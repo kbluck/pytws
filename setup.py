@@ -35,7 +35,7 @@ setup(
     author = 'Kevin Bluck',
     author_email = 'kevin.bluck@gmail.com',
     url = '',
-    license = 'Python License,
+    license = 'Python License',
     packages = ['pytws'],
     classifiers = filter(None, classifiers.split('\n')),
     long_description = '\n'.join(__doc__.split('\n')[2:]),
