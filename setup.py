@@ -13,7 +13,7 @@ __version__   = "$Id$"
 from distutils.core import setup
 
 
-classifiers = """
+classifiers = '''
     Development Status :: 2 - Pre-Alpha
     Intended Audience :: Developers
     License :: OSI Approved :: Python License
@@ -25,7 +25,7 @@ classifiers = """
     Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator
     Topic :: Software Development :: Libraries
     Topic :: Software Development :: Libraries :: Python Modules
-"""
+'''
 
 
 setup(
