@@ -1,1 +1,15 @@
 $Id$
+
+Dependencies:
+
+Requires Python 2.5 or greater.
+
+Requires TWS build 887 or greater. TWS must be running before API calls are
+made. This is a limitation of the IB TWS API.
+
+In order to execute unit tests using run-tests.py, requires Nose.
+Nose home: http://somethingaboutorange.com/mrl/projects/nose/
+
+The preferred IDE for development is Eclipse/PyDev. Project files included.
+Eclipse home: http://www.eclipse.org/
+PyDev home: http://pydev.sourceforge.net/
