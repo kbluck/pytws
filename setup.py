@@ -16,7 +16,7 @@ from distutils.core import setup
 classifiers = '''
     Development Status :: 2 - Pre-Alpha
     Intended Audience :: Developers
-    License :: OSI Approved :: Python License
+    License :: OSI Approved :: MIT/X Consortium License
     Natural Language :: English
     Operating System :: OS Independent
     Programming Language :: Python
@@ -35,7 +35,7 @@ setup(
     author = 'Kevin Bluck',
     author_email = 'kevin.bluck@gmail.com',
     url = '',
-    license = 'Python License',
+    license = 'MIT License',
     packages = ['pytws'],
     classifiers = filter(None, classifiers.split('\n')),
     long_description = '\n'.join(__doc__.split('\n')[2:]),
