@@ -36,7 +36,7 @@ setup(
     author_email = 'kevin.bluck@gmail.com',
     url = '',
     license = 'MIT License',
-    packages = ['pytws'],
+    packages = ['tws'],
     classifiers = filter(None, classifiers.split('\n')),
     long_description = '\n'.join(__doc__.split('\n')[2:]),
     platforms = ['any'],
