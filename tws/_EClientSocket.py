@@ -23,20 +23,26 @@ class EClientSocket(object):
         self._serverVersion = ""
         self._twsTime = ""
 
+
     def wrapper(self):
         return self._wrapper
+
 
     def reader(self):
         return self._reader
 
+
     def isConnected(self):
         return self._connected
+
 
     def serverVersion(self):
         return self._serverVersion
 
+
     def TwsConnectionTime(self):
         return self._twsTime
+
 
     def checkConnected(self, host):
         assert issubclass(type(host), str) or (host == None)  
@@ -48,11 +54,13 @@ class EClientSocket(object):
             return None
         return host if host else "127.0.0.1"
 
+
     # General constants
     CLIENT_VERSION = 42
     SERVER_VERSION = 38
     EOL = 0
     BAG_SEC_TYPE = "BAG"
+
 
     # API tag constants
     REQ_MKT_DATA = 1
@@ -98,6 +106,7 @@ class EClientSocket(object):
     MIN_SERVER_VER_SCALE_ORDERS2 = 40
     MIN_SERVER_VER_ALGO_ORDERS = 41
     MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42
+
 
     # Message Type name constants
     GROUPS = 1
