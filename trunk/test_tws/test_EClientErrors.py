@@ -1,4 +1,4 @@
-'''Unit test package for module "tws.EClientErrors".'''
+'''Unit test package for module "tws._EClientErrors".'''
 
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"

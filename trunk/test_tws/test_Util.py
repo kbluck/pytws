@@ -1,4 +1,4 @@
-'''Unit test package for module "tws.Util".'''
+'''Unit test package for module "tws._Util".'''
 
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
