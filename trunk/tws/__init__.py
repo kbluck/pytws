@@ -25,3 +25,22 @@ sys.modules.setdefault("tws.Util", Util)
 
 # Release unneeded references.
 del sys
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Utility stuff to support package
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+def synchronized():
+    '''Thread mutex-locking decorator.'''
+    def wrapper(callable):
+        def inner(*args, **kwds):
+            _mutex.acquire()
+            try:
+                return callable(*args, **kwds)
+            finally:
+                _mutex.release()
+        return inner
+    return wrapper
+
+_mutex = __import__("threading").RLock()
