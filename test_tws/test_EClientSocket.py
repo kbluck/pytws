@@ -4,11 +4,11 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
-from tws import EClientSocket
+from tws import EClientSocket, EWrapper
 
 
 # Local classes required to test EClientSocket
-class _wrapper(object):
+class _wrapper(EWrapper):
     pass
 
 class _reader(object):
