@@ -11,9 +11,6 @@ from tws import EClientSocket, EReader, EWrapper
 class _wrapper(EWrapper):
     pass
 
-class _reader(EReader):
-    pass
-
 
 class test_EClientSocket(unittest.TestCase):
     '''Test class "tws.EClientSocket"'''
