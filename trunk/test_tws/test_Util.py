@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
-from tws import Util
+import tws.Util as Util
 
 
 class test_Util(unittest.TestCase):
