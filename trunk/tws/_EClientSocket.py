@@ -15,6 +15,8 @@ class EClientSocket(object):
     """
 
     def __init__(self, wrapper):
+        assert issubclass(type(wrapper), __import__("tws").EWrapper)  
+
         self._wrapper = wrapper
         self._reader = None
         self._connected = False

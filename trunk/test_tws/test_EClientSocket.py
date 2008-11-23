@@ -25,6 +25,13 @@ class test_EClientSocket(unittest.TestCase):
         self.wrapper = _wrapper()
         self.client = EClientSocket(self.wrapper)
 
+    def test_init(self):
+        self.assertTrue(EClientSocket(_wrapper()))
+
+        if __debug__:
+            self.assertRaises(AssertionError, EClientSocket, 0)
+
+
     def test_api_versions(self):
         # Want to make sure to notice version changes.
         self.assertEqual(EClientSocket.CLIENT_VERSION, 42)
