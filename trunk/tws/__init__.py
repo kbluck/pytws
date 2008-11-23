@@ -9,6 +9,7 @@ __version__   = "$Id$"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 from tws._EClientSocket import EClientSocket
+from tws._EWrapper import EWrapper
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
