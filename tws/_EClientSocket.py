@@ -55,6 +55,13 @@ class EClientSocket(object):
         return host if host else "127.0.0.1"
 
 
+    def connectionError(self):
+        self._wrapper.error(EClientErrors.NO_VALID_ID,
+                            EClientErrors.CONNECT_FAIL.code(),
+                            EClientErrors.CONNECT_FAIL.msg())
+        self.m_reader = None
+
+
     # General constants
     CLIENT_VERSION = 42
     SERVER_VERSION = 38
