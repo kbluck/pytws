@@ -9,9 +9,9 @@ __version__   = "$Id$"
 
 
 class EReader(object):
-    """Type which reads EClientSocket data.
-    
-       A subclass object of this type must be provided for the use of
-       EClientSocket.
+    """Type which reads and reacts to EClientSocket data.
+
+       Reads data from client socket and fires events in the application-defined
+       EWrapper-derived object provided to EClientSocket.
     """
     pass
