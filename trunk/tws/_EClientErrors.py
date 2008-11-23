@@ -26,7 +26,7 @@ class CodeMsgPair(tuple):
         return self[1]
 
 
-NO_VALID_ID = CodeMsgPair((-1, "Invalid Error ID"))
+NO_VALID_ID = -1
 ALREADY_CONNECTED = CodeMsgPair((501, "Already connected."))
 CONNECT_FAIL = CodeMsgPair((502, "Couldn't connect to TWS.  Confirm that \"Enable ActiveX and Socket Clients\" is enabled on the TWS \"Configure->API\" menu."))
 UPDATE_TWS = CodeMsgPair((503, "The TWS is out of date and must be upgraded."))
