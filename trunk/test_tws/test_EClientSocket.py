@@ -44,6 +44,10 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.client.checkConnected(None), "127.0.0.1")
         self.assertEqual(self.client.checkConnected("1.2.3.4"), "1.2.3.4")
         self.assertEqual(1, len(self.wrapper.errors))
+        
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.checkConnected, 0)
+            
 
     def test_getters(self):
         self.assertEqual(self.client.wrapper(), self.wrapper)
