@@ -7,6 +7,8 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
+import tws._EClientErrors as EClientErrors
+
 
 class EClientSocket(object):
     """Socket client which connects to the TWS socket server.
@@ -33,6 +35,14 @@ class EClientSocket(object):
 
     def TwsConnectionTime(self):
         return self._twsTime
+
+    def checkConnected(self, host):
+        if self._connected:
+            self._wrapper.error(EClientErrors.NO_VALID_ID, 
+                                EClientErrors.ALREADY_CONNECTED.code(),
+                                EClientErrors.ALREADY_CONNECTED.msg())
+            return None
+        return host if host else "127.0.0.1"
 
     # General constants
     CLIENT_VERSION = 42
