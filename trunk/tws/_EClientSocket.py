@@ -12,6 +12,28 @@ class EClientSocket(object):
     """Socket client which connects to the TWS socket server.
     """
 
+    def __init__(self, wrapper):
+        self._wrapper = wrapper
+        self._reader = None
+        self._connected = False
+        self._serverVersion = ""
+        self._twsTime = ""
+
+    def wrapper(self):
+        return self._wrapper
+
+    def reader(self):
+        return self._reader
+
+    def isConnected(self):
+        return self._connected
+
+    def serverVersion(self):
+        return self._serverVersion
+
+    def TwsConnectionTime(self):
+        return self._twsTime
+
     # General constants
     CLIENT_VERSION = 42
     SERVER_VERSION = 38
