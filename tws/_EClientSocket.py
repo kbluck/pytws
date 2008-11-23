@@ -37,6 +37,8 @@ class EClientSocket(object):
         return self._twsTime
 
     def checkConnected(self, host):
+        assert issubclass(type(host), str) or (host == None)  
+
         if self._connected:
             self._wrapper.error(EClientErrors.NO_VALID_ID, 
                                 EClientErrors.ALREADY_CONNECTED.code(),
