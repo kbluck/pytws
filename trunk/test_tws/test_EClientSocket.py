@@ -55,6 +55,14 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.checkConnected, 0)
             
+    def test_connectionError(self):
+        self.assertEqual(0, len(self.wrapper.errors))
+        self.client.connectionError()
+        self.assertEqual(1, len(self.wrapper.errors))
+        self.assertEqual(self.wrapper.errors[0],
+                         (EClientErrors.NO_VALID_ID, 
+                          EClientErrors.CONNECT_FAIL.code(),
+                          EClientErrors.CONNECT_FAIL.msg()))
 
     def test_getters(self):
         self.assertEqual(self.client.wrapper(), self.wrapper)
