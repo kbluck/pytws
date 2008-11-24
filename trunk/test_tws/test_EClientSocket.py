@@ -4,46 +4,20 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
-import socket
-from StringIO import StringIO
-from tws import EClientErrors, EClientSocket, EReader, EWrapper
+from tws import EClientSocket, EClientErrors
+from test_tws import mock_wrapper
 
 
 # Local classes required to test EClientSocket
-class _wrapper(EWrapper):
-
-    def __init__(self):
-        self.errors = []
-    
-    def error(self, id, code, text):
-        self.errors.append((id, code, text))
-        
-class _fake_socket(object):
-
-    def __init__(self):
-        self._peer = ()
-
-    def connect(self, peer, error=False):
-        if error: raise socket.error()
-        self._peer = peer
-
-    def getpeername(self):
-        if not self._peer: raise socket.error()
-        return self._peer
-
-    def makefile(self, mode):
-        return StringIO()
-
-
 class test_EClientSocket(unittest.TestCase):
     '''Test class "tws.EClientSocket"'''
     
     def setUp(self):
-        self.wrapper = _wrapper()
+        self.wrapper = mock_wrapper()
         self.client = EClientSocket(self.wrapper)
 
     def test_init(self):
-        self.assertTrue(EClientSocket(_wrapper()))
+        self.assertTrue(EClientSocket(mock_wrapper()))
 
         if __debug__:
             self.assertRaises(AssertionError, EClientSocket, 0)
