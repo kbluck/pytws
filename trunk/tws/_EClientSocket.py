@@ -63,6 +63,12 @@ class EClientSocket(object):
                             EClientErrors.CONNECT_FAIL.msg())
         self.m_reader = None
 
+    def createReader(self, connection, input_stream):
+        assert issubclass(type(connection), type(self))
+        assert hasattr(input_stream, "read")
+
+        return __import__("tws").EReader(connection, input_stream)
+
 
     # General constants
     CLIENT_VERSION = 42

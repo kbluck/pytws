@@ -4,7 +4,8 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
-from tws import EClientSocket, EClientErrors
+from StringIO import StringIO
+from tws import EClientSocket, EClientErrors, EReader
 from test_tws import mock_wrapper, mock_socket
 
 
@@ -56,6 +57,14 @@ class test_EClientSocket(unittest.TestCase):
                          (EClientErrors.NO_VALID_ID, 
                           EClientErrors.CONNECT_FAIL.code(),
                           EClientErrors.CONNECT_FAIL.msg()))
+
+    def test_createReader(self):
+        self.assertTrue(issubclass(type(
+            self.client.createReader(self.client, StringIO())), EReader))
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.createReader, 1, StringIO())
+            self.assertRaises(AssertionError, self.client.createReader, self.client, 1)
 
     def test_getters(self):
         self.assertEqual(self.client.wrapper(), self.wrapper)
