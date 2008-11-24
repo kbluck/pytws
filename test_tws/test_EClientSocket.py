@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from tws import EClientSocket, EClientErrors
-from test_tws import mock_wrapper
+from test_tws import mock_wrapper, mock_socket
 
 
 # Local classes required to test EClientSocket
@@ -18,9 +18,11 @@ class test_EClientSocket(unittest.TestCase):
 
     def test_init(self):
         self.assertTrue(EClientSocket(mock_wrapper()))
+        self.assertTrue(EClientSocket(mock_wrapper(), mock_socket))
 
         if __debug__:
             self.assertRaises(AssertionError, EClientSocket, 0)
+            self.assertRaises(AssertionError, EClientSocket, self.wrapper, 0)
 
 
     def test_api_versions(self):
