@@ -16,7 +16,7 @@ class test_EReader(unittest.TestCase):
         self.wrapper = mock_wrapper()
         self.parent = EClientSocket(self.wrapper)
         self.stream = StringIO()
-        self.reader = EReader(self.parent, self.stream)
+        self.reader = self.parent.createReader(self.parent, self.stream)
 
     def test_init(self):
         self.assertTrue(EReader(self.parent, self.stream))
