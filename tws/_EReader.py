@@ -14,4 +14,10 @@ class EReader(object):
        Reads data from client socket and fires events in the application-defined
        EWrapper-derived object provided to EClientSocket.
     """
-    pass
+
+    def __init__(self, connection, input_stream):
+        assert issubclass(type(connection), __import__("tws").EClientSocket)
+        assert hasattr(input_stream, "read")
+
+        self._connection = connection
+        self._stream = input_stream
