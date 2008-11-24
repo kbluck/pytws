@@ -14,14 +14,16 @@ class EClientSocket(object):
     """Socket client which connects to the TWS socket server.
     """
 
-    def __init__(self, wrapper):
+    def __init__(self, wrapper, socket_factory=__import__("socket").socket):
         assert issubclass(type(wrapper), __import__("tws").EWrapper)  
+        assert hasattr(socket_factory, "connect")
 
         self._wrapper = wrapper
         self._reader = None
         self._connected = False
         self._serverVersion = ""
         self._twsTime = ""
+        self._socket_factory = socket_factory
 
 
     def wrapper(self):
