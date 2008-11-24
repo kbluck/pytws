@@ -4,6 +4,8 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
+import socket
+from StringIO import StringIO
 from tws import EClientErrors, EClientSocket, EReader, EWrapper
 
 
@@ -16,6 +18,21 @@ class _wrapper(EWrapper):
     def error(self, id, code, text):
         self.errors.append((id, code, text))
         
+class _fake_socket(object):
+
+    def __init__(self):
+        self._peer = ()
+
+    def connect(self, peer, error=False):
+        if error: raise socket.error()
+        self._peer = peer
+
+    def getpeername(self):
+        if not self._peer: raise socket.error()
+        return self._peer
+
+    def makefile(self, mode):
+        return StringIO()
 
 
 class test_EClientSocket(unittest.TestCase):
