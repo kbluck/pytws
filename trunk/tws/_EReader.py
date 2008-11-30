@@ -7,6 +7,8 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
+from cStringIO import StringIO as _buffer_factory
+
 
 class EReader(object):
     """Type which reads and reacts to EClientSocket data.
@@ -21,3 +23,12 @@ class EReader(object):
 
         self._connection = connection
         self._stream = input_stream
+
+    def _readStr(self):
+        buffer = _buffer_factory()
+        while True:
+            char = self._stream.read(1)
+            if char == '\x00': break
+            buffer.write(char)
+        result = buffer.getvalue()
+        return result if result else None
