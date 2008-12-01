@@ -23,7 +23,7 @@ class EReader(object):
         self._stream = input_stream
 
 
-    ## Socket stream reader functions ##
+    ## Raw base data stream reader functions ##
 
     def _readStr(self):
         buffer = self._buffer_factory()
