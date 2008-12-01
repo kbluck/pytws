@@ -16,11 +16,18 @@ def test_import():
 class mock_wrapper(EWrapper):
 
     def __init__(self):
+        self.calldata = []
         self.errors = []
     
     def error(self, id, code, text):
         self.errors.append((id, code, text))
-        
+
+    def __getattr__(self, name):
+        # Any arbitrary unknown attribute is mapped to a function call which is
+        # recorded into self.calldata. 
+        return lambda *args, **kwds: self.calldata.append((name, args, kwds))
+
+
 class mock_socket(object):
 
     def __init__(self):
