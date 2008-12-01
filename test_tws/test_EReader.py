@@ -51,6 +51,16 @@ class test_EReader(unittest.TestCase):
         self.assertRaises(ValueError, self.reader._readIntMax)
         self.assertEqual(self.reader._readIntMax(), 789)
 
+    def test_readBoolFromInt(self):
+        self.stream.write('0\x001\x00\x00-1\x001b3\x00123\x00')
+        self.stream.seek(0)
+        self.assertEqual(self.reader._readBoolFromInt(), False)
+        self.assertEqual(self.reader._readBoolFromInt(), True)
+        self.assertEqual(self.reader._readBoolFromInt(), False)
+        self.assertEqual(self.reader._readBoolFromInt(), True)
+        self.assertRaises(ValueError, self.reader._readBoolFromInt)
+        self.assertEqual(self.reader._readBoolFromInt(), True)
+
     def test_readLong(self):
         self.stream.write('123\x00456\x00\x001b3\x00789\x00')
         self.stream.seek(0)
