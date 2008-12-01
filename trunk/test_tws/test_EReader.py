@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import EClientSocket, EReader
+from tws import EClientSocket, EReader, Util
 from test_tws import mock_wrapper
 
 
@@ -41,6 +41,15 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.reader._readInt(), 0)
         self.assertRaises(ValueError, self.reader._readInt)
         self.assertEqual(self.reader._readInt(), 789)
+
+    def test_readIntMax(self):
+        self.stream.write('123\x00456\x00\x001b3\x00789\x00')
+        self.stream.seek(0)
+        self.assertEqual(self.reader._readIntMax(), 123)
+        self.assertEqual(self.reader._readIntMax(), 456)
+        self.assertEqual(self.reader._readIntMax(), Util._INT_MAX_VALUE)
+        self.assertRaises(ValueError, self.reader._readIntMax)
+        self.assertEqual(self.reader._readIntMax(), 789)
 
     def test_readLong(self):
         self.stream.write('123\x00456\x00\x001b3\x00789\x00')

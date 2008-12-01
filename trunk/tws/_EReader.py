@@ -31,9 +31,12 @@ class EReader(object):
         result = buffer.getvalue()
         return result if result else None
 
-    def _readInt(self):
+    def _readInt(self, default=0):
         strval = self._readStr()
-        return int(strval) if strval else 0
+        return int(strval) if strval else default
+
+    def _readIntMax(self):
+        return self._readInt(default=self._INT_MAX_VALUE)
 
     def _readLong(self):
         strval = self._readStr()
@@ -44,3 +47,4 @@ class EReader(object):
         return float(strval) if strval else 0.0
 
     from cStringIO import StringIO as _buffer_factory
+    from tws._Util import _INT_MAX_VALUE
