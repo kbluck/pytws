@@ -36,3 +36,7 @@ class EReader(object):
     def _readInt(self):
         strval = self._readStr()
         return int(strval) if strval else 0
+
+    def _readDouble(self):
+        strval = self._readStr()
+        return float(strval) if strval else 0.0
