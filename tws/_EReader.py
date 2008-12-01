@@ -20,7 +20,24 @@ class EReader(object):
         assert hasattr(input_stream, "read")
 
         self._connection = connection
+        self._wrapper = connection._wrapper
         self._stream = input_stream
+
+
+    def _readTickPrice(self):
+        version = self._readInt()
+        tickerId = self._readInt()
+        tickType = self._readInt()
+        price = self._readDouble()
+        size = self._readInt() if version >= 2 else 0
+        canAutoExecute = self._readInt() if version >= 3 else 0
+        self._wrapper.tickPrice(tickerId, tickType, price, canAutoExecute)
+        if version >= 2:
+            sizeTickType = 0 if tickType == 1 else \
+                           3 if tickType == 2 else \
+                           5 if tickType == 4 else -1 
+            if (sizeTickType != -1):
+                self._wrapper.tickSize(tickerId, sizeTickType, size)
 
 
     ## Raw base data stream reader functions ##
