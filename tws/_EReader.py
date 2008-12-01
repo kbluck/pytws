@@ -32,3 +32,7 @@ class EReader(object):
             buffer.write(char)
         result = buffer.getvalue()
         return result if result else None
+
+    def _readInt(self):
+        strval = self._readStr()
+        return int(strval) if strval else 0
