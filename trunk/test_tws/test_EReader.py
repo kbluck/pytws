@@ -32,3 +32,12 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.reader._readStr(), 'test2')
         self.assertEqual(self.reader._readStr(), None)
         self.assertEqual(self.reader._readStr(), 'test3')
+
+    def test_readInt(self):
+        self.stream.write('123\x00456\x00\x001b3\x00789\x00')
+        self.stream.seek(0)
+        self.assertEqual(self.reader._readInt(), 123)
+        self.assertEqual(self.reader._readInt(), 456)
+        self.assertEqual(self.reader._readInt(), 0)
+        self.assertRaises(ValueError, self.reader._readInt)
+        self.assertEqual(self.reader._readInt(), 789)
