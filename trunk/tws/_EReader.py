@@ -38,6 +38,9 @@ class EReader(object):
     def _readIntMax(self):
         return self._readInt(default=self._INT_MAX_VALUE)
 
+    def _readBoolFromInt(self):
+        return True if self._readInt() else False
+
     def _readLong(self):
         strval = self._readStr()
         return long(strval) if strval else long(0)
