@@ -40,6 +40,14 @@ class EReader(object):
                 self._wrapper.tickSize(tickerId, sizeTickType, size)
 
 
+    def _readTickSize(self):
+        version = self._readInt()
+        tickerId = self._readInt()
+        tickType = self._readInt()
+        size = self._readInt()
+        self._wrapper.tickSize(tickerId, tickType, size)
+
+
     ## Raw base data stream reader functions ##
 
     def _readStr(self):
