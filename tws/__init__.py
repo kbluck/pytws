@@ -22,6 +22,9 @@ import sys
 from tws import _EClientErrors as EClientErrors
 sys.modules.setdefault("tws.EClientErrors", EClientErrors)
 
+from tws import _TickType as TickType
+sys.modules.setdefault("tws.TickType", TickType)
+
 from tws import _Util as Util
 sys.modules.setdefault("tws.Util", Util)
 
