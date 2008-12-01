@@ -7,8 +7,6 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-from cStringIO import StringIO as _buffer_factory
-
 
 class EReader(object):
     """Type which reads and reacts to EClientSocket data.
@@ -25,7 +23,7 @@ class EReader(object):
         self._stream = input_stream
 
     def _readStr(self):
-        buffer = _buffer_factory()
+        buffer = self._buffer_factory()
         while True:
             char = self._stream.read(1)
             if char == '\x00': break
@@ -44,3 +42,5 @@ class EReader(object):
     def _readDouble(self):
         strval = self._readStr()
         return float(strval) if strval else 0.0
+
+    from cStringIO import StringIO as _buffer_factory
