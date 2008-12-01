@@ -42,9 +42,13 @@ class EReader(object):
         strval = self._readStr()
         return long(strval) if strval else long(0)
 
-    def _readDouble(self):
+    def _readDouble(self, default=0.0):
         strval = self._readStr()
-        return float(strval) if strval else 0.0
+        return float(strval) if strval else default
+
+    def _readDoubleMax(self):
+        return self._readDouble(default=self._DOUBLE_MAX_VALUE)
 
     from cStringIO import StringIO as _buffer_factory
     from tws._Util import _INT_MAX_VALUE
+    from tws._Util import _DOUBLE_MAX_VALUE

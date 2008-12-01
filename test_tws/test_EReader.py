@@ -68,3 +68,12 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.reader._readDouble(), 0.0)
         self.assertRaises(ValueError, self.reader._readDouble)
         self.assertEqual(self.reader._readDouble(), 789.0)
+
+    def test_readDoubleMax(self):
+        self.stream.write('1.25\x00456\x00\x001b3\x00789.\x00')
+        self.stream.seek(0)
+        self.assertEqual(self.reader._readDoubleMax(), 1.25)
+        self.assertEqual(self.reader._readDoubleMax(), 456.0)
+        self.assertEqual(self.reader._readDoubleMax(), Util._DOUBLE_MAX_VALUE)
+        self.assertRaises(ValueError, self.reader._readDoubleMax)
+        self.assertEqual(self.reader._readDoubleMax(), 789.0)
