@@ -7,6 +7,8 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
+from tws import _TickType
+
 
 class EReader(object):
     """Type which reads and reacts to EClientSocket data.
@@ -33,9 +35,9 @@ class EReader(object):
         canAutoExecute = self._readInt() if version >= 3 else 0
         self._wrapper.tickPrice(tickerId, tickType, price, canAutoExecute)
         if version >= 2:
-            sizeTickType = 0 if tickType == 1 else \
-                           3 if tickType == 2 else \
-                           5 if tickType == 4 else -1 
+            sizeTickType = _TickType.BID_SIZE  if tickType == _TickType.BID  else \
+                           _TickType.ASK_SIZE  if tickType == _TickType.ASK  else \
+                           _TickType.LAST_SIZE if tickType == _TickType.LAST else -1 
             if (sizeTickType != -1):
                 self._wrapper.tickSize(tickerId, sizeTickType, size)
 
