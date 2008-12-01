@@ -28,26 +28,26 @@ class EReader(object):
 
     def _readTickPrice(self):
         version = self._readInt()
-        tickerId = self._readInt()
-        tickType = self._readInt()
+        ticker_id = self._readInt()
+        price_tick_type = self._readInt()
         price = self._readDouble()
         size = self._readInt() if version >= 2 else 0
-        canAutoExecute = self._readInt() if version >= 3 else 0
-        self._wrapper.tickPrice(tickerId, tickType, price, canAutoExecute)
+        can_auto_execute = self._readInt() if version >= 3 else 0
+        self._wrapper.tickPrice(ticker_id, price_tick_type, price, can_auto_execute)
         if version >= 2:
-            sizeTickType = _TickType.BID_SIZE  if tickType == _TickType.BID  else \
-                           _TickType.ASK_SIZE  if tickType == _TickType.ASK  else \
-                           _TickType.LAST_SIZE if tickType == _TickType.LAST else -1 
-            if (sizeTickType != -1):
-                self._wrapper.tickSize(tickerId, sizeTickType, size)
+            size_tick_type = _TickType.BID_SIZE  if price_tick_type == _TickType.BID  else \
+                             _TickType.ASK_SIZE  if price_tick_type == _TickType.ASK  else \
+                             _TickType.LAST_SIZE if price_tick_type == _TickType.LAST else -1 
+            if (size_tick_type != -1):
+                self._wrapper.tickSize(ticker_id, size_tick_type, size)
 
 
     def _readTickSize(self):
         version = self._readInt()
-        tickerId = self._readInt()
-        tickType = self._readInt()
+        ticker_id = self._readInt()
+        tick_type = self._readInt()
         size = self._readInt()
-        self._wrapper.tickSize(tickerId, tickType, size)
+        self._wrapper.tickSize(ticker_id, tick_type, size)
 
 
     ## Raw base data stream reader functions ##
