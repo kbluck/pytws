@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 '''PyTWS - Interactive Brokers Python API
 
-PyTWS is a Python port of the API used for accessing the Interactive Brokers
-Trader Workstation software.  PyTWS implements the same functionality as the
-proprietary Java API distributed by Interactive Brokers.
+   PyTWS is a Python port of the API used for controlling the Interactive
+   Brokers LLC Trader Workstation software.  PyTWS implements the same
+   interface and functionality as the proprietary Java API distributed by
+   Interactive Brokers.
+   
+   PyTWS is not reviewed, supported or endorsed by Interactive Brokers LLC.
 '''
 
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
@@ -20,10 +23,7 @@ classifiers = '''
     Natural Language :: English
     Operating System :: OS Independent
     Programming Language :: Python
-    Topic :: Office/Business :: Financial
     Topic :: Office/Business :: Financial :: Investment
-    Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator
-    Topic :: Software Development :: Libraries
     Topic :: Software Development :: Libraries :: Python Modules
 '''
 
