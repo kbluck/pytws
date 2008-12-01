@@ -39,7 +39,7 @@ class EReader(object):
         return self._readInt(default=self._INT_MAX_VALUE)
 
     def _readBoolFromInt(self):
-        return True if self._readInt() else False
+        return bool(self._readInt())
 
     def _readLong(self):
         strval = self._readStr()
