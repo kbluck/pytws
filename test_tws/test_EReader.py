@@ -42,6 +42,15 @@ class test_EReader(unittest.TestCase):
         self.assertRaises(ValueError, self.reader._readInt)
         self.assertEqual(self.reader._readInt(), 789)
 
+    def test_readLong(self):
+        self.stream.write('123\x00456\x00\x001b3\x00789\x00')
+        self.stream.seek(0)
+        self.assertEqual(self.reader._readLong(), long(123))
+        self.assertEqual(self.reader._readLong(), long(456))
+        self.assertEqual(self.reader._readLong(), long(0))
+        self.assertRaises(ValueError, self.reader._readLong)
+        self.assertEqual(self.reader._readLong(), long(789))
+
     def test_readDouble(self):
         self.stream.write('1.25\x00456\x00\x001b3\x00789.\x00')
         self.stream.seek(0)
