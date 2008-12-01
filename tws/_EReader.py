@@ -22,6 +22,9 @@ class EReader(object):
         self._connection = connection
         self._stream = input_stream
 
+
+    ## Socket stream reader functions ##
+
     def _readStr(self):
         buffer = self._buffer_factory()
         while True:
@@ -31,26 +34,35 @@ class EReader(object):
         result = buffer.getvalue()
         return result if result else None
 
+
     def _readInt(self, default=0):
         strval = self._readStr()
         return int(strval) if strval else default
 
+
     def _readIntMax(self):
         return self._readInt(default=self._INT_MAX_VALUE)
 
+
     def _readBoolFromInt(self):
         return bool(self._readInt())
+
 
     def _readLong(self):
         strval = self._readStr()
         return long(strval) if strval else long(0)
 
+
     def _readDouble(self, default=0.0):
         strval = self._readStr()
         return float(strval) if strval else default
 
+
     def _readDoubleMax(self):
         return self._readDouble(default=self._DOUBLE_MAX_VALUE)
+
+
+    ## Private class imports ##
 
     from cStringIO import StringIO as _buffer_factory
     from tws._Util import _INT_MAX_VALUE
