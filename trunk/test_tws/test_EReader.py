@@ -136,3 +136,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[4], ('tickPrice', (2,4,1.5,1), {}))
         self.assertEqual(self.wrapper.calldata[5], ('tickSize',  (2,5,6), {}))
         self.assertEqual(self.wrapper.calldata[6], ('tickPrice', (2,5,1.5,0), {}))
+
+    def test_readTickSize(self):
+        self.stream.write('3\x009\x001\x008\x00')
+        self.stream.seek(0)
+        self.reader._readTickSize()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ('tickSize', (9,1,8), {}))
