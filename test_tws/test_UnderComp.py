@@ -8,7 +8,7 @@ from tws import UnderComp
 
 
 class test_UnderComp(unittest.TestCase):
-    '''Test module "tws.UnderComp"'''
+    '''Test class "tws.UnderComp"'''
 
     def test_init(self):
         test = UnderComp()
