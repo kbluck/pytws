@@ -135,6 +135,22 @@ class EReader(object):
         self._wrapper.tickEFP(ticker_id, tick_type, basis_points, formatted_basis_points, implied_futures_price,
                               hold_days, future_expiry, dividend_impact, dividends_to_expiry)
 
+
+    def _readOrderStatus(self):
+        version = self._readInt()
+        id = self._readInt()
+        status = self._readStr()
+        filled = self._readInt()
+        remaining = self._readInt()
+        avg_fill_price = self._readDouble()
+        perm_id = self._readInt() if version >= 2 else 0
+        parent_id = self._readInt() if version >= 3 else 0
+        last_fill_price = self._readDouble() if version >= 4 else 0
+        client_id = self._readInt() if version >= 5 else 0
+        why_held = self._readStr() if version >= 6 else None
+        self._wrapper.orderStatus(id, status, filled, remaining, avg_fill_price, perm_id,
+                                  parent_id, last_fill_price, client_id, why_held)
+
     ## Tag constants ##
 
     TICK_PRICE = 1
