@@ -105,6 +105,14 @@ class EReader(object):
                                             model_price, pv_dividend)
 
 
+    def _readTickGeneric(self):
+        version = self._readInt()
+        ticker_id = self._readInt()
+        tick_type = self._readInt()
+        value = self._readDouble()
+        self._wrapper.tickGeneric(ticker_id, tick_type, value)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1

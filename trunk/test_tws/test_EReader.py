@@ -164,3 +164,12 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[2], ('tickOptionComputation', (9, 13, 0.25, Util._DOUBLE_MAX_VALUE, 0.125, 1.5), {}))
         self.assertEqual(self.wrapper.calldata[3], ('tickOptionComputation', (9, 13, 0.25, Util._DOUBLE_MAX_VALUE, 0.125, 1.5), {}))
         self.assertEqual(self.wrapper.calldata[4], ('tickOptionComputation', (9, 1, 0.25, 0.5, Util._DOUBLE_MAX_VALUE, Util._DOUBLE_MAX_VALUE), {}))
+
+    def test_readTickGeneric(self):
+        self.stream.write('3\x009\x001\x001.25\x00')
+        self.stream.seek(0)
+        self.reader._readTickGeneric()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ('tickGeneric', (9,1,1.25), {}))
+
