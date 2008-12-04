@@ -184,3 +184,14 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[3], ('orderStatus', (9,'ABC',2,3,1.5,4,5,2.5,0,None), {}))
         self.assertEqual(self.wrapper.calldata[4], ('orderStatus', (9,'ABC',2,3,1.5,4,5,2.5,6,None), {}))
         self.assertEqual(self.wrapper.calldata[5], ('orderStatus', (9,'ABC',2,3,1.5,4,5,2.5,6,'DEF'), {}))
+
+    def test_readUpdateAccountValue(self):
+        self.stream.write('1\x00AB\x00CD\x00EF\x00')
+        self.stream.write('2\x00AB\x00CD\x00EF\x00GH\x00')
+        self.stream.seek(0)
+        for i in xrange(2): self.reader._readUpdateAccountValue()
+        self.assertEqual(len(self.wrapper.calldata), 2)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ('updateAccountValue', ('AB','CD','EF',None), {}))
+        self.assertEqual(self.wrapper.calldata[1], ('updateAccountValue', ('AB','CD','EF','GH'), {}))
+
