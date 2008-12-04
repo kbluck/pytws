@@ -10,6 +10,7 @@ __version__   = "$Id$"
 
 from tws._EClientSocket import EClientSocket
 from tws._EReader import EReader
+from tws._UnderComp import UnderComp
 from tws._EWrapper import EWrapper
 
 
