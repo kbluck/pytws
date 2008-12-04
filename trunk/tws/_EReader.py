@@ -121,6 +121,20 @@ class EReader(object):
         self._wrapper.tickString(ticker_id, tick_type, value)
 
 
+    def _readTickEFP(self):
+        version = self._readInt()
+        ticker_id = self._readInt()
+        tick_type = self._readInt()
+        basis_points = self._readDouble()
+        formatted_basis_points = self._readStr()
+        implied_futures_price = self._readDouble()
+        hold_days = self._readInt()
+        future_expiry = self._readStr()
+        dividend_impact = self._readDouble()
+        dividends_to_expiry = self._readDouble()
+        self._wrapper.tickEFP(ticker_id, tick_type, basis_points, formatted_basis_points, implied_futures_price,
+                              hold_days, future_expiry, dividend_impact, dividends_to_expiry)
+
     ## Tag constants ##
 
     TICK_PRICE = 1
