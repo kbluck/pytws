@@ -87,6 +87,24 @@ class EReader(object):
         self._wrapper.tickSize(ticker_id, tick_type, size)
 
 
+    def _readTickOptionComputation(self):
+        version = self._readInt()
+        ticker_id = self._readInt()
+        tick_type = self._readInt()
+        implied_vol = self._readDouble()
+        delta = self._readDouble()
+        if (tick_type == _TickType.MODEL_OPTION):
+            model_price = self._readDouble()
+            pv_dividend = self._readDouble()
+        else:
+            model_price = pv_dividend = self._DOUBLE_MAX_VALUE
+
+        self._wrapper.tickOptionComputation(ticker_id, tick_type, 
+                                            implied_vol if implied_vol >= 0.0 else self._DOUBLE_MAX_VALUE,
+                                            delta if abs(delta) <= 1.0 else self._DOUBLE_MAX_VALUE,
+                                            model_price, pv_dividend)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
