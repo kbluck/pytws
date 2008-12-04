@@ -151,6 +151,15 @@ class EReader(object):
         self._wrapper.orderStatus(id, status, filled, remaining, avg_fill_price, perm_id,
                                   parent_id, last_fill_price, client_id, why_held)
 
+    def _readUpdateAccountValue(self):
+        version = self._readInt()
+        key = self._readStr()
+        val = self._readStr()
+        cur = self._readStr()
+        account_name = self._readStr() if version >= 2 else None
+        self._wrapper.updateAccountValue(key, val, cur, account_name)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
