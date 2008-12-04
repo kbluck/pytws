@@ -5,7 +5,10 @@ __version__   = "$Id$"
 
 
 class UnderComp(object):
-    '''Data structure with information about a delta-neutral combination of contracts.'''
+    '''Data structure with information to help build a delta-neutral
+       combination of contracts.
+    '''
+
     def __init__(self):
         self.m_conId = 0
         self.m_delta = 0.0
