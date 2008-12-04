@@ -181,3 +181,10 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ('tickString', (9,1,'ABC123'), {}))
 
+    def test_readTickEFP(self):
+        self.stream.write('3\x002\x001\x001.5\x00ABC\x002.5\x003\x00XYZ\x004.5\x005.5\x00')
+        self.stream.seek(0)
+        self.reader._readTickEFP()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ('tickEFP', (2,1,1.5,'ABC',2.5,3,'XYZ',4.5,5.5), {}))
