@@ -113,6 +113,14 @@ class EReader(object):
         self._wrapper.tickGeneric(ticker_id, tick_type, value)
 
 
+    def _readTickString(self):
+        version = self._readInt()
+        ticker_id = self._readInt()
+        tick_type = self._readInt()
+        value = self._readStr()
+        self._wrapper.tickString(ticker_id, tick_type, value)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1

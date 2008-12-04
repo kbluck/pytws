@@ -173,3 +173,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ('tickGeneric', (9,1,1.25), {}))
 
+    def test_readTickString(self):
+        self.stream.write('3\x009\x001\x00ABC123\x00')
+        self.stream.seek(0)
+        self.reader._readTickString()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ('tickString', (9,1,'ABC123'), {}))
+
