@@ -28,6 +28,7 @@ del sys
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 from tws._ComboLeg import ComboLeg
+from tws._Contract import Contract
 from tws._EClientSocket import EClientSocket
 from tws._EReader import EReader
 from tws._Execution import Execution
