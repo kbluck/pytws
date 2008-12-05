@@ -5,6 +5,25 @@ __version__   = "$Id$"
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Module imports. Backfill sys.modules for each
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+import sys
+
+import _EClientErrors as EClientErrors
+sys.modules.setdefault("tws.EClientErrors", EClientErrors)
+
+import _TickType as TickType
+sys.modules.setdefault("tws.TickType", TickType)
+
+import _Util as Util
+sys.modules.setdefault("tws.Util", Util)
+
+# Release unneeded references.
+del sys
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Class imports.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -17,25 +36,6 @@ from tws._OrderState import OrderState
 from tws._TagValue import TagValue
 from tws._UnderComp import UnderComp
 from tws._EWrapper import EWrapper
-
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Module imports. Backfill sys.modules for each
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-import sys
-
-from tws import _EClientErrors as EClientErrors
-sys.modules.setdefault("tws.EClientErrors", EClientErrors)
-
-from tws import _TickType as TickType
-sys.modules.setdefault("tws.TickType", TickType)
-
-from tws import _Util as Util
-sys.modules.setdefault("tws.Util", Util)
-
-# Release unneeded references.
-del sys
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
