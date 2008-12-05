@@ -18,6 +18,7 @@ class TagValue(object):
     def __eq__(self, other):
         if id(self) == id(other): return True
         if not isinstance(other, self.__class__): return False
-        if (self.m_tag != other.m_tag): return False
-        if (self.m_value != other.m_value): return False
-        return True
+        return True if (
+            (self.m_tag == other.m_tag) and
+            (self.m_value == other.m_value)
+        ) else False

@@ -28,5 +28,6 @@ class Execution(object):
     def __eq__(self, other):
         if id(self) == id(other): return True
         if not isinstance(other, self.__class__): return False
-        if (self.m_execId != other.m_execId): return False
-        return True
+        return True if (
+            (self.m_execId == other.m_execId)
+        ) else False

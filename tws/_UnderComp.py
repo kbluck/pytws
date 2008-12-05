@@ -18,7 +18,8 @@ class UnderComp(object):
     def __eq__(self, other):
         if id(self) == id(other): return True
         if not isinstance(other, self.__class__): return False
-        if (self.m_conId != other.m_conId): return False
-        if (self.m_delta != other.m_delta): return False
-        if (self.m_price != other.m_price): return False
-        return True
+        return True if (
+            (self.m_conId == other.m_conId) and
+            (self.m_delta == other.m_delta) and
+            (self.m_price == other.m_price)
+        ) else False
