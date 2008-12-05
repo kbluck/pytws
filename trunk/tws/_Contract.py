@@ -7,6 +7,8 @@ from tws import Util as _Util
 
 
 class Contract(object):
+    '''Data structure with attributes to describe a tradeable contract.
+    '''
 
     def __init__(self, con_id=0, symbol='', sec_type='', expiry='', strike=0.0,
                        right='', multiplier='', exchange='', currency='',
