@@ -14,7 +14,5 @@ if __name__ == '__main__':
     logging.disable(100)
 
     # Ensure project source packages are on the path.
-    sys.path.append(
-        os.path.abspath(
-            os.path.join(os.path.dirname(__file__), '.')))
+    sys.path.append(os.path.abspath(os.path.dirname(__file__)))
     nose.run(argv=['-d','--where=.'])
