@@ -8,6 +8,7 @@ __version__   = "$Id$"
 # Class imports.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+from tws._ComboLeg import ComboLeg
 from tws._EClientSocket import EClientSocket
 from tws._EReader import EReader
 from tws._Execution import Execution
