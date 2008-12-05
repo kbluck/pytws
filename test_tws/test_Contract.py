@@ -8,8 +8,7 @@ from tws import Contract, ComboLeg, UnderComp
 
 
 class test_Contract(unittest.TestCase):
-    '''Data structure to describe a tradeable contract.
-    '''
+    '''Test type "tws.Contract"'''
 
     def test_init(self):
         test1 = Contract()
