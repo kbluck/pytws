@@ -11,8 +11,8 @@ import tws._EClientErrors as EClientErrors
 
 
 class EClientSocket(object):
-    """Socket client which connects to the TWS socket server.
-    """
+    '''Socket client which connects to the TWS socket server.
+    '''
 
     def __init__(self, wrapper, socket_factory=__import__("socket").socket):
         assert issubclass(type(wrapper), __import__("tws").EWrapper)  

@@ -12,15 +12,15 @@ class test_Execution(unittest.TestCase):
 
     def test_init(self):
         test1 = Execution()
-        test2 = Execution(1, 2, 'ab', 'cd', 'ef', 'gh', 'ij', 3, 3.5, 4, 5, 6, 7.5)
+        test2 = Execution(1, 2, "ab", "cd", "ef", "gh", "ij", 3, 3.5, 4, 5, 6, 7.5)
     
         self.assertEqual(test1.m_orderId, 0)
         self.assertEqual(test1.m_clientId, 0)
-        self.assertEqual(test1.m_execId, '')
-        self.assertEqual(test1.m_time, '')
-        self.assertEqual(test1.m_acctNumber, '')
-        self.assertEqual(test1.m_exchange, '')
-        self.assertEqual(test1.m_side, '')
+        self.assertEqual(test1.m_execId, "")
+        self.assertEqual(test1.m_time, "")
+        self.assertEqual(test1.m_acctNumber, "")
+        self.assertEqual(test1.m_exchange, "")
+        self.assertEqual(test1.m_side, "")
         self.assertEqual(test1.m_shares, 0)
         self.assertEqual(test1.m_price, 0.0)
         self.assertEqual(test1.m_permId, 0)
@@ -30,11 +30,11 @@ class test_Execution(unittest.TestCase):
 
         self.assertEqual(test2.m_orderId, 1)
         self.assertEqual(test2.m_clientId, 2)
-        self.assertEqual(test2.m_execId, 'ab')
-        self.assertEqual(test2.m_time, 'cd')
-        self.assertEqual(test2.m_acctNumber, 'ef')
-        self.assertEqual(test2.m_exchange, 'gh')
-        self.assertEqual(test2.m_side, 'ij')
+        self.assertEqual(test2.m_execId, "ab")
+        self.assertEqual(test2.m_time, "cd")
+        self.assertEqual(test2.m_acctNumber, "ef")
+        self.assertEqual(test2.m_exchange, "gh")
+        self.assertEqual(test2.m_side, "ij")
         self.assertEqual(test2.m_shares, 3)
         self.assertEqual(test2.m_price, 3.5)
         self.assertEqual(test2.m_permId, 4)
@@ -47,11 +47,11 @@ class test_Execution(unittest.TestCase):
 
         test.m_orderId = 1
         test.m_clientId = 2
-        test.m_execId = 'ab'
-        test.m_time = 'cd'
-        test.m_acctNumber = 'ef'
-        test.m_exchange = 'gh'
-        test.m_side = 'ij'
+        test.m_execId = "ab"
+        test.m_time = "cd"
+        test.m_acctNumber = "ef"
+        test.m_exchange = "gh"
+        test.m_side = "ij"
         test.m_shares = 3
         test.m_price = 3.0
         test.m_permId = 4
@@ -61,11 +61,11 @@ class test_Execution(unittest.TestCase):
 
         self.assertEqual(test.m_orderId, 1)
         self.assertEqual(test.m_clientId, 2)
-        self.assertEqual(test.m_execId, 'ab')
-        self.assertEqual(test.m_time, 'cd')
-        self.assertEqual(test.m_acctNumber, 'ef')
-        self.assertEqual(test.m_exchange, 'gh')
-        self.assertEqual(test.m_side, 'ij')
+        self.assertEqual(test.m_execId, "ab")
+        self.assertEqual(test.m_time, "cd")
+        self.assertEqual(test.m_acctNumber, "ef")
+        self.assertEqual(test.m_exchange, "gh")
+        self.assertEqual(test.m_side, "ij")
         self.assertEqual(test.m_shares, 3)
         self.assertEqual(test.m_price, 3.0)
         self.assertEqual(test.m_permId, 4)
@@ -76,7 +76,7 @@ class test_Execution(unittest.TestCase):
     def test_equals(self):
         test1 = Execution()
         test2 = Execution()
-        test3 = Execution(1, 2, 'ab')
+        test3 = Execution(1, 2, "ab")
         
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)

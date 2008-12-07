@@ -11,11 +11,11 @@ from tws import _TickType
 
 
 class EReader(object):
-    """Type which reads and reacts to EClientSocket data.
+    '''Type which reads and reacts to EClientSocket data.
 
        Reads data from client socket and fires events in the application-defined
        EWrapper-derived object provided to EClientSocket.
-    """
+    '''
 
     def __init__(self, connection, input_stream):
         assert issubclass(type(connection), __import__("tws").EClientSocket)
@@ -30,7 +30,7 @@ class EReader(object):
         buffer = self._buffer_factory()
         while True:
             char = self._stream.read(1)
-            if char == '\x00': break
+            if char == "\x00": break
             buffer.write(char)
         result = buffer.getvalue()
         return result if result else None

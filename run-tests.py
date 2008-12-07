@@ -3,7 +3,7 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     import logging
     import os.path
@@ -15,4 +15,4 @@ if __name__ == '__main__':
 
     # Ensure project source packages are on the path.
     sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-    nose.run(argv=['-d','--where=.'])
+    nose.run(argv=["-d","--where=."])

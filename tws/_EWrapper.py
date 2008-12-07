@@ -9,9 +9,9 @@ __version__   = "$Id$"
 
 
 class EWrapper(object):
-    """Listener class which reacts to EClientSocket events.
+    '''Listener class which reacts to EClientSocket events.
     
        A subclass object of this type must be provided to the constructor of
        EClientSocket.
-    """
+    '''
     pass
