@@ -35,6 +35,7 @@ from tws._EReader import EReader
 from tws._Execution import Execution
 from tws._ExecutionFilter import ExecutionFilter
 from tws._OrderState import OrderState
+from tws._ScannerSubscription import ScannerSubscription
 from tws._TagValue import TagValue
 from tws._UnderComp import UnderComp
 from tws._EWrapper import EWrapper
