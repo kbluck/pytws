@@ -29,16 +29,16 @@ classifiers = '''
 
 
 setup(
-    name = 'PyTWS',
+    name = "PyTWS",
     version = "0.0.1-9.61b",
-    description = __doc__.split('\n')[0],
-    author = 'Kevin Bluck',
-    author_email = 'kevin.bluck@gmail.com',
-    url = '',
-    license = 'MIT License',
-    packages = ['tws'],
-    classifiers = filter(None, classifiers.split('\n')),
-    long_description = '\n'.join(__doc__.split('\n')[2:]),
-    platforms = ['any'],
-    download_url = '',
+    description = __doc__.split("\n")[0],
+    author = "Kevin Bluck",
+    author_email = "kevin.bluck@gmail.com",
+    url = "",
+    license = "MIT License",
+    packages = ["tws"],
+    classifiers = filter(None, classifiers.split("\n")),
+    long_description = "\n".join(__doc__.split("\n")[2:]),
+    platforms = ["any"],
+    download_url = "",
 )

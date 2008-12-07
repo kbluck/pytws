@@ -9,8 +9,8 @@ class ExecutionFilter(object):
        criteria.
     '''
 
-    def __init__(self, client_id=0, acct_code='', time='', symbol='', 
-                       sec_type='', exchange='', side=''):
+    def __init__(self, client_id=0, acct_code="", time="", symbol="", 
+                       sec_type="", exchange="", side=""):
         self.m_clientId = client_id
         self.m_acctCode = acct_code
         self.m_time = time

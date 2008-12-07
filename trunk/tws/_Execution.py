@@ -8,7 +8,7 @@ class Execution(object):
     '''Data structure to describe a trade execution.
     '''
 
-    def __init__(self, order_id=0, client_id=0, exec_id='', time='', acct_number='', exchange='', side='',
+    def __init__(self, order_id=0, client_id=0, exec_id="", time="", acct_number="", exchange="", side="",
                        shares=0, price=0.0, perm_id=0, liquidation=0, cum_qty=0, avg_price=0.0):
         self.m_orderId = order_id
         self.m_clientId = client_id

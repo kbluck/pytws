@@ -9,8 +9,8 @@ class OrderState(object):
        order.
     '''
 
-    def __init__(self, status='', init_margin='', maint_margin='', equity_with_loan='', commission=0.0,
-                       min_commission=0.0, max_commission=0.0, commission_currency='', warning_text=''):
+    def __init__(self, status="", init_margin="", maint_margin="", equity_with_loan="", commission=0.0,
+                       min_commission=0.0, max_commission=0.0, commission_currency="", warning_text=""):
         self.m_status = status                 # Missing from Java source; IB Bug?
         self.m_initMargin = init_margin
         self.m_maintMargin = maint_margin

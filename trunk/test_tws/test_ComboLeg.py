@@ -20,47 +20,47 @@ class test_ComboLeg(unittest.TestCase):
 
     def test_init(self):
         test1 = ComboLeg()
-        test2 = ComboLeg(1, 2, 'ab', 'cd', 3, 4, 'ef')
+        test2 = ComboLeg(1, 2, "ab", "cd", 3, 4, "ef")
     
         self.assertEqual(test1.m_conId, 0)
         self.assertEqual(test1.m_ratio, 0)
-        self.assertEqual(test1.m_action, '')
-        self.assertEqual(test1.m_exchange, '')
+        self.assertEqual(test1.m_action, "")
+        self.assertEqual(test1.m_exchange, "")
         self.assertEqual(test1.m_openClose, 0)
         self.assertEqual(test1.m_shortSaleSlot, 0)
-        self.assertEqual(test1.m_designatedLocation, '')
+        self.assertEqual(test1.m_designatedLocation, "")
 
         self.assertEqual(test2.m_conId, 1)
         self.assertEqual(test2.m_ratio, 2)
-        self.assertEqual(test2.m_action, 'ab')
-        self.assertEqual(test2.m_exchange, 'cd')
+        self.assertEqual(test2.m_action, "ab")
+        self.assertEqual(test2.m_exchange, "cd")
         self.assertEqual(test2.m_openClose, 3)
         self.assertEqual(test2.m_shortSaleSlot, 4)
-        self.assertEqual(test2.m_designatedLocation, 'ef')
+        self.assertEqual(test2.m_designatedLocation, "ef")
 
     def test_fields(self):
         test = ComboLeg()
 
         test.m_conId = 1
         test.m_ratio = 2
-        test.m_action = 'ab'
-        test.m_exchange = 'cd'
+        test.m_action = "ab"
+        test.m_exchange = "cd"
         test.m_openClose = 3
         test.m_shortSaleSlot = 4
-        test.m_designatedLocation = 'ef'
+        test.m_designatedLocation = "ef"
 
         self.assertEqual(test.m_conId, 1)
         self.assertEqual(test.m_ratio, 2)
-        self.assertEqual(test.m_action, 'ab')
-        self.assertEqual(test.m_exchange, 'cd')
+        self.assertEqual(test.m_action, "ab")
+        self.assertEqual(test.m_exchange, "cd")
         self.assertEqual(test.m_openClose, 3)
         self.assertEqual(test.m_shortSaleSlot, 4)
-        self.assertEqual(test.m_designatedLocation, 'ef')
+        self.assertEqual(test.m_designatedLocation, "ef")
 
     def test_equals(self):
         test1 = ComboLeg()
         test2 = ComboLeg()
-        test3 = ComboLeg(1, 2, 'ab', 'cd', 3, 4, 'ef')
+        test3 = ComboLeg(1, 2, "ab", "cd", 3, 4, "ef")
         
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)

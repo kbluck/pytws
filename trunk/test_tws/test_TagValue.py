@@ -12,23 +12,23 @@ class test_TagValue(unittest.TestCase):
 
     def test_init(self):
         test1 = TagValue()
-        test2 = TagValue('AB','CD')
-        self.assertEqual(test1.m_tag, '')
-        self.assertEqual(test1.m_value, '')
-        self.assertEqual(test2.m_tag, 'AB')
-        self.assertEqual(test2.m_value, 'CD')
+        test2 = TagValue("AB","CD")
+        self.assertEqual(test1.m_tag, "")
+        self.assertEqual(test1.m_value, "")
+        self.assertEqual(test2.m_tag, "AB")
+        self.assertEqual(test2.m_value, "CD")
 
     def test_fields(self):
         test = TagValue()
-        test.m_tag = 'ab'
-        test.m_value = 'cd'
-        self.assertEqual(test.m_tag, 'ab')
-        self.assertEqual(test.m_value, 'cd')
+        test.m_tag = "ab"
+        test.m_value = "cd"
+        self.assertEqual(test.m_tag, "ab")
+        self.assertEqual(test.m_value, "cd")
 
     def test_equals(self):
         test1 = TagValue()
         test2 = TagValue()
-        test3 = TagValue('AB','CD')
+        test3 = TagValue("AB","CD")
         
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)

@@ -10,8 +10,8 @@ class Contract(object):
     '''Data structure with attributes to describe a tradeable contract.
     '''
 
-    def __init__(self, con_id=0, symbol='', sec_type='', expiry='', strike=0.0,
-                       right='', multiplier='', exchange='', currency='',
+    def __init__(self, con_id=0, symbol="", sec_type="", expiry="", strike=0.0,
+                       right="", multiplier="", exchange="", currency="",
                        local_symbol="", combo_legs=[], primary_exch="",
                        include_expired=False):
         self.m_conId = con_id
@@ -29,7 +29,7 @@ class Contract(object):
 
         # Combos
         self.m_comboLegs = combo_legs
-        self.m_comboLegsDescrip = ''
+        self.m_comboLegsDescrip = ""
     
         # delta neutrals
         self.m_underComp = self._undercomp_factory();
