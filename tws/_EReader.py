@@ -159,6 +159,39 @@ class EReader(object):
         account_name = self._readStr() if version >= 2 else None
         self._wrapper.updateAccountValue(key, val, cur, account_name)
 
+    def _readUpdatePortfolio(self):
+        version = self._readInt()
+
+        contract = self._contract_factory()
+        if version >= 6:
+            contract.m_conId = self._readInt()
+        contract.m_symbol = self._readStr()
+        contract.m_secType = self._readStr()
+        contract.m_expiry = self._readStr()
+        contract.m_strike = self._readDouble()
+        contract.m_right = self._readStr()
+        if version >= 7:
+            contract.m_multiplier = self._readStr()
+            contract.m_primaryExch = self._readStr()
+        contract.m_currency = self._readStr()
+        if version >= 2:
+            contract.m_localSymbol = self._readStr()
+
+        position = self._readInt()
+        market_price = self._readDouble()
+        market_value = self._readDouble()
+
+        average_cost = self._readDouble() if version >= 3 else 0.0
+        unrealized_PNL = self._readDouble() if version >= 3 else 0.0
+        realized_PNL = self._readDouble() if version >= 3 else 0.0
+        account_name = self._readStr() if version >= 4 else ""
+
+        if (version == 6) and (self._connection.serverVersion() == 39):
+            contract.m_primaryExch = self._readStr()
+
+        self._wrapper.updatePortfolio(contract, position, market_price, market_value, average_cost,
+                                      unrealized_PNL, realized_PNL, account_name)
+
 
     ## Tag constants ##
 
@@ -201,3 +234,4 @@ class EReader(object):
     from cStringIO import StringIO as _buffer_factory
     from tws._Util import _INT_MAX_VALUE
     from tws._Util import _DOUBLE_MAX_VALUE
+    from tws import Contract as _contract_factory

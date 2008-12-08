@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import EClientSocket, EReader, Util
+from tws import Contract, EClientSocket, EReader, Util
 from test_tws import mock_wrapper
 
 
@@ -195,3 +195,34 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[0], ("updateAccountValue", ("AB","CD","EF",None), {}))
         self.assertEqual(self.wrapper.calldata[1], ("updateAccountValue", ("AB","CD","EF","GH"), {}))
 
+    def test_readUpdatePortfolio(self):
+        self.stream.write("1\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x002\x003.5\x004.5\x00")
+        self.stream.write("2\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x00KL\x002\x003.5\x004.5\x00")
+        self.stream.write("3\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x00KL\x002\x003.5\x004.5\x005.5\x006.5\x007.5\x00")
+        self.stream.write("4\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x00KL\x002\x003.5\x004.5\x005.5\x006.5\x007.5\x00MN\x00")
+        self.stream.write("6\x008\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x00KL\x002\x003.5\x004.5\x005.5\x006.5\x007.5\x00MN\x00")
+        self.stream.write("6\x008\x00AB\x00CD\x00EF\x001.5\x00GH\x00IJ\x00KL\x002\x003.5\x004.5\x005.5\x006.5\x007.5\x00MN\x00ST\x00")
+        self.stream.write("7\x008\x00AB\x00CD\x00EF\x001.5\x00GH\x00OP\x00QR\x00IJ\x00KL\x002\x003.5\x004.5\x005.5\x006.5\x007.5\x00MN\x00")
+        self.stream.seek(0)
+        for i in xrange(5): self.reader._readUpdatePortfolio()
+        self.assertEqual(len(self.wrapper.calldata), 5)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract = Contract(symbol="AB", sec_type="CD", expiry="EF", strike=1.5, right="GH", currency="IJ")
+        self.assertEqual(self.wrapper.calldata[0], ("updatePortfolio", (contract,2,3.5,4.5,0.0,0.0,0.0,''), {}))
+        contract.m_localSymbol = "KL"
+        self.assertEqual(self.wrapper.calldata[1], ("updatePortfolio", (contract,2,3.5,4.5,0.0,0.0,0.0,''), {}))
+        self.assertEqual(self.wrapper.calldata[2], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,''), {}))
+        self.assertEqual(self.wrapper.calldata[3], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
+        contract.m_conId = 8
+        self.assertEqual(self.wrapper.calldata[4], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
+
+        self.parent._serverVersion = 39
+        self.reader._readUpdatePortfolio()
+        contract.m_primaryExch = "ST"
+        self.assertEqual(self.wrapper.calldata[5], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
+
+        self.reader._readUpdatePortfolio()
+        contract.m_multiplier = "OP"
+        contract.m_primaryExch = "QR"
+        self.assertEqual(self.wrapper.calldata[6], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
