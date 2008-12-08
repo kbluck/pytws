@@ -34,6 +34,7 @@ from tws._EClientSocket import EClientSocket
 from tws._EReader import EReader
 from tws._Execution import Execution
 from tws._ExecutionFilter import ExecutionFilter
+from tws._Order import Order
 from tws._OrderState import OrderState
 from tws._ScannerSubscription import ScannerSubscription
 from tws._TagValue import TagValue
