@@ -7,7 +7,7 @@ import unittest
 from tws import ScannerSubscription
 
 
-class test_Execution(unittest.TestCase):
+class test_ScannerSubscription(unittest.TestCase):
     '''Test type "tws.ScannerSubscription"'''
 
     def test_init(self):
