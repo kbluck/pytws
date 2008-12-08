@@ -226,3 +226,11 @@ class test_EReader(unittest.TestCase):
         contract.m_multiplier = "OP"
         contract.m_primaryExch = "QR"
         self.assertEqual(self.wrapper.calldata[6], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
+
+    def test_readUpdateAccountTime(self):
+        self.stream.write("3\x00AB\x00")
+        self.stream.seek(0)
+        self.reader._readUpdateAccountTime()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("updateAccountTime", ("AB",), {}))
