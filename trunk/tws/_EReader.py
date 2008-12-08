@@ -7,7 +7,8 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-from tws import _TickType
+from tws import EClientErrors as _EClientErrors
+from tws import TickType as _TickType
 
 
 class EReader(object):
@@ -196,6 +197,14 @@ class EReader(object):
         version = self._readInt()
         timestamp = self._readStr()
         self._wrapper.updateAccountTime(timestamp)
+
+
+    def _readError(self):
+        version = self._readInt()
+        id = self._readInt() if version >= 2 else _EClientErrors.NO_VALID_ID
+        code = self._readInt() if version >= 2 else _EClientErrors.UNKNOWN_ID.code()
+        msg = self._readStr()
+        self._wrapper.error(id, code, msg)
 
 
     ## Tag constants ##

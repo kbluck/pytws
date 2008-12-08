@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import Contract, EClientSocket, EReader, Util
+from tws import Contract, EClientErrors, EClientSocket, EReader, Util
 from test_tws import mock_wrapper
 
 
@@ -234,3 +234,13 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("updateAccountTime", ("AB",), {}))
+
+    def test_readError(self):
+        self.stream.write("1\x00AB\x00")
+        self.stream.write("2\x001\x002\x00CD\x00")
+        self.stream.seek(0)
+        for i in xrange(2): self.reader._readError()
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,EClientErrors.UNKNOWN_ID.code(),"AB"))
+        self.assertEqual(self.wrapper.errors[1], (1,2,"CD"))
