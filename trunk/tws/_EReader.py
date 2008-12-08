@@ -192,6 +192,11 @@ class EReader(object):
         self._wrapper.updatePortfolio(contract, position, market_price, market_value, average_cost,
                                       unrealized_PNL, realized_PNL, account_name)
 
+    def _readUpdateAccountTime(self):
+        version = self._readInt()
+        timestamp = self._readStr()
+        self._wrapper.updateAccountTime(timestamp)
+
 
     ## Tag constants ##
 
