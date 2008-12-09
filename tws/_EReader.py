@@ -344,6 +344,12 @@ class EReader(object):
         self._wrapper.openOrder(order.m_orderId, contract, order, orderState)
 
 
+    def _readNextValidId(self):
+        version = self._readInt()
+        order_id = self._readInt()
+        self._wrapper.nextValidId(order_id)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
