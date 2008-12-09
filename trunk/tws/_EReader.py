@@ -207,6 +207,143 @@ class EReader(object):
         self._wrapper.error(id, code, msg)
 
 
+    def _readOpenOrder(self):
+        version = self._readInt()
+        order = self._order_factory()
+        order.m_orderId = self._readInt()
+        contract = self._contract_factory()
+        if version >= 17:
+            contract.m_conId = self._readInt()
+        contract.m_symbol = self._readStr()
+        contract.m_secType = self._readStr()
+        contract.m_expiry = self._readStr()
+        contract.m_strike = self._readDouble()
+        contract.m_right = self._readStr()
+        contract.m_exchange = self._readStr()
+        contract.m_currency = self._readStr()
+        if version >= 2:
+            contract.m_localSymbol = self._readStr()
+        order.m_action = self._readStr()
+        order.m_totalQuantity = self._readInt()
+        order.m_orderType = self._readStr()
+        order.m_lmtPrice = self._readDouble()
+        order.m_auxPrice = self._readDouble()
+        order.m_tif = self._readStr()
+        order.m_ocaGroup = self._readStr()
+        order.m_account = self._readStr()
+        order.m_openClose = self._readStr()
+        order.m_origin = self._readInt()
+        order.m_orderRef = self._readStr()
+        if version >= 3:
+            order.m_clientId = self._readInt()
+        if version >= 4:
+            order.m_permId = self._readInt()
+            if version < 18:
+                self._readBoolFromInt()
+            else:
+                order.m_outsideRth = self._readBoolFromInt()
+            order.m_hidden = (self._readInt() == 1)
+            order.m_discretionaryAmt = self._readDouble()
+        if version >= 5:
+            order.m_goodAfterTime = self._readStr()
+        if version >= 6:
+            self._readStr()
+        if version >= 7:
+            order.m_faGroup = self._readStr()
+            order.m_faMethod = self._readStr()
+            order.m_faPercentage = self._readStr()
+            order.m_faProfile = self._readStr()
+        if version >= 8:
+            order.m_goodTillDate = self._readStr()
+        if version >= 9:
+            order.m_rule80A = self._readStr()
+            order.m_percentOffset = self._readDouble()
+            order.m_settlingFirm = self._readStr()
+            order.m_shortSaleSlot = self._readInt()
+            order.m_designatedLocation = self._readStr()
+            order.m_auctionStrategy = self._readInt()
+            order.m_startingPrice = self._readDouble()
+            order.m_stockRefPrice = self._readDouble()
+            order.m_delta = self._readDouble()
+            order.m_stockRangeLower = self._readDouble()
+            order.m_stockRangeUpper = self._readDouble()
+            order.m_displaySize = self._readInt()
+            if version < 18:
+                self._readBoolFromInt()
+            order.m_blockOrder = self._readBoolFromInt()
+            order.m_sweepToFill = self._readBoolFromInt()
+            order.m_allOrNone = self._readBoolFromInt()
+            order.m_minQty = self._readInt()
+            order.m_ocaType = self._readInt()
+            order.m_eTradeOnly = self._readBoolFromInt()
+            order.m_firmQuoteOnly = self._readBoolFromInt()
+            order.m_nbboPriceCap = self._readDouble()
+        if version >= 10:
+            order.m_parentId = self._readInt()
+            order.m_triggerMethod = self._readInt()
+        if version >= 11:
+            order.m_volatility = self._readDouble()
+            order.m_volatilityType = self._readInt()
+            if (version == 11):
+                receivedInt = self._readInt()
+                order.m_deltaNeutralOrderType = "NONE" if (receivedInt == 0) else "MKT"
+            else:
+                order.m_deltaNeutralOrderType = self._readStr()
+                order.m_deltaNeutralAuxPrice = self._readDouble()
+            order.m_continuousUpdate = self._readInt()
+            if (self._connection.serverVersion() == 26):
+                order.m_stockRangeLower = self._readDouble()
+                order.m_stockRangeUpper = self._readDouble()
+            order.m_referencePriceType = self._readInt()
+        if version >= 13:
+            order.m_trailStopPrice = self._readDouble()
+        if version >= 14:
+            order.m_basisPoints = self._readDouble()
+            order.m_basisPointsType = self._readInt()
+            contract.m_comboLegsDescrip = self._readStr()
+        if version >= 15:
+            if version >= 20:
+                order.m_scaleInitLevelSize = self._readIntMax()
+                order.m_scaleSubsLevelSize = self._readIntMax()
+            else:
+                self._readIntMax()
+                order.m_scaleInitLevelSize = self._readIntMax()
+            order.m_scalePriceIncrement = self._readDoubleMax()
+        if version >= 19:
+            order.m_clearingAccount = self._readStr()
+            order.m_clearingIntent = self._readStr()
+        if version >= 20:
+            if self._readBoolFromInt():
+                undercomp = self._undercomp_factory()
+                undercomp.m_conId = self._readInt()
+                undercomp.m_delta = self._readDouble()
+                undercomp.m_price = self._readDouble()
+                contract.m_underComp = undercomp
+        if version >= 21:
+            order.m_algoStrategy = self._readStr()
+            if order.m_algoStrategy:
+                algoParamsCount = self._readInt()
+                if algoParamsCount > 0:
+                    order.m_algoParams = []
+                    for i in xrange(algoParamsCount):
+                        order.m_algoParams.append(
+                            self._tag_value_factory(self._readStr(),
+                                                    self._readStr()))
+        orderState = self._order_state_factory()
+        if version >= 16:
+            order.m_whatIf = self._readBoolFromInt()
+            orderState.m_status = self._readStr()
+            orderState.m_initMargin = self._readStr()
+            orderState.m_maintMargin = self._readStr()
+            orderState.m_equityWithLoan = self._readStr()
+            orderState.m_commission = self._readDoubleMax()
+            orderState.m_minCommission = self._readDoubleMax()
+            orderState.m_maxCommission = self._readDoubleMax()
+            orderState.m_commissionCurrency = self._readStr()
+            orderState.m_warningText = self._readStr()
+        self._wrapper.openOrder(order.m_orderId, contract, order, orderState)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
@@ -248,4 +385,8 @@ class EReader(object):
     from cStringIO import StringIO as _buffer_factory
     from tws._Util import _INT_MAX_VALUE
     from tws._Util import _DOUBLE_MAX_VALUE
-    from tws import Contract as _contract_factory
+    from tws._Contract import Contract as _contract_factory
+    from tws._Order import Order as _order_factory
+    from tws._OrderState import OrderState as _order_state_factory
+    from tws._TagValue import TagValue as _tag_value_factory
+    from tws._UnderComp import UnderComp as _undercomp_factory

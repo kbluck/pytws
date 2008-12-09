@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import Contract, EClientErrors, EClientSocket, EReader, Util
+from tws import Contract, EClientErrors, EClientSocket, EReader, Order, OrderState, TagValue, UnderComp, Util
 from test_tws import mock_wrapper
 
 
@@ -244,3 +244,189 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 2)
         self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,EClientErrors.UNKNOWN_ID.code(),"AB"))
         self.assertEqual(self.wrapper.errors[1], (1,2,"CD"))
+
+    def test_readOpenOrder(self):
+        # This one's huge.
+        self.stream.write("1\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x00")
+        self.stream.write("2\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x00")
+        self.stream.write("3\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x00")
+        self.stream.write("4\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00")
+        self.stream.write("5\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00")
+        self.stream.write("6\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00")
+        self.stream.write("7\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00")
+        self.stream.write("8\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00")
+        self.stream.write("9\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x00")
+        self.stream.write("10\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x00")
+        self.stream.write("11\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x0015\x001\x0016\x00")
+        self.stream.write("11\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x0015\x001\x0015.5\x0016.5\x0016\x00")
+        self.stream.write("12\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x00")
+        self.stream.write("13\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x00")
+        self.stream.write("14\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x00")
+        self.stream.write("15\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x001\x0018\x0020.5\x00")
+        self.stream.write("16\x002\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x001\x0018\x0020.5\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("17\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x001\x0018\x0020.5\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("18\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x001\x0018\x0020.5\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("19\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x001\x0018\x0020.5\x00F6\x00G7\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("20\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x0020\x0021\x0020.5\x00F6\x00G7\x000\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("20\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x0020\x0021\x0020.5\x00F6\x00G7\x001\x0022\x0024.5\x0025.5\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("21\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x0020\x0021\x0020.5\x00F6\x00G7\x001\x0022\x0024.5\x0025.5\x00\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("21\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x0020\x0021\x0020.5\x00F6\x00G7\x001\x0022\x0024.5\x0025.5\x00H8\x000\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+        self.stream.write("21\x002\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00N5\x00G7\x003\x00H8\x003.5\x004.5\x00I9\x00J1\x00K2\x00L3\x004\x00M4\x005\x006\x001\x001\x005.5\x00O6\x00\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x006.5\x00V4\x007\x00W5\x008\x007.5\x008.5\x009.5\x0010.5\x0011.5\x009\x001\x001\x001\x0010\x0011\x001\x001\x0012.5\x0012\x0013\x0013.5\x0014\x00X6\x0017.5\x001\x0016\x0018.5\x0019.5\x0017\x00Y7\x0020\x0021\x0020.5\x00F6\x00G7\x001\x0022\x0024.5\x0025.5\x00H8\x002\x00I9\x00J1\x00K2\x00L3\x001\x00Z8\x00A9\x00B1\x00C2\x0021.5\x0022.5\x0023.5\x00D4\x00E5\x00")
+
+        self.stream.seek(0)
+
+        self.parent._serverVersion = -1 # Arbitrary fake value.
+        for i in xrange(11): self.reader._readOpenOrder()
+        self.parent._serverVersion = 26 # Server version matters on the 12th test call.
+        self.reader._readOpenOrder()
+        self.parent._serverVersion = -1 # Back to fake server version
+        for i in xrange(13): self.reader._readOpenOrder()
+
+        self.assertEqual(len(self.wrapper.calldata), 25)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract = Contract()
+        order = Order()
+        orderstate = OrderState()
+
+        # V1
+        contract.m_symbol = "A1"
+        contract.m_secType = "B2"
+        contract.m_expiry = "C3"
+        contract.m_strike = 2.5
+        contract.m_right = "D4"
+        contract.m_exchange = "E5"
+        contract.m_currency = "F6"
+        order.m_orderId = 2
+        order.m_action = "G7"
+        order.m_totalQuantity = 3
+        order.m_orderType = "H8"
+        order.m_lmtPrice = 3.5
+        order.m_auxPrice = 4.5
+        order.m_tif = "I9"
+        order.m_ocaGroup = "J1"
+        order.m_account = "K2"
+        order.m_openClose = "L3"
+        order.m_origin = 4
+        order.m_orderRef = "M4"
+        self.assertEqual(self.wrapper.calldata[0], ("openOrder", (2,contract,order,orderstate), {}))
+        # V2
+        contract.m_localSymbol = "N5"
+        self.assertEqual(self.wrapper.calldata[1], ("openOrder", (2,contract,order,orderstate), {}))
+        # V3
+        order.m_clientId = 5
+        self.assertEqual(self.wrapper.calldata[2], ("openOrder", (2,contract,order,orderstate), {}))
+        # V4
+        order.m_permId = 6
+        order.m_hidden = 1
+        order.m_discretionaryAmt = 5.5
+        self.assertEqual(self.wrapper.calldata[3], ("openOrder", (2,contract,order,orderstate), {}))
+        order.m_permId = 0 # Matching permID will force order to evaluate equal otherwise.
+        self.assertEqual(self.wrapper.calldata[3], ("openOrder", (2,contract,order,orderstate), {}))
+        # V5
+        order.m_goodAfterTime = "O6"
+        self.assertEqual(self.wrapper.calldata[4], ("openOrder", (2,contract,order,orderstate), {}))
+        # V6
+        self.assertEqual(self.wrapper.calldata[5], ("openOrder", (2,contract,order,orderstate), {}))
+        # V7
+        order.m_faGroup = "P7"
+        order.m_faMethod = "Q8"
+        order.m_faPercentage = "R9"
+        order.m_faProfile = "S1"
+        self.assertEqual(self.wrapper.calldata[6], ("openOrder", (2,contract,order,orderstate), {}))
+        # V8
+        order.m_goodTillDate = "T2"
+        self.assertEqual(self.wrapper.calldata[7], ("openOrder", (2,contract,order,orderstate), {}))
+        # V9
+        order.m_rule80A = "U3"
+        order.m_percentOffset = 6.5
+        order.m_settlingFirm = "V4"
+        order.m_shortSaleSlot = 7
+        order.m_designatedLocation = "W5"
+        order.m_auctionStrategy = 8
+        order.m_startingPrice = 7.5
+        order.m_stockRefPrice = 8.5
+        order.m_delta = 9.5
+        order.m_stockRangeLower = 10.5
+        order.m_stockRangeUpper = 11.5
+        order.m_displaySize = 9
+        order.m_blockOrder = True
+        order.m_sweepToFill = True
+        order.m_allOrNone = True
+        order.m_minQty = 10
+        order.m_ocaType = 11
+        order.m_eTradeOnly = True
+        order.m_firmQuoteOnly = True
+        order.m_nbboPriceCap = 12.5
+        self.assertEqual(self.wrapper.calldata[8], ("openOrder", (2,contract,order,orderstate), {}))
+        # V10
+        order.m_parentId = 12
+        order.m_triggerMethod = 13
+        self.assertEqual(self.wrapper.calldata[9], ("openOrder", (2,contract,order,orderstate), {}))
+        # V11 
+        order.m_volatility = 13.5
+        order.m_volatilityType = 14
+        order.m_deltaNeutralOrderType = "MKT"
+        order.m_continuousUpdate = 1
+        order.m_referencePriceType = 16
+        self.assertEqual(self.wrapper.calldata[10], ("openOrder", (2,contract,order,orderstate), {}))
+        order.m_stockRangeLower = 15.5
+        order.m_stockRangeUpper = 16.5
+        self.assertEqual(self.wrapper.calldata[11], ("openOrder", (2,contract,order,orderstate), {}))
+        # V12
+        order.m_deltaNeutralOrderType = "X6"
+        order.m_deltaNeutralAuxPrice = 17.5
+        order.m_stockRangeLower = 10.5
+        order.m_stockRangeUpper = 11.5
+        self.assertEqual(self.wrapper.calldata[12], ("openOrder", (2,contract,order,orderstate), {}))
+        # V13
+        order.m_trailStopPrice = 18.5
+        self.assertEqual(self.wrapper.calldata[13], ("openOrder", (2,contract,order,orderstate), {}))
+        # V14
+        order.m_basisPoints = 19.5
+        order.m_basisPointsType = 17
+        contract.m_comboLegsDescrip = "Y7"
+        self.assertEqual(self.wrapper.calldata[14], ("openOrder", (2,contract,order,orderstate), {}))
+        # V15        
+        order.m_scaleInitLevelSize = 18
+        order.m_scalePriceIncrement = 20.5
+        self.assertEqual(self.wrapper.calldata[15], ("openOrder", (2,contract,order,orderstate), {}))
+        # V16
+        order.m_whatIf = True
+        orderstate.m_status = "Z8"
+        orderstate.m_initMargin = "A9"
+        orderstate.m_maintMargin = "B1"
+        orderstate.m_equityWithLoan = "C2"
+        orderstate.m_commission = 21.5
+        orderstate.m_minCommission = 22.5
+        orderstate.m_maxCommission = 23.5
+        orderstate.m_commissionCurrency = "D4"
+        orderstate.m_warningText = "E5"
+        self.assertEqual(self.wrapper.calldata[16], ("openOrder", (2,contract,order,orderstate), {}))
+        # V17
+        contract.m_conId = 19
+        self.assertEqual(self.wrapper.calldata[17], ("openOrder", (2,contract,order,orderstate), {}))
+        # V18
+        order.m_outsideRth = True
+        self.assertEqual(self.wrapper.calldata[18], ("openOrder", (2,contract,order,orderstate), {}))
+        # V19
+        order.m_clearingAccount = "F6"
+        order.m_clearingIntent = "G7"
+        self.assertEqual(self.wrapper.calldata[19], ("openOrder", (2,contract,order,orderstate), {}))
+        # V20
+        order.m_scaleInitLevelSize = 20
+        order.m_scaleSubsLevelSize = 21
+        self.assertEqual(self.wrapper.calldata[20], ("openOrder", (2,contract,order,orderstate), {}))
+        undercomp = UnderComp()
+        undercomp.m_conId = 22
+        undercomp.m_delta = 24.5
+        undercomp.m_price = 25.5
+        contract.m_underComp = undercomp
+        self.assertEqual(self.wrapper.calldata[21], ("openOrder", (2,contract,order,orderstate), {}))
+        # V21
+        order.m_algoStrategy = None
+        self.assertEqual(self.wrapper.calldata[22], ("openOrder", (2,contract,order,orderstate), {}))
+        order.m_algoStrategy = "H8"
+        self.assertEqual(self.wrapper.calldata[23], ("openOrder", (2,contract,order,orderstate), {}))
+        order.m_algoParams = [TagValue("I9","J1"),TagValue("K2","L3")]
+        self.assertEqual(self.wrapper.calldata[24], ("openOrder", (2,contract,order,orderstate), {}))
