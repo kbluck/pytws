@@ -5,7 +5,8 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import Contract, EClientErrors, EClientSocket, EReader, Order, OrderState, TagValue, UnderComp, Util
+from tws import Contract, ContractDetails, EClientErrors, EClientSocket, EReader, \
+                Order, OrderState, TagValue, UnderComp, Util
 from test_tws import mock_wrapper
 
 
@@ -438,3 +439,49 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("nextValidId", (2,), {}))
+
+    def test_readScannerData(self):
+        self.stream.write("1\x003\x002\x004\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x005\x00M4\x00N5\x00O6\x002.5\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x00V4\x00W5\x00X6\x00")
+        self.stream.write("2\x003\x002\x004\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x00Y7\x005\x00M4\x00N5\x00O6\x002.5\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x00V4\x00W5\x00X6\x00Z8\x00")
+        self.stream.write("3\x003\x002\x004\x006\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x00Y7\x005\x007\x00M4\x00N5\x00O6\x002.5\x00P7\x00Q8\x00R9\x00S1\x00T2\x00U3\x00V4\x00W5\x00X6\x00Z8\x00")
+        self.stream.seek(0)
+        for i in xrange(3): self.reader._readScannerData()
+        self.assertEqual(len(self.wrapper.calldata), 9)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract1 = ContractDetails()
+        contract2 = ContractDetails()
+
+        contract1.m_summary.m_symbol = "A1"
+        contract1.m_summary.m_secType = "B2"
+        contract1.m_summary.m_expiry = "C3"
+        contract1.m_summary.m_strike = 1.5
+        contract1.m_summary.m_right = "D4"
+        contract1.m_summary.m_exchange = "E5"
+        contract1.m_summary.m_currency = "F6"
+        contract1.m_summary.m_localSymbol = "G7"
+        contract1.m_marketName = "H8"
+        contract1.m_tradingClass = "I9"
+
+        contract2.m_summary.m_symbol = "M4"
+        contract2.m_summary.m_secType = "N5"
+        contract2.m_summary.m_expiry = "O6"
+        contract2.m_summary.m_strike = 2.5
+        contract2.m_summary.m_right = "P7"
+        contract2.m_summary.m_exchange = "Q8"
+        contract2.m_summary.m_currency = "R9"
+        contract2.m_summary.m_localSymbol = "S1"
+        contract2.m_marketName = "T2"
+        contract2.m_tradingClass = "U3"
+
+        self.assertEqual(self.wrapper.calldata[0], ("scannerData", (3, 4, contract1, "J1", "K2", "L3", None), {}))
+        self.assertEqual(self.wrapper.calldata[1], ("scannerData", (3, 5, contract2, "V4", "W5", "X6", None), {}))
+        self.assertEqual(self.wrapper.calldata[2], ("scannerDataEnd", (3,), {}))
+        self.assertEqual(self.wrapper.calldata[3], ("scannerData", (3, 4, contract1, "J1", "K2", "L3", "Y7"), {}))
+        self.assertEqual(self.wrapper.calldata[4], ("scannerData", (3, 5, contract2, "V4", "W5", "X6", "Z8"), {}))
+        self.assertEqual(self.wrapper.calldata[5], ("scannerDataEnd", (3,), {}))
+        contract1.m_summary.m_conId = 6
+        contract2.m_summary.m_conId = 7
+        self.assertEqual(self.wrapper.calldata[6], ("scannerData", (3, 4, contract1, "J1", "K2", "L3", "Y7"), {}))
+        self.assertEqual(self.wrapper.calldata[7], ("scannerData", (3, 5, contract2, "V4", "W5", "X6", "Z8"), {}))
+        self.assertEqual(self.wrapper.calldata[8], ("scannerDataEnd", (3,), {}))
