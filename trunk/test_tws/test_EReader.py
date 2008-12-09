@@ -430,3 +430,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[23], ("openOrder", (2,contract,order,orderstate), {}))
         order.m_algoParams = [TagValue("I9","J1"),TagValue("K2","L3")]
         self.assertEqual(self.wrapper.calldata[24], ("openOrder", (2,contract,order,orderstate), {}))
+
+    def test_readNextValidId(self):
+        self.stream.write("1\x002\x00")
+        self.stream.seek(0)
+        self.reader._readNextValidId()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("nextValidId", (2,), {}))
