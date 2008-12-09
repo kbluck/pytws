@@ -108,3 +108,15 @@ class test_ContractDetails(unittest.TestCase):
         self.assertEqual(test.m_nextOptionType, "yz")
         self.assertEqual(test.m_nextOptionPartial, True)
         self.assertEqual(test.m_notes, "az")
+
+    def test_equals(self):
+        test1 = ContractDetails()
+        test2 = ContractDetails()
+        test3 = ContractDetails(Contract(), "ab", "cd", 1.5, "ef", "gh", 2)
+        
+        self.assertEqual(test1, test1)
+        self.assertEqual(test1, test2)
+        self.assertNotEqual(test1, None)
+        self.assertNotEqual(test1, "")
+        self.assertEqual(test3, test3)
+        self.assertNotEqual(test1, test3)
