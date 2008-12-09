@@ -350,6 +350,32 @@ class EReader(object):
         self._wrapper.nextValidId(order_id)
 
 
+    def _readScannerData(self):
+        version = self._readInt()
+        ticker_id = self._readInt()
+        for i in xrange(self._readInt()):
+            contract = self._contract_details_factory()
+            rank = self._readInt()
+            if version >= 3:
+                contract.m_summary.m_conId = self._readInt()
+            contract.m_summary.m_symbol = self._readStr()
+            contract.m_summary.m_secType = self._readStr()
+            contract.m_summary.m_expiry = self._readStr()
+            contract.m_summary.m_strike = self._readDouble()
+            contract.m_summary.m_right = self._readStr()
+            contract.m_summary.m_exchange = self._readStr()
+            contract.m_summary.m_currency = self._readStr()
+            contract.m_summary.m_localSymbol = self._readStr()
+            contract.m_marketName = self._readStr()
+            contract.m_tradingClass = self._readStr()
+            distance = self._readStr()
+            benchmark = self._readStr()
+            projection = self._readStr()            
+            legs = self._readStr() if version >= 2 else None
+            self._wrapper.scannerData(ticker_id, rank, contract, distance, benchmark, projection, legs)
+        self._wrapper.scannerDataEnd(ticker_id)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
@@ -389,10 +415,11 @@ class EReader(object):
     ## Private class imports ##
 
     from cStringIO import StringIO as _buffer_factory
-    from tws._Util import _INT_MAX_VALUE
-    from tws._Util import _DOUBLE_MAX_VALUE
     from tws._Contract import Contract as _contract_factory
+    from tws._ContractDetails import ContractDetails as _contract_details_factory
     from tws._Order import Order as _order_factory
     from tws._OrderState import OrderState as _order_state_factory
     from tws._TagValue import TagValue as _tag_value_factory
     from tws._UnderComp import UnderComp as _undercomp_factory
+    from tws._Util import _INT_MAX_VALUE
+    from tws._Util import _DOUBLE_MAX_VALUE
