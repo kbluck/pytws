@@ -471,6 +471,17 @@ class EReader(object):
         self._wrapper.execDetails(req_id, contract, execution)
 
 
+    def _readUpdateMktDepth(self):
+        version = self._readInt()
+        id = self._readInt()
+        position = self._readInt()
+        operation = self._readInt()
+        side = self._readInt()
+        price = self._readDouble()
+        size = self._readInt()
+        self._wrapper.updateMktDepth(id, position, operation, side, price, size)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1

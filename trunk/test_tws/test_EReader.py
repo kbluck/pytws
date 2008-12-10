@@ -607,3 +607,10 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[5], ("execDetails", (-1, contract, execution), {}))
         self.assertEqual(self.wrapper.calldata[6], ("execDetails", (9, contract, execution), {}))
 
+    def test_readUpdateMktDepth(self):
+        self.stream.write("1\x002\x003\x004\x005\x001.5\x006\x00")
+        self.stream.seek(0)
+        self.reader._readUpdateMktDepth()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("updateMktDepth", (2,3,4,5,1.5,6), {}))
