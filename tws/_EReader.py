@@ -376,6 +376,32 @@ class EReader(object):
         self._wrapper.scannerDataEnd(ticker_id)
 
 
+    def _readContractDetails(self):
+        version = self._readInt()
+        req_id = self._readInt() if version >= 3 else -1
+        contract = self._contract_details_factory()
+        contract.m_summary.m_symbol = self._readStr()
+        contract.m_summary.m_secType = self._readStr()
+        contract.m_summary.m_expiry = self._readStr()
+        contract.m_summary.m_strike = self._readDouble()
+        contract.m_summary.m_right = self._readStr()
+        contract.m_summary.m_exchange = self._readStr()
+        contract.m_summary.m_currency = self._readStr()
+        contract.m_summary.m_localSymbol = self._readStr()
+        contract.m_marketName = self._readStr()
+        contract.m_tradingClass = self._readStr()
+        contract.m_summary.m_conId = self._readInt()
+        contract.m_minTick = self._readDouble()
+        contract.m_summary.m_multiplier = self._readStr()
+        contract.m_orderTypes = self._readStr()
+        contract.m_validExchanges = self._readStr()
+        if version >= 2:
+            contract.m_priceMagnifier = self._readInt()
+        if version >= 4:
+            contract.m_underConId = self._readInt()
+        self._wrapper.contractDetails(req_id, contract)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
