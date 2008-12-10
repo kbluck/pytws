@@ -509,6 +509,13 @@ class EReader(object):
         self._wrapper.managedAccounts(accounts_list)
 
 
+    def _readReceiveFA(self):
+        version = self._readInt()
+        fa_data_type = self._readInt()
+        xml = self._readStr()
+        self._wrapper.receiveFA(fa_data_type, xml)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
