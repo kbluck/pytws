@@ -615,7 +615,6 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("updateMktDepth", (2,3,4,5,1.5,6), {}))
 
-
     def test_readUpdateMktDepthL2(self):
         self.stream.write("1\x002\x003\x00A1\x004\x005\x001.5\x006\x00")
         self.stream.seek(0)
@@ -623,3 +622,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("updateMktDepthL2", (2,3,"A1",4,5,1.5,6), {}))
+
+    def test_readUpdateNewsBulletin(self):
+        self.stream.write("1\x002\x003\x00A1\x00B2\x00")
+        self.stream.seek(0)
+        self.reader._readUpdateNewsBulletin()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("updateNewsBulletin", (2,3,"A1","B2"), {}))

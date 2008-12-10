@@ -494,6 +494,15 @@ class EReader(object):
         self._wrapper.updateMktDepthL2(id, position, market_maker, operation, side, price, size)
 
 
+    def _readUpdateNewsBulletin(self):
+        version = self._readInt()
+        news_msg_id = self._readInt()
+        news_msg_type = self._readInt()
+        news_message = self._readStr()
+        originating_exch = self._readStr()
+        self._wrapper.updateNewsBulletin(news_msg_id, news_msg_type, news_message, originating_exch)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
