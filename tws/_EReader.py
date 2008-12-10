@@ -482,6 +482,18 @@ class EReader(object):
         self._wrapper.updateMktDepth(id, position, operation, side, price, size)
 
 
+    def _readUpdateMktDepthL2(self):
+        version = self._readInt()
+        id = self._readInt()
+        position = self._readInt()
+        market_maker = self._readStr()
+        operation = self._readInt()
+        side = self._readInt()
+        price = self._readDouble()
+        size = self._readInt()
+        self._wrapper.updateMktDepthL2(id, position, market_maker, operation, side, price, size)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
