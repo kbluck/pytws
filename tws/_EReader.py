@@ -503,6 +503,12 @@ class EReader(object):
         self._wrapper.updateNewsBulletin(news_msg_id, news_msg_type, news_message, originating_exch)
 
 
+    def _readManagedAccounts(self):
+        version = self._readInt()
+        accounts_list = self._readStr()
+        self._wrapper.managedAccounts(accounts_list)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
