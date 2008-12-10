@@ -6,7 +6,7 @@ __version__   = "$Id$"
 import unittest
 from StringIO import StringIO
 from tws import Contract, ContractDetails, EClientErrors, EClientSocket, EReader, \
-                Order, OrderState, TagValue, UnderComp, Util
+                Execution, Order, OrderState, TagValue, UnderComp, Util
 from test_tws import mock_wrapper
 
 
@@ -559,3 +559,51 @@ class test_EReader(unittest.TestCase):
         contract.m_notes = "R9"
         self.assertEqual(self.wrapper.calldata[1], ("bondContractDetails", (-1, contract), {}))
         self.assertEqual(self.wrapper.calldata[2], ("bondContractDetails", (4, contract), {}))
+
+
+    def test_readExecDetails(self):
+        self.stream.write("1\x002\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x00")
+        self.stream.write("2\x002\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x00")
+        self.stream.write("3\x002\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x005\x00")
+        self.stream.write("4\x002\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x005\x006\x00")
+        self.stream.write("5\x002\x007\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x005\x006\x00")
+        self.stream.write("6\x002\x007\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x005\x006\x008\x003.5\x00")
+        self.stream.write("7\x009\x002\x007\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x00J1\x00K2\x00L3\x003\x002.5\x004\x005\x006\x008\x003.5\x00")
+        self.stream.seek(0)
+        for i in xrange(7): self.reader._readExecDetails()
+        self.assertEqual(len(self.wrapper.calldata), 7)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract = Contract()
+        execution = Execution()
+
+        contract.m_symbol = "A1"
+        contract.m_secType = "B2"
+        contract.m_expiry = "C3"
+        contract.m_strike = 1.5
+        contract.m_right = "D4"
+        contract.m_exchange = "E5"
+        contract.m_currency = "F6"
+        contract.m_localSymbol = "G7"
+        execution.m_orderId = 2
+        execution.m_execId = "H8"
+        execution.m_time = "I9"
+        execution.m_acctNumber = "J1"
+        execution.m_exchange = "K2"
+        execution.m_side = "L3"
+        execution.m_shares = 3
+        execution.m_price = 2.5
+        self.assertEqual(self.wrapper.calldata[0], ("execDetails", (-1, contract, execution), {}))
+        execution.m_permId = 4
+        self.assertEqual(self.wrapper.calldata[1], ("execDetails", (-1, contract, execution), {}))
+        execution.m_clientId = 5
+        self.assertEqual(self.wrapper.calldata[2], ("execDetails", (-1, contract, execution), {}))
+        execution.m_liquidation = 6
+        self.assertEqual(self.wrapper.calldata[3], ("execDetails", (-1, contract, execution), {}))
+        contract.m_conId = 7
+        self.assertEqual(self.wrapper.calldata[4], ("execDetails", (-1, contract, execution), {}))
+        execution.m_cumQty = 8
+        execution.m_avgPrice = 3.5
+        self.assertEqual(self.wrapper.calldata[5], ("execDetails", (-1, contract, execution), {}))
+        self.assertEqual(self.wrapper.calldata[6], ("execDetails", (9, contract, execution), {}))
+

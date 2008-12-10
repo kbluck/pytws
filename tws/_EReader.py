@@ -435,6 +435,42 @@ class EReader(object):
         self._wrapper.bondContractDetails(req_id, contract)
 
 
+    def _readExecDetails(self):
+            version = self._readInt()
+            req_id = self._readInt() if version >= 7 else -1
+            order_id = self._readInt()
+            contract = self._contract_factory()
+            if version >= 5:
+                contract.m_conId = self._readInt()
+            contract.m_symbol = self._readStr()
+            contract.m_secType = self._readStr()
+            contract.m_expiry = self._readStr()
+            contract.m_strike = self._readDouble()
+            contract.m_right = self._readStr()
+            contract.m_exchange = self._readStr()
+            contract.m_currency = self._readStr()
+            contract.m_localSymbol = self._readStr()
+            execution = self._execution_factory()
+            execution.m_orderId = order_id
+            execution.m_execId = self._readStr()
+            execution.m_time = self._readStr()
+            execution.m_acctNumber = self._readStr()
+            execution.m_exchange = self._readStr()
+            execution.m_side = self._readStr()
+            execution.m_shares = self._readInt()
+            execution.m_price = self._readDouble()
+            if version >= 2:
+                execution.m_permId = self._readInt()
+            if version >= 3:
+                execution.m_clientId = self._readInt()
+            if version >= 4:
+                execution.m_liquidation = self._readInt()
+            if version >= 6:
+                execution.m_cumQty = self._readInt()
+                execution.m_avgPrice = self._readDouble()
+            self._wrapper.execDetails(req_id, contract, execution)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
@@ -476,6 +512,7 @@ class EReader(object):
     from cStringIO import StringIO as _buffer_factory
     from tws._Contract import Contract as _contract_factory
     from tws._ContractDetails import ContractDetails as _contract_details_factory
+    from tws._Execution import Execution as _execution_factory
     from tws._Order import Order as _order_factory
     from tws._OrderState import OrderState as _order_state_factory
     from tws._TagValue import TagValue as _tag_value_factory
