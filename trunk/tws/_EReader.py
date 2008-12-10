@@ -402,6 +402,39 @@ class EReader(object):
         self._wrapper.contractDetails(req_id, contract)
 
 
+    def _readBondContractDetails(self):
+        version = self._readInt()
+        req_id = self._readInt() if version >= 3 else -1
+        contract = self._contract_details_factory()
+        contract.m_summary.m_symbol = self._readStr()
+        contract.m_summary.m_secType = self._readStr()
+        contract.m_cusip = self._readStr()
+        contract.m_coupon = self._readDouble()
+        contract.m_maturity = self._readStr()
+        contract.m_issueDate = self._readStr()
+        contract.m_ratings = self._readStr()
+        contract.m_bondType = self._readStr()
+        contract.m_couponType = self._readStr()
+        contract.m_convertible = self._readBoolFromInt()
+        contract.m_callable = self._readBoolFromInt()
+        contract.m_putable = self._readBoolFromInt()
+        contract.m_descAppend = self._readStr()
+        contract.m_summary.m_exchange = self._readStr()
+        contract.m_summary.m_currency = self._readStr()
+        contract.m_marketName = self._readStr()
+        contract.m_tradingClass = self._readStr()
+        contract.m_summary.m_conId = self._readInt()
+        contract.m_minTick = self._readDouble()
+        contract.m_orderTypes = self._readStr()
+        contract.m_validExchanges = self._readStr()
+        if version >= 2:
+            contract.m_nextOptionDate = self._readStr()
+            contract.m_nextOptionType = self._readStr()
+            contract.m_nextOptionPartial = self._readBoolFromInt()
+            contract.m_notes = self._readStr()
+        self._wrapper.bondContractDetails(req_id, contract)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1

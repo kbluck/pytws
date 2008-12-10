@@ -519,3 +519,43 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[2], ("contractDetails", (4, contract), {}))
         contract.m_underConId = 5
         self.assertEqual(self.wrapper.calldata[3], ("contractDetails", (4, contract), {}))
+
+
+    def test_readBondContractDetails(self):
+        self.stream.write("1\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x001\x001\x00I9\x00J1\x00K2\x00L3\x00M4\x002\x002.5\x00N5\x00O6\x00")
+        self.stream.write("2\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x001\x001\x00I9\x00J1\x00K2\x00L3\x00M4\x002\x002.5\x00N5\x00O6\x00P7\x00Q8\x001\x00R9\x00")
+        self.stream.write("3\x004\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x001\x001\x00I9\x00J1\x00K2\x00L3\x00M4\x002\x002.5\x00N5\x00O6\x00P7\x00Q8\x001\x00R9\x00")
+        self.stream.seek(0)
+        for i in xrange(3): self.reader._readBondContractDetails()
+        self.assertEqual(len(self.wrapper.calldata), 3)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract = ContractDetails()
+        contract.m_summary.m_symbol = "A1"
+        contract.m_summary.m_secType = "B2"
+        contract.m_cusip = "C3"
+        contract.m_coupon = 1.5
+        contract.m_maturity = "D4"
+        contract.m_issueDate = "E5"
+        contract.m_ratings = "F6"
+        contract.m_bondType = "G7"
+        contract.m_couponType = "H8"
+        contract.m_convertible = True
+        contract.m_callable = True
+        contract.m_putable = True
+        contract.m_descAppend = "I9"
+        contract.m_summary.m_exchange = "J1"
+        contract.m_summary.m_currency = "K2"
+        contract.m_marketName = "L3"
+        contract.m_tradingClass = "M4"
+        contract.m_summary.m_conId = 2
+        contract.m_minTick = 2.5
+        contract.m_orderTypes = "N5"
+        contract.m_validExchanges = "O6"
+        self.assertEqual(self.wrapper.calldata[0], ("bondContractDetails", (-1, contract), {}))
+        contract.m_nextOptionDate = "P7"
+        contract.m_nextOptionType = "Q8"
+        contract.m_nextOptionPartial = True
+        contract.m_notes = "R9"
+        self.assertEqual(self.wrapper.calldata[1], ("bondContractDetails", (-1, contract), {}))
+        self.assertEqual(self.wrapper.calldata[2], ("bondContractDetails", (4, contract), {}))
