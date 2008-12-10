@@ -485,3 +485,37 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[6], ("scannerData", (3, 4, contract1, "J1", "K2", "L3", "Y7"), {}))
         self.assertEqual(self.wrapper.calldata[7], ("scannerData", (3, 5, contract2, "V4", "W5", "X6", "Z8"), {}))
         self.assertEqual(self.wrapper.calldata[8], ("scannerDataEnd", (3,), {}))
+
+
+    def test_readContractDetails(self):
+        self.stream.write("1\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x002\x002.5\x00J1\x00K2\x00L3\x00")
+        self.stream.write("2\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x002\x002.5\x00J1\x00K2\x00L3\x003\x00")
+        self.stream.write("3\x004\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x002\x002.5\x00J1\x00K2\x00L3\x003\x00")
+        self.stream.write("4\x004\x00A1\x00B2\x00C3\x001.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x002\x002.5\x00J1\x00K2\x00L3\x003\x005\x00")
+        self.stream.seek(0)
+        for i in xrange(4): self.reader._readContractDetails()
+        self.assertEqual(len(self.wrapper.calldata), 4)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        contract = ContractDetails()
+        contract.m_summary.m_symbol = "A1"
+        contract.m_summary.m_secType = "B2"
+        contract.m_summary.m_expiry = "C3"
+        contract.m_summary.m_strike = 1.5
+        contract.m_summary.m_right = "D4"
+        contract.m_summary.m_exchange = "E5"
+        contract.m_summary.m_currency = "F6"
+        contract.m_summary.m_localSymbol = "G7"
+        contract.m_marketName = "H8"
+        contract.m_tradingClass = "I9"
+        contract.m_summary.m_conId = 2
+        contract.m_minTick = 2.5
+        contract.m_summary.m_multiplier = "J1"
+        contract.m_orderTypes = "K2"
+        contract.m_validExchanges = "L3"
+        self.assertEqual(self.wrapper.calldata[0], ("contractDetails", (-1, contract), {}))
+        contract.m_priceMagnifier = 3
+        self.assertEqual(self.wrapper.calldata[1], ("contractDetails", (-1, contract), {}))
+        self.assertEqual(self.wrapper.calldata[2], ("contractDetails", (4, contract), {}))
+        contract.m_underConId = 5
+        self.assertEqual(self.wrapper.calldata[3], ("contractDetails", (4, contract), {}))
