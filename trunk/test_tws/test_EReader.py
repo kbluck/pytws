@@ -630,3 +630,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("updateNewsBulletin", (2,3,"A1","B2"), {}))
+
+    def test_readManagedAccounts(self):
+        self.stream.write("1\x00A1\x00")
+        self.stream.seek(0)
+        self.reader._readManagedAccounts()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("managedAccounts", ("A1",), {}))
