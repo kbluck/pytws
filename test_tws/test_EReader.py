@@ -646,3 +646,23 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("receiveFA", (2, "A1"), {}))
+
+    def test_readHistoricalData(self):
+        self.stream.write("1\x003\x002\x00A1\x001.5\x002.5\x003.5\x004.5\x004\x005.5\x00\x00B2\x006.5\x007.5\x008.5\x009.5\x005\x006.5\x00true\x00")
+        self.stream.write("2\x003\x00C3\x00D4\x002\x00A1\x001.5\x002.5\x003.5\x004.5\x004\x005.5\x00f\x00B2\x006.5\x007.5\x008.5\x009.5\x005\x006.5\x00true\x00")
+        self.stream.write("3\x003\x00C3\x00D4\x002\x00A1\x001.5\x002.5\x003.5\x004.5\x004\x005.5\x00\x006\x00B2\x006.5\x007.5\x008.5\x009.5\x005\x006.5\x00true\x007\x00")
+        self.stream.seek(0)
+        for i in xrange(3): self.reader._readHistoricalData()
+
+        self.assertEqual(len(self.wrapper.calldata), 9)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        self.assertEqual(self.wrapper.calldata[0], ("historicalData", (3,"A1",1.5,2.5,3.5,4.5,4,-1,5.5,False), {}))
+        self.assertEqual(self.wrapper.calldata[1], ("historicalData", (3,"B2",6.5,7.5,8.5,9.5,5,-1,6.5,True), {}))
+        self.assertEqual(self.wrapper.calldata[2], ("historicalData", (3,'finished',-1,-1,-1,-1,-1,-1,-1,False), {}))
+        self.assertEqual(self.wrapper.calldata[3], ("historicalData", (3,"A1",1.5,2.5,3.5,4.5,4,-1,5.5,False), {}))
+        self.assertEqual(self.wrapper.calldata[4], ("historicalData", (3,"B2",6.5,7.5,8.5,9.5,5,-1,6.5,True), {}))
+        self.assertEqual(self.wrapper.calldata[5], ("historicalData", (3,'finished-C3-D4',-1,-1,-1,-1,-1,-1,-1,False), {}))
+        self.assertEqual(self.wrapper.calldata[6], ("historicalData", (3,"A1",1.5,2.5,3.5,4.5,4,6,5.5,False), {}))
+        self.assertEqual(self.wrapper.calldata[7], ("historicalData", (3,"B2",6.5,7.5,8.5,9.5,5,7,6.5,True), {}))
+        self.assertEqual(self.wrapper.calldata[8], ("historicalData", (3,'finished-C3-D4',-1,-1,-1,-1,-1,-1,-1,False), {}))
