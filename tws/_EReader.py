@@ -537,6 +537,12 @@ class EReader(object):
         self._wrapper.historicalData(req_id, finish_token, -1, -1, -1, -1, -1, -1, -1, False)
 
 
+    def _readScannerParameters(self):
+        version = self._readInt()
+        xml = self._readStr()
+        self._wrapper.scannerParameters(xml)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
