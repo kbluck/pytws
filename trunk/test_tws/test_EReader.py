@@ -666,3 +666,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(self.wrapper.calldata[6], ("historicalData", (3,"A1",1.5,2.5,3.5,4.5,4,6,5.5,False), {}))
         self.assertEqual(self.wrapper.calldata[7], ("historicalData", (3,"B2",6.5,7.5,8.5,9.5,5,7,6.5,True), {}))
         self.assertEqual(self.wrapper.calldata[8], ("historicalData", (3,'finished-C3-D4',-1,-1,-1,-1,-1,-1,-1,False), {}))
+
+    def test_readScannerParameters(self):
+        self.stream.write("1\x00A1\x00")
+        self.stream.seek(0)
+        self.reader._readScannerParameters()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("scannerParameters", ("A1",), {}))
