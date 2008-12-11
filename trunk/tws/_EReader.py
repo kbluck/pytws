@@ -516,6 +516,27 @@ class EReader(object):
         self._wrapper.receiveFA(fa_data_type, xml)
 
 
+    def _readHistoricalData(self):
+        version = self._readInt()
+        req_id = self._readInt()
+        finish_token = "finished"
+        if version >= 2:
+            finish_token += '-%s-%s' % (self._readStr(), self._readStr())
+        item_count = self._readInt()
+        for i in xrange(item_count):
+            date = self._readStr()
+            open = self._readDouble()
+            high = self._readDouble()
+            low = self._readDouble()
+            close = self._readDouble()
+            volume = self._readInt()
+            wap = self._readDouble()
+            has_gaps = (str(self._readStr()).upper() == "TRUE")
+            bar_count = self._readInt() if version >= 3 else -1
+            self._wrapper.historicalData(req_id, date, open, high, low, close, volume, bar_count, wap, has_gaps)
+        self._wrapper.historicalData(req_id, finish_token, -1, -1, -1, -1, -1, -1, -1, False)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
