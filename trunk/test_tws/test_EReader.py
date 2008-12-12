@@ -674,3 +674,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("scannerParameters", ("A1",), {}))
+
+    def test_readCurrentTime(self):
+        self.stream.write("1\x001234567890\x00")
+        self.stream.seek(0)
+        self.reader._readCurrentTime()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("currentTime", (1234567890,), {}))
