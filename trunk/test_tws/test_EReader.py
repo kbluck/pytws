@@ -690,3 +690,43 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("realtimeBar", (2,3,1.5,2.5,3.5,4.5,5,6.5,7), {}))
+
+    def test_readFundamentalData(self):
+        self.stream.write("1\x002\x00A1\x00")
+        self.stream.seek(0)
+        self.reader._readFundamentalData()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("fundamentalData", (2,"A1"), {}))
+
+    def test_readContractDetailsEnd(self):
+        self.stream.write("1\x002\x00")
+        self.stream.seek(0)
+        self.reader._readContractDetailsEnd()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
+
+    def test_readOpenOrderEnd(self):
+        self.stream.write("1\x00")
+        self.stream.seek(0)
+        self.reader._readOpenOrderEnd()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("openOrderEnd", (), {}))
+
+    def test_readAccountDownloadEnd(self):
+        self.stream.write("1\x00A1\x00")
+        self.stream.seek(0)
+        self.reader._readAccountDownloadEnd()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("accountDownloadEnd", ("A1",), {}))
+
+    def test_readExecDetailsEnd(self):
+        self.stream.write("1\x002\x00")
+        self.stream.seek(0)
+        self.reader._readExecDetailsEnd()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("execDetailsEnd", (2,), {}))

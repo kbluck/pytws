@@ -550,7 +550,7 @@ class EReader(object):
 
 
     def _readRealtimeBar(self):
-        version = self._readInt()
+        self._readInt()
         req_id = self._readInt()
         time = self._readLong()
         open = self._readDouble()
@@ -561,6 +561,36 @@ class EReader(object):
         wap = self._readDouble()
         count = self._readInt()
         self._wrapper.realtimeBar(req_id, time, open, high, low, close, volume, wap, count)
+
+
+    def _readFundamentalData(self):
+            self._readInt()
+            req_id = self._readInt()
+            data = self._readStr()
+            self._wrapper.fundamentalData(req_id, data)
+
+
+    def _readContractDetailsEnd(self):
+            self._readInt()
+            req_id = self._readInt()
+            self._wrapper.contractDetailsEnd(req_id)
+
+
+    def _readOpenOrderEnd(self):
+            self._readInt()
+            self._wrapper.openOrderEnd()
+
+
+    def _readAccountDownloadEnd(self):
+            self._readInt()
+            account_name = self._readStr()
+            self._wrapper.accountDownloadEnd(account_name)
+
+
+    def _readExecDetailsEnd(self):
+            self._readInt()
+            req_id = self._readInt()
+            self._wrapper.execDetailsEnd(req_id)
 
 
     ## Tag constants ##
