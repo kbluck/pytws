@@ -682,3 +682,11 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("currentTime", (1234567890,), {}))
+
+    def test_readRealtimeBar(self):
+        self.stream.write("1\x002\x003\x001.5\x002.5\x003.5\x004.5\x005\x006.5\x007\x00")
+        self.stream.seek(0)
+        self.reader._readRealtimeBar()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(self.wrapper.calldata[0], ("realtimeBar", (2,3,1.5,2.5,3.5,4.5,5,6.5,7), {}))

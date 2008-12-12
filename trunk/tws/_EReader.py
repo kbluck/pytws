@@ -549,6 +549,20 @@ class EReader(object):
         self._wrapper.currentTime(time)
 
 
+    def _readRealtimeBar(self):
+        version = self._readInt()
+        req_id = self._readInt()
+        time = self._readLong()
+        open = self._readDouble()
+        high = self._readDouble()
+        low = self._readDouble()
+        close = self._readDouble()
+        volume = self._readLong()
+        wap = self._readDouble()
+        count = self._readInt()
+        self._wrapper.realtimeBar(req_id, time, open, high, low, close, volume, wap, count)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
