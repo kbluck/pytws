@@ -593,6 +593,16 @@ class EReader(object):
             self._wrapper.execDetailsEnd(req_id)
 
 
+    def _readDeltaNeutralValidation(self):
+        self._readInt()
+        req_id = self._readInt()
+        undercomp = self._undercomp_factory()
+        undercomp.m_conId = self._readInt()
+        undercomp.m_delta = self._readDouble()
+        undercomp.m_price = self._readDouble()
+        self._wrapper.deltaNeutralValidation(req_id, undercomp)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1

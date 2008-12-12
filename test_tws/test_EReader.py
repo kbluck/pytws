@@ -730,3 +730,16 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(self.wrapper.calldata[0], ("execDetailsEnd", (2,), {}))
+
+    def test_readDeltaNeutralValidation(self):
+        self.stream.write("1\x002\x003\x004.5\x005.5\x00")
+        self.stream.seek(0)
+        self.reader._readDeltaNeutralValidation()
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 0)
+
+        undercomp = UnderComp()
+        undercomp.m_conId = 3
+        undercomp.m_delta = 4.5
+        undercomp.m_price = 5.5
+        self.assertEqual(self.wrapper.calldata[0], ("deltaNeutralValidation", (2,undercomp), {}))
