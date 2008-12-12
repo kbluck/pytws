@@ -543,6 +543,12 @@ class EReader(object):
         self._wrapper.scannerParameters(xml)
 
 
+    def _readCurrentTime(self):
+        version = self._readInt()
+        time = self._readLong()
+        self._wrapper.currentTime(time)
+
+
     ## Tag constants ##
 
     TICK_PRICE = 1
