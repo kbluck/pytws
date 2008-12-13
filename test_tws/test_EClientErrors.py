@@ -19,9 +19,13 @@ class test_EClientErrors(unittest.TestCase):
         self.assertEqual(test2.code(), 2)
         self.assertEqual(test1.msg(), "Test1")
         self.assertEqual(test2.msg(), "Test2")
+        self.assertEqual(test1.args, ((1, 'Test1'),))
+        self.assertEqual(test2.args, ((2, 'Test2'),))
+        self.assertEqual(test1.message, "1: Test1")
+        self.assertEqual(test2.message, "2: Test2")
 
         if __debug__:
-            self.assertRaises(TypeError, CodeMsgPair, 1)
+            self.assertRaises(AssertionError, CodeMsgPair, 1)
             self.assertRaises(AssertionError, CodeMsgPair, [])
             self.assertRaises(AssertionError, CodeMsgPair, (1,2,3))
             self.assertRaises(AssertionError, CodeMsgPair, ("",""))

@@ -8,8 +8,8 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 
-class CodeMsgPair(tuple):
-    '''Wraps an error code identifier and error text as a tuple.'''
+class TwsError(StandardError):
+    '''Wraps a Tws error code identifier and error text as a Python exception.'''
 
     def __init__(self, pair):
         assert issubclass(type(pair), tuple)
@@ -17,13 +17,20 @@ class CodeMsgPair(tuple):
         assert issubclass(type(pair[0]), int)
         assert issubclass(type(pair[1]), str)
 
-        tuple.__init__(pair)
+        self._code = pair[0]
+        self._msg = pair[1]
+        StandardError.__init__(self, pair)
+        self.message = "%d: %s" % (self._code, self._msg)
 
     def code(self):
-        return self[0]
+        return self._code
 
     def msg(self):
-        return self[1]
+        return self._msg
+
+    
+# Alias exception type with name defined in Java sources
+CodeMsgPair = TwsError
 
 
 NO_VALID_ID = -1
