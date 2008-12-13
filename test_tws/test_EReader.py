@@ -27,6 +27,30 @@ class test_EReader(unittest.TestCase):
             self.assertRaises(AssertionError, EReader, 1, self.stream)
             self.assertRaises(AssertionError, EReader, self.parent, 1)
 
+    def test_readNextMessage(self):
+        self.stream.write("52\x001\x002\x00")
+        self.stream.write("123456\x00")
+        self.stream.write("53\x001\x00")
+        self.stream.write("-1\x00")
+        self.stream.write("54\x001\x00A1\x00")
+        self.stream.seek(0)
+        return_values = []
+        for i in xrange(5): return_values.append(self.reader._readNextMessage())
+        self.assertEqual(len(return_values), 5)
+        self.assertEqual(len(self.wrapper.calldata), 3)
+        self.assertEqual(len(self.wrapper.errors), 1)
+        self.assertTrue(return_values[0]) 
+        self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
+        self.assertFalse(return_values[1]) 
+        self.assertTrue(return_values[2]) 
+        self.assertEqual(self.wrapper.calldata[1], ("openOrderEnd", (), {}))
+        self.assertFalse(return_values[3]) 
+        self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,
+                                                  EClientErrors.UNKNOWN_ID.code(),
+                                                  EClientErrors.UNKNOWN_ID.msg() + " (123456)"))
+        self.assertTrue(return_values[4]) 
+        self.assertEqual(self.wrapper.calldata[2], ("accountDownloadEnd", ("A1",), {}))
+
     def test_readStr(self):
         self.stream.write("test1\x00test2\x00\x00test3\x00")
         self.stream.seek(0)

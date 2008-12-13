@@ -27,6 +27,20 @@ class EReader(object):
         self._stream = input_stream
 
 
+    def _readNextMessage(self):
+        message_id = self._readInt()
+        if (message_id == -1): return False
+
+        reader_method = self._reader_map.get(message_id, None)
+        if reader_method:
+            reader_method(self)
+        else:
+            self._wrapper.error(_EClientErrors.NO_VALID_ID,
+                                _EClientErrors.UNKNOWN_ID.code(),
+                                "%s (%d)" % (_EClientErrors.UNKNOWN_ID.msg(), message_id))
+        return bool(reader_method)
+
+
     def _readStr(self):
         buffer = self._buffer_factory()
         while True:
@@ -604,7 +618,6 @@ class EReader(object):
 
 
     ## Tag constants ##
-
     TICK_PRICE = 1
     TICK_SIZE = 2
     ORDER_STATUS = 3
@@ -639,8 +652,44 @@ class EReader(object):
     DELTA_NEUTRAL_VALIDATION = 56
 
 
-    ## Private class imports ##
+    ## Tag-method dispatch rules ##
+    _reader_map = {
+        TICK_PRICE: _readTickPrice,
+        TICK_SIZE: _readTickSize,
+        ORDER_STATUS: _readOrderStatus,
+        ERR_MSG: _readError,
+        OPEN_ORDER: _readOpenOrder,
+        ACCT_VALUE: _readUpdateAccountValue,
+        PORTFOLIO_VALUE: _readUpdatePortfolio,
+        ACCT_UPDATE_TIME: _readUpdateAccountTime,
+        NEXT_VALID_ID: _readNextValidId,
+        CONTRACT_DATA: _readContractDetails,
+        EXECUTION_DATA: _readExecDetails,
+        MARKET_DEPTH: _readUpdateMktDepth,
+        MARKET_DEPTH_L2: _readUpdateMktDepthL2,
+        NEWS_BULLETINS: _readUpdateNewsBulletin,
+        MANAGED_ACCTS: _readManagedAccounts,
+        RECEIVE_FA: _readReceiveFA,
+        HISTORICAL_DATA:_readHistoricalData,
+        BOND_CONTRACT_DATA: _readBondContractDetails,
+        SCANNER_PARAMETERS: _readScannerParameters,
+        SCANNER_DATA: _readScannerData,
+        TICK_OPTION_COMPUTATION: _readTickOptionComputation,
+        TICK_GENERIC: _readTickGeneric,
+        TICK_STRING: _readTickString,
+        TICK_EFP: _readTickEFP,
+        CURRENT_TIME: _readCurrentTime,
+        REAL_TIME_BARS: _readRealtimeBar,
+        FUNDAMENTAL_DATA: _readFundamentalData,
+        CONTRACT_DATA_END: _readContractDetailsEnd,
+        OPEN_ORDER_END: _readOpenOrderEnd,
+        ACCT_DOWNLOAD_END: _readAccountDownloadEnd,
+        EXECUTION_DATA_END: _readExecDetailsEnd,
+        DELTA_NEUTRAL_VALIDATION: _readDeltaNeutralValidation
+    }
 
+
+    ## Private class imports ##
     from cStringIO import StringIO as _buffer_factory
     from tws._Contract import Contract as _contract_factory
     from tws._ContractDetails import ContractDetails as _contract_details_factory
