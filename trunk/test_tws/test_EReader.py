@@ -15,17 +15,17 @@ class test_EReader(unittest.TestCase):
     
     def setUp(self):
         self.wrapper = mock_wrapper()
-        self.parent = EClientSocket(self.wrapper)
+        self.connection = EClientSocket(self.wrapper)
         self.stream = StringIO()
-        self.reader = self.parent.createReader(self.parent, self.stream)
+        self.reader = self.connection.createReader(self.connection, self.stream)
         self.calldata = []
 
     def test_init(self):
-        self.assertTrue(EReader(self.parent, StringIO()))
+        self.assertTrue(EReader(self.connection, StringIO()))
 
         if __debug__:
             self.assertRaises(AssertionError, EReader, 1, self.stream)
-            self.assertRaises(AssertionError, EReader, self.parent, 1)
+            self.assertRaises(AssertionError, EReader, self.connection, 1)
 
     def test_readNextMessage(self):
         self.stream.write("52\x001\x002\x00")
@@ -242,7 +242,7 @@ class test_EReader(unittest.TestCase):
         contract.m_conId = 8
         self.assertEqual(self.wrapper.calldata[4], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
 
-        self.parent._serverVersion = 39
+        self.connection._serverVersion = 39
         self.reader._readUpdatePortfolio()
         contract.m_primaryExch = "ST"
         self.assertEqual(self.wrapper.calldata[5], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
@@ -300,11 +300,11 @@ class test_EReader(unittest.TestCase):
 
         self.stream.seek(0)
 
-        self.parent._serverVersion = -1 # Arbitrary fake value.
+        self.connection._serverVersion = -1 # Arbitrary fake value.
         for i in xrange(11): self.reader._readOpenOrder()
-        self.parent._serverVersion = 26 # Server version matters on the 12th test call.
+        self.connection._serverVersion = 26 # Server version matters on the 12th test call.
         self.reader._readOpenOrder()
-        self.parent._serverVersion = -1 # Back to fake server version
+        self.connection._serverVersion = -1 # Back to fake server version
         for i in xrange(13): self.reader._readOpenOrder()
 
         self.assertEqual(len(self.wrapper.calldata), 25)
