@@ -45,9 +45,9 @@ class test_EReader(unittest.TestCase):
         self.assertTrue(return_values[2]) 
         self.assertEqual(self.wrapper.calldata[1], ("openOrderEnd", (), {}))
         self.assertFalse(return_values[3]) 
-        self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,
+        self.assertEqual(self.wrapper.errors[0], (123456,
                                                   EClientErrors.UNKNOWN_ID.code(),
-                                                  EClientErrors.UNKNOWN_ID.msg() + " (123456)"))
+                                                  EClientErrors.UNKNOWN_ID.msg()))
         self.assertTrue(return_values[4]) 
         self.assertEqual(self.wrapper.calldata[2], ("accountDownloadEnd", ("A1",), {}))
 

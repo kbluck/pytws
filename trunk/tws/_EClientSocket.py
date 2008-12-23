@@ -50,17 +50,13 @@ class EClientSocket(object):
         assert issubclass(type(host), str) or (host == None)  
 
         if self._connected:
-            self._wrapper.error(EClientErrors.NO_VALID_ID, 
-                                EClientErrors.ALREADY_CONNECTED.code(),
-                                EClientErrors.ALREADY_CONNECTED.msg())
+            self._wrapper.error(EClientErrors.ALREADY_CONNECTED)
             return None
         return host if host else "127.0.0.1"
 
 
     def connectionError(self):
-        self._wrapper.error(EClientErrors.NO_VALID_ID,
-                            EClientErrors.CONNECT_FAIL.code(),
-                            EClientErrors.CONNECT_FAIL.msg())
+        self._wrapper.error(EClientErrors.CONNECT_FAIL)
         self.m_reader = None
 
     def createReader(self, connection, input_stream):

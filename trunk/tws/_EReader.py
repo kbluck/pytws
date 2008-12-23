@@ -35,9 +35,9 @@ class EReader(object):
         if reader_method:
             reader_method(self)
         else:
-            self._wrapper.error(_EClientErrors.NO_VALID_ID,
-                                _EClientErrors.UNKNOWN_ID.code(),
-                                "%s (%d)" % (_EClientErrors.UNKNOWN_ID.msg(), message_id))
+            self._wrapper.error(_EClientErrors.TwsError(id=message_id,
+                                    code=_EClientErrors.UNKNOWN_ID.code(),
+                                    msg=_EClientErrors.UNKNOWN_ID.msg()))
         return bool(reader_method)
 
 
@@ -218,7 +218,7 @@ class EReader(object):
         id = self._readInt() if version >= 2 else _EClientErrors.NO_VALID_ID
         code = self._readInt() if version >= 2 else _EClientErrors.UNKNOWN_ID.code()
         msg = self._readStr()
-        self._wrapper.error(id, code, msg)
+        self._wrapper.error(_EClientErrors.TwsError(id, code, msg))
 
 
     def _readOpenOrder(self):
