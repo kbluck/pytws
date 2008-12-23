@@ -9,18 +9,28 @@ __version__   = "$Id$"
 
 from tws import EClientErrors as _EClientErrors
 from tws import TickType as _TickType
+from threading import Thread as _thread_type
 
 
-class EReader(object):
+class EReader(_thread_type):
     '''Type which reads and reacts to EClientSocket data.
 
        Reads data from client socket and fires events in the application-defined
        EWrapper-derived object provided to EClientSocket.
+
+       Note carefully: EReader reads socket data in a separate thread, and the
+       calls it makes to the EClientSocket's EWrapper object's methods will
+       also be made in the context of that thread. EWrapper objects must take
+       appropriate measures to synchronize these calls as appropriate to the
+       application at hand.
     '''
 
-    def __init__(self, connection, input_stream):
+    def __init__(self, connection, input_stream, name=None):
         assert issubclass(type(connection), __import__("tws").EClientSocket)
         assert hasattr(input_stream, "read")
+        
+        _thread_type.__init__(self, name=name)        
+        self.setDaemon(True)
 
         self._connection = connection
         self._wrapper = connection._wrapper
