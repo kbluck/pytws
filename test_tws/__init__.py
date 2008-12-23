@@ -19,8 +19,8 @@ class mock_wrapper(EWrapper):
         self.calldata = []
         self.errors = []
     
-    def error(self, id, code, text):
-        self.errors.append((id, code, text))
+    def error(self, e):
+        self.errors.append((e.id(), e.code(), e.msg()))
 
     def __getattr__(self, name):
         # Any arbitrary unknown attribute is mapped to a function call which is
