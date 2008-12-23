@@ -25,6 +25,11 @@ class EReader(object):
         self._connection = connection
         self._wrapper = connection._wrapper
         self._stream = input_stream
+        self._interrupted = False
+
+
+    def interrupt(self):
+        self._interrupted = True
 
 
     def _readNextMessage(self):

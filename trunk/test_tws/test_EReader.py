@@ -27,6 +27,11 @@ class test_EReader(unittest.TestCase):
             self.assertRaises(AssertionError, EReader, 1, self.stream)
             self.assertRaises(AssertionError, EReader, self.connection, 1)
 
+    def test_interrupt(self):
+        self.assertFalse(self.reader._interrupted)
+        self.reader.interrupt()
+        self.assertTrue(self.reader._interrupted)
+
     def test_readNextMessage(self):
         self.stream.write("52\x001\x002\x00")
         self.stream.write("123456\x00")
