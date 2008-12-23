@@ -8,19 +8,25 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 
+NO_VALID_ID = -1   # Constant
+
+
 class TwsError(StandardError):
     '''Wraps a Tws error code identifier and error text as a Python exception.'''
 
-    def __init__(self, pair):
-        assert issubclass(type(pair), tuple)
-        assert 2 == len(pair)
-        assert issubclass(type(pair[0]), int)
-        assert issubclass(type(pair[1]), str)
+    def __init__(self, id=NO_VALID_ID, code=None, msg=None):
+        assert type(id) == int
+        assert (type(code) == int) or code is None
+        assert (type(msg) == str) or msg is None
 
-        self._code = pair[0]
-        self._msg = pair[1]
-        StandardError.__init__(self, pair)
-        self.message = "%d: %s" % (self._code, self._msg)
+        self._id = id
+        self._code = code
+        self._msg = msg
+        StandardError.__init__(self, (id, code, msg))
+        self.message = "%s: %s (Id: %s)" % (self._code, self._msg, self._id)
+
+    def id(self):
+        return self._id
 
     def code(self):
         return self._code
@@ -33,33 +39,32 @@ class TwsError(StandardError):
 CodeMsgPair = TwsError
 
 
-NO_VALID_ID = -1
-ALREADY_CONNECTED = CodeMsgPair((501, "Already connected."))
-CONNECT_FAIL = CodeMsgPair((502, "Couldn't connect to TWS.  Confirm that \"Enable ActiveX and Socket Clients\" is enabled on the TWS \"Configure->API\" menu."))
-UPDATE_TWS = CodeMsgPair((503, "The TWS is out of date and must be upgraded."))
-NOT_CONNECTED = CodeMsgPair((504, "Not connected"))
-UNKNOWN_ID = CodeMsgPair((505, "Fatal Error: Unknown message id."))
-FAIL_SEND_REQMKT = CodeMsgPair((510, "Request Market Data Sending Error - "))
-FAIL_SEND_CANMKT = CodeMsgPair((511, "Cancel Market Data Sending Error - "))
-FAIL_SEND_ORDER = CodeMsgPair((512, "Order Sending Error - "))
-FAIL_SEND_ACCT = CodeMsgPair((513, "Account Update Request Sending Error -"))
-FAIL_SEND_EXEC = CodeMsgPair((514, "Request For Executions Sending Error -"))
-FAIL_SEND_CORDER = CodeMsgPair((515, "Cancel Order Sending Error -"))
-FAIL_SEND_OORDER = CodeMsgPair((516, "Request Open Order Sending Error -"))
-UNKNOWN_CONTRACT = CodeMsgPair((517, "Unknown contract. Verify the contract details supplied."))
-FAIL_SEND_REQCONTRACT = CodeMsgPair((518, "Request Contract Data Sending Error - "))
-FAIL_SEND_REQMKTDEPTH = CodeMsgPair((519, "Request Market Depth Sending Error - "))
-FAIL_SEND_CANMKTDEPTH = CodeMsgPair((520, "Cancel Market Depth Sending Error - "))
-FAIL_SEND_SERVER_LOG_LEVEL = CodeMsgPair((521, "Set Server Log Level Sending Error - "))
-FAIL_SEND_FA_REQUEST = CodeMsgPair((522, "FA Information Request Sending Error - "))
-FAIL_SEND_FA_REPLACE = CodeMsgPair((523, "FA Information Replace Sending Error - "))
-FAIL_SEND_REQSCANNER = CodeMsgPair((524, "Request Scanner Subscription Sending Error - "))
-FAIL_SEND_CANSCANNER = CodeMsgPair((525, "Cancel Scanner Subscription Sending Error - "))
-FAIL_SEND_REQSCANNERPARAMETERS = CodeMsgPair((526, "Request Scanner Parameter Sending Error - "))
-FAIL_SEND_REQHISTDATA = CodeMsgPair((527, "Request Historical Data Sending Error - "))
-FAIL_SEND_CANHISTDATA = CodeMsgPair((528, "Request Historical Data Sending Error - "))
-FAIL_SEND_REQRTBARS = CodeMsgPair((529, "Request Real-time Bar Data Sending Error - "))
-FAIL_SEND_CANRTBARS = CodeMsgPair((530, "Cancel Real-time Bar Data Sending Error - "))
-FAIL_SEND_REQCURRTIME = CodeMsgPair((531, "Request Current Time Sending Error - "))
-FAIL_SEND_REQFUNDDATA = CodeMsgPair((532, "Request Fundamental Data Sending Error - "))
-FAIL_SEND_CANFUNDDATA = CodeMsgPair((533, "Cancel Fundamental Data Sending Error - "))
+ALREADY_CONNECTED = CodeMsgPair(code=501, msg="Already connected.")
+CONNECT_FAIL = CodeMsgPair(code=502, msg="Couldn't connect to TWS.  Confirm that \"Enable ActiveX and Socket Clients\" is enabled on the TWS \"Configure->API\" menu.")
+UPDATE_TWS = CodeMsgPair(code=503, msg="The TWS is out of date and must be upgraded.")
+NOT_CONNECTED = CodeMsgPair(code=504, msg="Not connected")
+UNKNOWN_ID = CodeMsgPair(code=505, msg="Fatal Error: Unknown message id.")
+FAIL_SEND_REQMKT = CodeMsgPair(code=510, msg="Request Market Data Sending Error - ")
+FAIL_SEND_CANMKT = CodeMsgPair(code=511, msg="Cancel Market Data Sending Error - ")
+FAIL_SEND_ORDER = CodeMsgPair(code=512, msg="Order Sending Error - ")
+FAIL_SEND_ACCT = CodeMsgPair(code=513, msg="Account Update Request Sending Error -")
+FAIL_SEND_EXEC = CodeMsgPair(code=514, msg="Request For Executions Sending Error -")
+FAIL_SEND_CORDER = CodeMsgPair(code=515, msg="Cancel Order Sending Error -")
+FAIL_SEND_OORDER = CodeMsgPair(code=516, msg="Request Open Order Sending Error -")
+UNKNOWN_CONTRACT = CodeMsgPair(code=517, msg="Unknown contract. Verify the contract details supplied.")
+FAIL_SEND_REQCONTRACT = CodeMsgPair(code=518, msg="Request Contract Data Sending Error - ")
+FAIL_SEND_REQMKTDEPTH = CodeMsgPair(code=519, msg="Request Market Depth Sending Error - ")
+FAIL_SEND_CANMKTDEPTH = CodeMsgPair(code=520, msg="Cancel Market Depth Sending Error - ")
+FAIL_SEND_SERVER_LOG_LEVEL = CodeMsgPair(code=521, msg="Set Server Log Level Sending Error - ")
+FAIL_SEND_FA_REQUEST = CodeMsgPair(code=522, msg="FA Information Request Sending Error - ")
+FAIL_SEND_FA_REPLACE = CodeMsgPair(code=523, msg="FA Information Replace Sending Error - ")
+FAIL_SEND_REQSCANNER = CodeMsgPair(code=524, msg="Request Scanner Subscription Sending Error - ")
+FAIL_SEND_CANSCANNER = CodeMsgPair(code=525, msg="Cancel Scanner Subscription Sending Error - ")
+FAIL_SEND_REQSCANNERPARAMETERS = CodeMsgPair(code=526, msg="Request Scanner Parameter Sending Error - ")
+FAIL_SEND_REQHISTDATA = CodeMsgPair(code=527, msg="Request Historical Data Sending Error - ")
+FAIL_SEND_CANHISTDATA = CodeMsgPair(code=528, msg="Request Historical Data Sending Error - ")
+FAIL_SEND_REQRTBARS = CodeMsgPair(code=529, msg="Request Real-time Bar Data Sending Error - ")
+FAIL_SEND_CANRTBARS = CodeMsgPair(code=530, msg="Cancel Real-time Bar Data Sending Error - ")
+FAIL_SEND_REQCURRTIME = CodeMsgPair(code=531, msg="Request Current Time Sending Error - ")
+FAIL_SEND_REQFUNDDATA = CodeMsgPair(code=532, msg="Request Fundamental Data Sending Error - ")
+FAIL_SEND_CANFUNDDATA = CodeMsgPair(code=533, msg="Cancel Fundamental Data Sending Error - ")
