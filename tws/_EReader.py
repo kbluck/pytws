@@ -28,17 +28,24 @@ class EReader(object):
 
 
     def _readNextMessage(self):
-        message_id = self._readInt()
-        if (message_id == -1): return False
+        try:
+            message_id = self._readInt()
+            if (message_id == -1): return False
 
-        reader_method = self._reader_map.get(message_id, None)
-        if reader_method:
+            reader_method = self._reader_map.get(message_id, None)
+            if not reader_method:
+                raise _EClientErrors.TwsError(message_id,
+                                              _EClientErrors.UNKNOWN_ID.code(),
+                                              _EClientErrors.UNKNOWN_ID.msg())
             reader_method(self)
-        else:
-            self._wrapper.error(_EClientErrors.TwsError(id=message_id,
-                                    code=_EClientErrors.UNKNOWN_ID.code(),
-                                    msg=_EClientErrors.UNKNOWN_ID.msg()))
-        return bool(reader_method)
+
+        except Exception, e:
+            try:
+                self._wrapper.error(e)
+            except: pass
+            return False
+        
+        return True
 
 
     def _readStr(self):

@@ -20,7 +20,10 @@ class mock_wrapper(EWrapper):
         self.errors = []
     
     def error(self, e):
-        self.errors.append((e.id(), e.code(), e.msg()))
+        if hasattr(e, 'id'):
+            self.errors.append((e.id(), e.code(), e.msg()))
+        else:
+            self.errors.append((-1,type(e),e.args))
 
     def __getattr__(self, name):
         # Any arbitrary unknown attribute is mapped to a function call which is

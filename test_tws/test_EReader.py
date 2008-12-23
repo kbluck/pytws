@@ -33,12 +33,19 @@ class test_EReader(unittest.TestCase):
         self.stream.write("53\x001\x00")
         self.stream.write("-1\x00")
         self.stream.write("54\x001\x00A1\x00")
+        self.stream.write("654321\x00")
+        self.stream.write("654321\x00")
+
+        def _raise(x=1, y=2): raise Exception(654321)
+        self.reader._reader_map[654321] = _raise
+        
         self.stream.seek(0)
         return_values = []
-        for i in xrange(5): return_values.append(self.reader._readNextMessage())
-        self.assertEqual(len(return_values), 5)
+        for i in xrange(6): return_values.append(self.reader._readNextMessage())
+
+        self.assertEqual(len(return_values), 6)
         self.assertEqual(len(self.wrapper.calldata), 3)
-        self.assertEqual(len(self.wrapper.errors), 1)
+        self.assertEqual(len(self.wrapper.errors), 2)
         self.assertTrue(return_values[0]) 
         self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
         self.assertFalse(return_values[1]) 
@@ -50,6 +57,16 @@ class test_EReader(unittest.TestCase):
                                                   EClientErrors.UNKNOWN_ID.msg()))
         self.assertTrue(return_values[4]) 
         self.assertEqual(self.wrapper.calldata[2], ("accountDownloadEnd", ("A1",), {}))
+        self.assertFalse(return_values[5]) 
+        self.assertEqual(self.wrapper.errors[1], (-1,Exception,(654321,)))
+
+        self.wrapper.error = _raise
+        return_values.append(self.reader._readNextMessage())
+        self.assertEqual(len(return_values), 7)
+        self.assertEqual(len(self.wrapper.calldata), 3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertFalse(return_values[6]) 
+        
 
     def test_readStr(self):
         self.stream.write("test1\x00test2\x00\x00test3\x00")
