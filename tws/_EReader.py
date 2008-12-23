@@ -32,6 +32,17 @@ class EReader(object):
         self._interrupted = True
 
 
+    def run(self):
+        try:
+            while not self._interrupted and self._readNextMessage():
+                pass
+        except Exception:
+            assert False  # Should never happen.
+
+        if self._connection.isConnected():
+            self._connection.close()        
+
+
     def _readNextMessage(self):
         try:
             try:

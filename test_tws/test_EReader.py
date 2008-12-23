@@ -32,6 +32,20 @@ class test_EReader(unittest.TestCase):
         self.reader.interrupt()
         self.assertTrue(self.reader._interrupted)
 
+    def test_run(self):
+        self.stream.write("52\x001\x002\x00")
+        self.stream.write("123456\x00")
+
+        self.stream.seek(0)
+        self.reader.run()
+
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 1)
+
+        self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
+        self.assertEqual(self.wrapper.errors[0], (123456,
+                                                  EClientErrors.UNKNOWN_ID.code(),
+                                                  EClientErrors.UNKNOWN_ID.msg()))
     def test_readNextMessage(self):
         self.stream.write("52\x001\x002\x00")
         self.stream.write("123456\x00")
