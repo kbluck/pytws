@@ -66,7 +66,7 @@ class EClientSocket(object):
         return __import__("tws").EReader(connection, input_stream)
 
 
-    def send(self, data):
+    def _send(self, data):
         if type(data) in (str, int, long, float):
             self._stream.write(str(data))
         elif type(data) == bool:

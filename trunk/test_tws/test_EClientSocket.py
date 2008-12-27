@@ -85,14 +85,14 @@ class test_EClientSocket(unittest.TestCase):
     def test_send(self):
         self.client._stream = StringIO() #Inject mock stream
 
-        self.client.send("ABC")
-        self.client.send(123)
-        self.client.send(1234.5)
-        self.client.send(123456789012345)
-        self.client.send(True)
-        self.client.send(False)
+        self.client._send("ABC")
+        self.client._send(123)
+        self.client._send(1234.5)
+        self.client._send(123456789012345)
+        self.client._send(True)
+        self.client._send(False)
 
         self.assertEqual("ABC\x00123\x001234.5\x00123456789012345\x001\x000\x00",
                          self.client._stream.getvalue())
 
-        self.assertRaises(ValueError, self.client.send, object())
+        self.assertRaises(ValueError, self.client._send, object())
