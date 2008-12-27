@@ -81,3 +81,18 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, EClientSocket.faMsgTypeName, 0)
             self.assertRaises(AssertionError, EClientSocket.faMsgTypeName, 4)
+
+    def test_send(self):
+        self.client._stream = StringIO() #Inject mock stream
+
+        self.client.send("ABC")
+        self.client.send(123)
+        self.client.send(1234.5)
+        self.client.send(123456789012345)
+        self.client.send(True)
+        self.client.send(False)
+
+        self.assertEqual("ABC\x00123\x001234.5\x00123456789012345\x001\x000\x00",
+                         self.client._stream.getvalue())
+
+        self.assertRaises(ValueError, self.client.send, object())

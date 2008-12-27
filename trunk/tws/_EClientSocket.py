@@ -16,7 +16,7 @@ class EClientSocket(object):
 
     def __init__(self, wrapper, socket_factory=__import__("socket").socket):
         assert issubclass(type(wrapper), __import__("tws").EWrapper)  
-        assert hasattr(socket_factory, "connect")
+        assert callable(socket_factory)
 
         self._wrapper = wrapper
         self._reader = None
@@ -66,10 +66,20 @@ class EClientSocket(object):
         return __import__("tws").EReader(connection, input_stream)
 
 
+    def send(self, data):
+        if type(data) in (str, int, long, float):
+            self._stream.write(str(data))
+        elif type(data) == bool:
+            self._stream.write("1" if data else "0")
+        else:
+            raise ValueError("Unknown data type for EClientSocket.send(): %s", type(data))
+        self._stream.write(self.EOL)
+
+
     # General constants
     CLIENT_VERSION = 42
     SERVER_VERSION = 38
-    EOL = 0
+    EOL = "\x00"
     BAG_SEC_TYPE = "BAG"
 
 
