@@ -96,3 +96,17 @@ class test_EClientSocket(unittest.TestCase):
                          self.client._stream.getvalue())
 
         self.assertRaises(ValueError, self.client._send, object())
+
+
+    def test_sendMax(self):
+        self.client._stream = StringIO() #Inject mock stream
+
+        self.client._sendMax(123)
+        self.client._sendMax(1234.5)
+        self.client._sendMax(self.client._INT_MAX_VALUE)
+        self.client._sendMax(self.client._DOUBLE_MAX_VALUE)
+
+        self.assertEqual("123\x001234.5\x00\x00\x00",
+                         self.client._stream.getvalue())
+
+        self.assertRaises(ValueError, self.client._sendMax, "")
