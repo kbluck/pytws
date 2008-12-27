@@ -82,6 +82,24 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, EClientSocket.faMsgTypeName, 0)
             self.assertRaises(AssertionError, EClientSocket.faMsgTypeName, 4)
 
+    def test_eConnect(self):
+        # Method is stubbed for now.
+        self.assertFalse(self.client.isConnected())
+        self.client.eConnect()
+        self.assertTrue(self.client.isConnected())
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+
+    def test_eDisconnect(self):
+        # Method is stubbed for now.
+        self.assertFalse(self.client.isConnected())
+        self.client.eConnect()
+        self.assertTrue(self.client.isConnected())
+        self.client.eDisconnect()
+        self.assertFalse(self.client.isConnected())
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+
     def test_send(self):
         self.client._stream = StringIO() #Inject mock stream
 
@@ -116,3 +134,13 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 0)
         self.assertEqual(len(self.wrapper.errors), 1)
         self.assertEqual(self.wrapper.errors[0], (-1, Exception, ()))
+
+    def test_close(self):
+        self.client.eConnect()
+        self.assertTrue(self.client.isConnected())
+        self.client._close()
+        self.assertFalse(self.client.isConnected())
+
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(self.wrapper.calldata[0], ('connectionClosed', (), {}))
