@@ -8,6 +8,7 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import tws._EClientErrors as EClientErrors
+from tws import synchronized
 
 
 class EClientSocket(object):
@@ -59,6 +60,7 @@ class EClientSocket(object):
         self._wrapper.error(EClientErrors.CONNECT_FAIL)
         self.m_reader = None
 
+
     def createReader(self, connection, input_stream):
         assert issubclass(type(connection), type(self))
         assert hasattr(input_stream, "read")
@@ -85,6 +87,11 @@ class EClientSocket(object):
             self._send(data) if data != self._DOUBLE_MAX_VALUE else self._send(None)
         else:
             raise ValueError("Unknown data type for EClientSocket._sendMax(): %s", type(data))
+
+
+    @synchronized
+    def _error(self, e):
+        self._wrapper.error(e)
 
 
     @classmethod
@@ -163,3 +170,5 @@ class EClientSocket(object):
     # Private class imports
     from tws._Util import _INT_MAX_VALUE
     from tws._Util import _DOUBLE_MAX_VALUE
+
+del synchronized

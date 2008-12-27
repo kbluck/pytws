@@ -12,7 +12,7 @@ from test_tws import mock_wrapper, mock_socket
 # Local classes required to test EClientSocket
 class test_EClientSocket(unittest.TestCase):
     '''Test class "tws.EClientSocket"'''
-    
+
     def setUp(self):
         self.wrapper = mock_wrapper()
         self.client = EClientSocket(self.wrapper)
@@ -40,15 +40,15 @@ class test_EClientSocket(unittest.TestCase):
                          (EClientErrors.NO_VALID_ID, 
                           EClientErrors.ALREADY_CONNECTED.code(),
                           EClientErrors.ALREADY_CONNECTED.msg()))
-        
+
         self.client._connected = False
         self.assertEqual(self.client.checkConnected(None), "127.0.0.1")
         self.assertEqual(self.client.checkConnected("1.2.3.4"), "1.2.3.4")
         self.assertEqual(1, len(self.wrapper.errors))
-        
+
         if __debug__:
             self.assertRaises(AssertionError, self.client.checkConnected, 0)
-            
+
     def test_connectionError(self):
         self.assertEqual(0, len(self.wrapper.errors))
         self.client.connectionError()
@@ -98,7 +98,6 @@ class test_EClientSocket(unittest.TestCase):
 
         self.assertRaises(ValueError, self.client._send, object())
 
-
     def test_sendMax(self):
         self.client._stream = StringIO() #Inject mock stream
 
@@ -111,3 +110,9 @@ class test_EClientSocket(unittest.TestCase):
                          self.client._stream.getvalue())
 
         self.assertRaises(ValueError, self.client._sendMax, "")
+
+    def test_error(self):
+        self.client._error(Exception())
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 1)
+        self.assertEqual(self.wrapper.errors[0], (-1, Exception, ()))
