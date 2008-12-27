@@ -3,8 +3,10 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
+import unittest
 import socket
-from tws import EWrapper
+import threading
+import tws
 
 
 def test_import():
@@ -13,12 +15,12 @@ def test_import():
     assert tws
 
 
-class mock_wrapper(EWrapper):
+class mock_wrapper(tws.EWrapper):
 
     def __init__(self):
         self.calldata = []
         self.errors = []
-    
+
     def error(self, e):
         if hasattr(e, 'id'):
             self.errors.append((e.id(), e.code(), e.msg()))
@@ -48,4 +50,31 @@ class mock_socket(object):
         return StringIO()
 
 
+class test_synchronized(unittest.TestCase):
+    '''Test decorator "tws.synchronized"'''
 
+    def setUp(self):
+        self._mutex = threading.Lock() 
+        self._old_mutex = tws._mutex
+        tws._mutex = self._mutex
+
+    def tearDown(self):
+        tws._mutex = self._old_mutex
+
+    @tws.synchronized
+    def mock_function(self, *args, **kwds):
+        self.assertTrue(self._mutex.locked())
+        return (args, kwds)
+
+    @tws.synchronized
+    def throws(self):
+        self.assertTrue(self._mutex.locked())
+        raise Exception()
+
+    def test_decorator(self):
+        self.assertFalse(self._mutex.locked())
+        self.assertEqual(self.mock_function(1, "B", c="C"),
+                        ((1,"B"),{"c":"C"}))
+        self.assertFalse(self._mutex.locked())
+        self.assertRaises(Exception, self.throws)
+        self.assertFalse(self._mutex.locked())

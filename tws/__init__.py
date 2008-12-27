@@ -5,6 +5,24 @@ __version__   = "$Id$"
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Utility stuff to support package
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+def synchronized(f):
+    '''Thread mutex-locking decorator.'''
+    def _synchronized_call(*args, **kwds):
+        global _mutex
+        _mutex.acquire()
+        try:
+            return f(*args, **kwds)
+        finally:
+            _mutex.release()
+    return _synchronized_call
+
+_mutex = __import__("threading").RLock()
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Module imports. Backfill sys.modules for each
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -40,22 +58,3 @@ from tws._ScannerSubscription import ScannerSubscription
 from tws._TagValue import TagValue
 from tws._UnderComp import UnderComp
 from tws._EWrapper import EWrapper
-
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Utility stuff to support package
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-def synchronized():
-    '''Thread mutex-locking decorator.'''
-    def wrapper(callable):
-        def inner(*args, **kwds):
-            _mutex.acquire()
-            try:
-                return callable(*args, **kwds)
-            finally:
-                _mutex.release()
-        return inner
-    return wrapper
-
-_mutex = __import__("threading").RLock()
