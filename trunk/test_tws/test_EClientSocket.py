@@ -91,8 +91,9 @@ class test_EClientSocket(unittest.TestCase):
         self.client._send(123456789012345)
         self.client._send(True)
         self.client._send(False)
+        self.client._send(None)
 
-        self.assertEqual("ABC\x00123\x001234.5\x00123456789012345\x001\x000\x00",
+        self.assertEqual("ABC\x00123\x001234.5\x00123456789012345\x001\x000\x00\x00",
                          self.client._stream.getvalue())
 
         self.assertRaises(ValueError, self.client._send, object())

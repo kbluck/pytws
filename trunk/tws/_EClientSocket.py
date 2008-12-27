@@ -71,6 +71,8 @@ class EClientSocket(object):
             self._stream.write(str(data))
         elif type(data) == bool:
             self._stream.write("1" if data else "0")
+        elif data is None:
+            pass
         else:
             raise ValueError("Unknown data type for EClientSocket._send(): %s", type(data))
         self._stream.write(self.EOL)
@@ -78,9 +80,9 @@ class EClientSocket(object):
 
     def _sendMax(self, data):
         if type(data) == int:
-            self._send(data) if data != self._INT_MAX_VALUE else self._send("")
+            self._send(data) if data != self._INT_MAX_VALUE else self._send(None)
         elif type(data) == float:
-            self._send(data) if data != self._DOUBLE_MAX_VALUE else self._send("")
+            self._send(data) if data != self._DOUBLE_MAX_VALUE else self._send(None)
         else:
             raise ValueError("Unknown data type for EClientSocket._sendMax(): %s", type(data))
 
