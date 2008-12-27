@@ -72,8 +72,31 @@ class EClientSocket(object):
         elif type(data) == bool:
             self._stream.write("1" if data else "0")
         else:
-            raise ValueError("Unknown data type for EClientSocket.send(): %s", type(data))
+            raise ValueError("Unknown data type for EClientSocket._send(): %s", type(data))
         self._stream.write(self.EOL)
+
+
+    def _sendMax(self, data):
+        if type(data) == int:
+            self._send(data) if data != self._INT_MAX_VALUE else self._send("")
+        elif type(data) == float:
+            self._send(data) if data != self._DOUBLE_MAX_VALUE else self._send("")
+        else:
+            raise ValueError("Unknown data type for EClientSocket._sendMax(): %s", type(data))
+
+
+    @classmethod
+    def faMsgTypeName(cls, faDataType):
+        if faDataType == cls.GROUPS:
+            return "GROUPS"
+        elif faDataType == cls.PROFILES:
+            return "PROFILES"
+        elif faDataType == cls.ALIASES:
+            return "ALIASES"
+
+        # Should never get here.
+        assert False
+        return ""
 
 
     # General constants
@@ -134,15 +157,7 @@ class EClientSocket(object):
     PROFILES = 2
     ALIASES = 3
 
-    @classmethod
-    def faMsgTypeName(cls, faDataType):
-        if faDataType == cls.GROUPS:
-            return "GROUPS"
-        elif faDataType == cls.PROFILES:
-            return "PROFILES"
-        elif faDataType == cls.ALIASES:
-            return "ALIASES"
 
-        # Should never get here.
-        assert False
-        return ""
+    # Private class imports
+    from tws._Util import _INT_MAX_VALUE
+    from tws._Util import _DOUBLE_MAX_VALUE
