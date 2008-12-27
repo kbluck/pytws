@@ -68,6 +68,24 @@ class EClientSocket(object):
         return __import__("tws").EReader(connection, input_stream)
 
 
+    @synchronized
+    def eConnect(self):
+        # Trivial stub for now.
+        self._connected = True
+
+
+    @synchronized
+    def eDisconnect(self):
+        # Trivial stub for now.
+        self._connected = False
+
+
+    @synchronized
+    def _close(self):
+        self.eDisconnect()
+        self.wrapper().connectionClosed()
+
+
     def _send(self, data):
         if type(data) in (str, int, long, float):
             self._stream.write(str(data))
