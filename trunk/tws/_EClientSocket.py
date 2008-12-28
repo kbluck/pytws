@@ -7,7 +7,8 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-from tws import _EClientErrors, synchronized
+import tws._EClientErrors as _EClientErrors
+from tws import synchronized
 
 
 class EClientSocket(object):
