@@ -25,7 +25,6 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, EClientSocket, 0)
             self.assertRaises(AssertionError, EClientSocket, self.wrapper, 0)
 
-
     def test_api_versions(self):
         # Want to make sure to notice version changes.
         self.assertEqual(EClientSocket.CLIENT_VERSION, 42)
@@ -70,8 +69,8 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.client.wrapper(), self.wrapper)
         self.assertEqual(self.client.reader(), None)
         self.assertEqual(self.client.isConnected(), False)
-        self.assertEqual(self.client.serverVersion(), "")
-        self.assertEqual(self.client.TwsConnectionTime(), "")
+        self.assertEqual(self.client.serverVersion(), 0)
+        self.assertEqual(self.client.TwsConnectionTime(), 0)
 
     def test_MsgTypeName(self):
         self.assertEqual(EClientSocket.faMsgTypeName(EClientSocket.GROUPS), "GROUPS")
