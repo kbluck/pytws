@@ -7,7 +7,7 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-import tws._EClientErrors as _EClientErrors
+import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
