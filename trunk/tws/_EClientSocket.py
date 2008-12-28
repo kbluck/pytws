@@ -7,8 +7,7 @@
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-import tws._EClientErrors as EClientErrors
-from tws import synchronized
+from tws import _EClientErrors, synchronized
 
 
 class EClientSocket(object):
@@ -51,13 +50,13 @@ class EClientSocket(object):
         assert issubclass(type(host), str) or (host == None)  
 
         if self._connected:
-            self._wrapper.error(EClientErrors.ALREADY_CONNECTED)
+            self._wrapper.error(_EClientErrors.ALREADY_CONNECTED)
             return None
         return host if host else "127.0.0.1"
 
 
     def connectionError(self):
-        self._wrapper.error(EClientErrors.CONNECT_FAIL)
+        self._wrapper.error(_EClientErrors.CONNECT_FAIL)
         self.m_reader = None
 
 
