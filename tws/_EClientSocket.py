@@ -22,8 +22,8 @@ class EClientSocket(object):
         self._wrapper = wrapper
         self._reader = None
         self._connected = False
-        self._serverVersion = ""
-        self._twsTime = ""
+        self._server_version = 0
+        self._tws_time = 0
         self._socket_factory = socket_factory
 
 
@@ -40,11 +40,11 @@ class EClientSocket(object):
 
 
     def serverVersion(self):
-        return self._serverVersion
+        return self._server_version
 
 
     def TwsConnectionTime(self):
-        return self._twsTime
+        return self._tws_time
 
 
     def checkConnected(self, host):

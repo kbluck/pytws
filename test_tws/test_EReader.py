@@ -278,7 +278,7 @@ class test_EReader(unittest.TestCase):
         contract.m_conId = 8
         self.assertEqual(self.wrapper.calldata[4], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
 
-        self.connection._serverVersion = 39
+        self.connection._server_version = 39
         self.reader._readUpdatePortfolio()
         contract.m_primaryExch = "ST"
         self.assertEqual(self.wrapper.calldata[5], ("updatePortfolio", (contract,2,3.5,4.5,5.5,6.5,7.5,'MN'), {}))
@@ -336,11 +336,11 @@ class test_EReader(unittest.TestCase):
 
         self.stream.seek(0)
 
-        self.connection._serverVersion = -1 # Arbitrary fake value.
+        self.connection._server_version = -1 # Arbitrary fake value.
         for i in xrange(11): self.reader._readOpenOrder()
-        self.connection._serverVersion = 26 # Server version matters on the 12th test call.
+        self.connection._server_version = 26 # Server version matters on the 12th test call.
         self.reader._readOpenOrder()
-        self.connection._serverVersion = -1 # Back to fake server version
+        self.connection._server_version = -1 # Back to fake server version
         for i in xrange(13): self.reader._readOpenOrder()
 
         self.assertEqual(len(self.wrapper.calldata), 25)
