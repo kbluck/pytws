@@ -11,6 +11,45 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
+def _requestmethod(generic_error=_EClientErrors.TwsError(), min_server=0, has_ticker=False):
+    '''Socket request-method decorator.
+
+       Eliminates repetitive error-checking boilerplate from request methods.   
+    '''
+    assert isinstance(generic_error, _EClientErrors.TwsError)
+    assert type(min_server) == int
+    assert type(has_ticker) == bool
+
+    def _decorator(method):
+        assert  (__import__("inspect").getargspec(method)[0][0] == "self")
+        assert  (not has_ticker) or (__import__("inspect").getargspec(method)[0][1] == "ticker_id")
+
+        def _decorated(self, *args, **kwds):
+            assert type(self) == EClientSocket
+
+            try:
+                # Socket client must be connected.
+                if not self._connected:
+                    self._error(_EClientErrors.NOT_CONNECTED)
+                    return
+                # Enforce minimum server version, if any.
+                if self._server_version < min_server:
+                    self._error(_EClientErrors.UPDATE_TWS)
+                    return
+                # Call wrapped method
+                return method(self, *args, **kwds)
+            # On exception, report generic error instance to EWrapper._error()
+            except:
+                self._error(generic_error.__class__(
+                                id=kwds.get("ticker_id", args[0] if args else None) 
+                                    if has_ticker else _EClientErrors.NO_VALID_ID,
+                                code=generic_error.code(),
+                                msg=generic_error.msg()))
+
+        return _decorated
+    return _decorator
+
+
 class EClientSocket(object):
     '''Socket client which connects to the TWS socket server.
     '''
@@ -188,5 +227,6 @@ class EClientSocket(object):
     # Private class imports
     from tws._Util import _INT_MAX_VALUE
     from tws._Util import _DOUBLE_MAX_VALUE
+
 
 del synchronized
