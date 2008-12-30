@@ -11,14 +11,17 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
-def _requestmethod(generic_error=_EClientErrors.TwsError(), min_server=0, has_ticker=False):
+def _requestmethod(min_server=0, has_ticker=False,
+                   generic_error=_EClientErrors.TwsError(),
+                   error_suffix=""):
     '''Socket request-method decorator.
 
        Eliminates repetitive error-checking boilerplate from request methods.   
     '''
-    assert isinstance(generic_error, _EClientErrors.TwsError)
     assert type(min_server) == int
     assert type(has_ticker) == bool
+    assert isinstance(generic_error, _EClientErrors.TwsError)
+    assert type(error_suffix) == str
 
     def _decorator(method):
         assert  (__import__("inspect").getargspec(method)[0][0] == "self")
@@ -44,7 +47,8 @@ def _requestmethod(generic_error=_EClientErrors.TwsError(), min_server=0, has_ti
                                 id=kwds.get("ticker_id", args[0] if args else None) 
                                     if has_ticker else _EClientErrors.NO_VALID_ID,
                                 code=generic_error.code(),
-                                msg=generic_error.msg()))
+                                msg="%s: %s" % (generic_error.msg(),
+                                                error_suffix or method.__name__)))
 
         return _decorated
     return _decorator
