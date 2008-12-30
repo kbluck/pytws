@@ -70,59 +70,6 @@ class EClientSocket(object):
         self._socket_factory = socket_factory
 
 
-    def wrapper(self):
-        return self._wrapper
-
-
-    def reader(self):
-        return self._reader
-
-
-    def isConnected(self):
-        return self._connected
-
-
-    def serverVersion(self):
-        return self._server_version
-
-
-    def TwsConnectionTime(self):
-        return self._tws_time
-
-
-    def checkConnected(self, host):
-        assert issubclass(type(host), str) or (host == None)  
-
-        if self._connected:
-            self._wrapper.error(_EClientErrors.ALREADY_CONNECTED)
-            return None
-        return host if host else "127.0.0.1"
-
-
-    def connectionError(self):
-        self._wrapper.error(_EClientErrors.CONNECT_FAIL)
-        self.m_reader = None
-
-
-    def createReader(self, connection, input_stream):
-        assert issubclass(type(connection), type(self))
-        assert hasattr(input_stream, "read")
-
-        return __import__("tws").EReader(connection, input_stream)
-
-
-    @synchronized
-    def eConnect(self):
-        # Trivial stub for now.
-        self._connected = True
-
-
-    @synchronized
-    def eDisconnect(self):
-        # Trivial stub for now.
-        self._connected = False
-
-
     @synchronized
     def _close(self):
         self.eDisconnect()
@@ -231,6 +178,59 @@ class EClientSocket(object):
     # Private class imports
     from tws._Util import _INT_MAX_VALUE
     from tws._Util import _DOUBLE_MAX_VALUE
+
+
+    def wrapper(self):
+        return self._wrapper
+
+
+    def reader(self):
+        return self._reader
+
+
+    def isConnected(self):
+        return self._connected
+
+
+    def serverVersion(self):
+        return self._server_version
+
+
+    def TwsConnectionTime(self):
+        return self._tws_time
+
+
+    def checkConnected(self, host):
+        assert issubclass(type(host), str) or (host == None)  
+
+        if self._connected:
+            self._wrapper.error(_EClientErrors.ALREADY_CONNECTED)
+            return None
+        return host if host else "127.0.0.1"
+
+
+    def connectionError(self):
+        self._wrapper.error(_EClientErrors.CONNECT_FAIL)
+        self.m_reader = None
+
+
+    def createReader(self, connection, input_stream):
+        assert issubclass(type(connection), type(self))
+        assert hasattr(input_stream, "read")
+
+        return __import__("tws").EReader(connection, input_stream)
+
+
+    @synchronized
+    def eConnect(self):
+        # Trivial stub for now.
+        self._connected = True
+
+
+    @synchronized
+    def eDisconnect(self):
+        # Trivial stub for now.
+        self._connected = False
 
 
 del synchronized
