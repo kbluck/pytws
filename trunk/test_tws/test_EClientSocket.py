@@ -143,3 +143,53 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(self.wrapper.calldata[0], ('connectionClosed', (), {}))
+
+    def test_requestmethod_decorator(self):
+        from tws._EClientSocket import _requestmethod
+
+        @_requestmethod(min_server=24)        
+        def test_call(self):
+            self._wrapper.test_call()
+        
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID)        
+        def test_raise_no_ticker(self):
+            raise Exception()
+
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_ticker=True)        
+        def test_raise_with_ticker(self, ticker_id):
+            raise Exception()
+
+        # Check connection required        
+        test_call(self.client)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 1)
+        self.assertEqual(self.wrapper.errors[0][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
+        self.client.eConnect()
+        
+        # Check exception raised for no ticker method
+        test_raise_no_ticker(self.client)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual(self.wrapper.errors[1][:2], (-1, 505))
+
+        # Check exception raised for ticker method, both positional and keyword
+        test_raise_with_ticker(self.client, 123)
+        test_raise_with_ticker(self.client, ticker_id=321)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual(self.wrapper.errors[2][:2], (123, 505))
+        self.assertEqual(self.wrapper.errors[3][:2], (321, 505))
+
+        # Check min_server
+        self.assertTrue(self.client.serverVersion() < 24)
+        test_call(self.client)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 5)
+        self.assertEqual(self.wrapper.errors[4][:2], (EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS.code()))
+        self.client._server_version = 24
+        
+        # Check successful call
+        test_call(self.client)
+        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.errors), 5)
+        self.assertEqual(self.wrapper.calldata[0][0], "test_call")
