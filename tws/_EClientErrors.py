@@ -14,27 +14,34 @@ NO_VALID_ID = -1   # Constant
 class TwsError(StandardError):
     '''Wraps a Tws error code identifier and error text as a Python exception.'''
 
-    def __init__(self, id=NO_VALID_ID, code=None, msg=None):
+    def __init__(self, id=NO_VALID_ID, code=None, msg=None, source=None):
         assert type(id) == int
         assert (type(code) == int) or code is None
         assert (type(msg) == str) or msg is None
+        assert (type(source) == TwsError) or source is None
+
+        StandardError.__init__(self, (id, code, msg, source))
 
         self._id = id
-        self._code = code
-        self._msg = msg
-        StandardError.__init__(self, (id, code, msg))
-        self.message = "%s: %s (Id: %s)" % (self._code, self._msg, self._id)
+        self._code = source.code() if source else code
+        self._msg = ((("%s: %s" % (source.msg(), msg)) if msg else source.msg()) 
+                        if source else msg)
+
+        self.message = "%s: %s (Ticker ID: %s)" % (self._code, self._msg, self._id)
+
 
     def id(self):
         return self._id
 
+
     def code(self):
         return self._code
+
 
     def msg(self):
         return self._msg
 
-    
+
 # Alias exception type with name defined in Java sources
 CodeMsgPair = TwsError
 

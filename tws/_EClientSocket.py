@@ -43,12 +43,11 @@ def _requestmethod(min_server=0, has_ticker=False,
                 return method(self, *args, **kwds)
             # On exception, report generic error instance to EWrapper._error()
             except:
-                self._error(generic_error.__class__(
+                self._error(_EClientErrors.TwsError(
+                                source=generic_error,
                                 id=kwds.get("ticker_id", args[0] if args else None) 
                                     if has_ticker else _EClientErrors.NO_VALID_ID,
-                                code=generic_error.code(),
-                                msg="%s: %s" % (generic_error.msg(),
-                                                error_suffix or method.__name__)))
+                                msg=error_suffix or method.__name__))
 
         return _decorated
     return _decorator
