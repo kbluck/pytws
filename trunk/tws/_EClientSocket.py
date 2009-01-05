@@ -251,6 +251,7 @@ class EClientSocket(object):
         self._send(VERSION)
 
 
+# Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
 del synchronized
