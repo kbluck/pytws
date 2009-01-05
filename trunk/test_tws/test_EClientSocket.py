@@ -231,6 +231,9 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.CANCEL_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
 
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelScannerSubscription, 3.5)
+
     def test_reqScannerParameters(self):
         self._check_connection_required(self.client.cancelScannerSubscription)
         self._check_min_server(24, self.client.cancelScannerSubscription)
@@ -308,3 +311,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x003\x007\x001\x00A1\x00B2\x00C3\x001.5\x002.5\x003\x005.5\x006.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x007.5\x008.5\x00J1\x004\x00K2\x00L3\x00" %
                          self.client.REQ_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3.5, subscription)
+            self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3, None)
