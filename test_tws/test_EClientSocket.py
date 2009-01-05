@@ -147,7 +147,7 @@ class test_EClientSocket(unittest.TestCase):
 
         calldata_count = len(self.wrapper.calldata)
         error_count = len(self.wrapper.errors)
-        method(self.client)
+        method(*args, **kwds)
 
         self.assertEqual(len(self.wrapper.calldata), calldata_count)
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
