@@ -238,7 +238,9 @@ class EClientSocket(object):
     @requestmethod(min_server=24, has_ticker=True,
                    generic_error=_EClientErrors.FAIL_SEND_CANSCANNER)
     def cancelScannerSubscription(self, ticker_id):
+        assert type(ticker_id) is int
         VERSION = 1
+
         self._send(self.CANCEL_SCANNER_SUBSCRIPTION)
         self._send(VERSION)
         self._send(ticker_id)
@@ -249,6 +251,7 @@ class EClientSocket(object):
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS)
     def reqScannerParameters(self):
         VERSION = 1
+
         self._send(self.REQ_SCANNER_PARAMETERS)
         self._send(VERSION)
 
@@ -257,7 +260,10 @@ class EClientSocket(object):
     @requestmethod(min_server=24, has_ticker=True,
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNER)
     def reqScannerSubscription(self, ticker_id, subscription):
+        assert type(ticker_id) == int
+        assert type(subscription) == __import__("tws").ScannerSubscription
         VERSION = 3
+
         self._send(self.REQ_SCANNER_SUBSCRIPTION)
         self._send(VERSION)
         self._send(ticker_id)
