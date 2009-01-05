@@ -11,9 +11,9 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
-def _requestmethod(min_server=0, has_ticker=False,
-                   generic_error=_EClientErrors.TwsError(),
-                   error_suffix=""):
+def requestmethod(min_server=0, has_ticker=False,
+                  generic_error=_EClientErrors.TwsError(),
+                  error_suffix=""):
     '''Socket request-method decorator.
 
        Eliminates repetitive error-checking boilerplate from request methods.   
@@ -232,4 +232,6 @@ class EClientSocket(object):
         self._connected = False
 
 
+_requestmethod = requestmethod
+del requestmethod
 del synchronized
