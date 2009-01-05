@@ -40,8 +40,10 @@ def requestmethod(has_ticker=False, min_server=0,
                 # Enforce minimum server version, if any.
                 if self._server_version < min_server:
                     self._error(_EClientErrors.TwsError(
+                                id=kwds.get("ticker_id", args[0] if args else _EClientErrors.NO_VALID_ID) 
+                                    if has_ticker else _EClientErrors.NO_VALID_ID,
                                 source=_EClientErrors.UPDATE_TWS,
-                                msg=min_server_error_suffix))
+                                msg=min_server_error_suffix or None))
                     return
                 # Call wrapped method
                 return method(self, *args, **kwds)
@@ -51,7 +53,7 @@ def requestmethod(has_ticker=False, min_server=0,
             except:
                 self._error(_EClientErrors.TwsError(
                                 source=generic_error,
-                                id=kwds.get("ticker_id", args[0] if args else None) 
+                                id=kwds.get("ticker_id", args[0] if args else _EClientErrors.NO_VALID_ID) 
                                     if has_ticker else _EClientErrors.NO_VALID_ID,
                                 msg=generic_error_suffix or method.__name__))
 
