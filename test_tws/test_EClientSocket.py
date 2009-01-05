@@ -16,6 +16,8 @@ class test_EClientSocket(unittest.TestCase):
     def setUp(self):
         self.wrapper = mock_wrapper()
         self.client = EClientSocket(self.wrapper)
+        self.stream = StringIO()
+        self.client._stream = self.stream
 
     def test_init(self):
         self.assertTrue(EClientSocket(mock_wrapper()))
@@ -100,8 +102,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 0)
 
     def test_send(self):
-        self.client._stream = StringIO() #Inject mock stream
-
         self.client._send("ABC")
         self.client._send(123)
         self.client._send(1234.5)
@@ -111,20 +111,18 @@ class test_EClientSocket(unittest.TestCase):
         self.client._send(None)
 
         self.assertEqual("ABC\x00123\x001234.5\x00123456789012345\x001\x000\x00\x00",
-                         self.client._stream.getvalue())
+                         self.stream.getvalue())
 
         self.assertRaises(ValueError, self.client._send, object())
 
     def test_sendMax(self):
-        self.client._stream = StringIO() #Inject mock stream
-
         self.client._sendMax(123)
         self.client._sendMax(1234.5)
         self.client._sendMax(self.client._INT_MAX_VALUE)
         self.client._sendMax(self.client._DOUBLE_MAX_VALUE)
 
         self.assertEqual("123\x001234.5\x00\x00\x00",
-                         self.client._stream.getvalue())
+                         self.stream.getvalue())
 
         self.assertRaises(ValueError, self.client._sendMax, "")
 
