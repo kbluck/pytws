@@ -251,6 +251,39 @@ class EClientSocket(object):
         self._send(VERSION)
 
 
+    @synchronized
+    @requestmethod(min_server=24, has_ticker=True,
+                   generic_error=_EClientErrors.FAIL_SEND_REQSCANNER)
+    def reqScannerSubscription(self, ticker_id, subscription):
+        VERSION = 3
+        self._send(self.REQ_SCANNER_SUBSCRIPTION)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._sendMax(subscription.numberOfRows())
+        self._send(subscription.instrument())
+        self._send(subscription.locationCode())
+        self._send(subscription.scanCode())
+        self._sendMax(subscription.abovePrice())
+        self._sendMax(subscription.belowPrice())
+        self._sendMax(subscription.aboveVolume())
+        self._sendMax(subscription.marketCapAbove())
+        self._sendMax(subscription.marketCapBelow())
+        self._send(subscription.moodyRatingAbove())
+        self._send(subscription.moodyRatingBelow())
+        self._send(subscription.spRatingAbove())
+        self._send(subscription.spRatingBelow())
+        self._send(subscription.maturityDateAbove())
+        self._send(subscription.maturityDateBelow())
+        self._sendMax(subscription.couponRateAbove())
+        self._sendMax(subscription.couponRateBelow())
+        self._send(subscription.excludeConvertible())
+        if self._server_version >= 25:
+            self._send(subscription.averageOptionVolumeAbove())
+            self._send(subscription.scannerSettingPairs())
+        if self._server_version >= 27:
+            self._send(subscription.stockTypeFilter())
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

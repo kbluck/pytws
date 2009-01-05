@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 from StringIO import StringIO
-from tws import EClientSocket, EClientErrors, EReader
+from tws import EClientSocket, EClientErrors, EReader, ScannerSubscription
 from test_tws import mock_wrapper, mock_socket
 
 
@@ -237,4 +237,69 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 3)
         self.assertEqual("%s\x001\x00" %
                          self.client.REQ_SCANNER_PARAMETERS,
+                         self.stream.getvalue())
+
+
+    def test_reqScannerSubscription(self):
+        subscription = ScannerSubscription()
+        
+        self._check_connection_required(self.client.reqScannerSubscription, 1, subscription)
+        self._check_min_server(24, self.client.reqScannerSubscription, 2, subscription)
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQSCANNER, 3,
+                                 self.client.reqScannerSubscription,
+                                 3, subscription)
+
+        self.assertEqual(self.client.serverVersion(), 24)
+        self.client.reqScannerSubscription(4, subscription)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x004\x00-1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" %
+                         self.client.REQ_SCANNER_SUBSCRIPTION,
+                         self.stream.getvalue())
+        
+        subscription.numberOfRows(1)
+        subscription.instrument("A1")
+        subscription.locationCode("B2")
+        subscription.scanCode("C3")
+        subscription.abovePrice(1.5)
+        subscription.belowPrice(2.5)
+        subscription.aboveVolume(3)
+        subscription.averageOptionVolumeAbove(4)
+        subscription.marketCapAbove(5.5)
+        subscription.marketCapBelow(6.5)
+        subscription.moodyRatingAbove("D4")
+        subscription.moodyRatingBelow("E5")
+        subscription.spRatingAbove("F6")
+        subscription.spRatingBelow("G7")
+        subscription.maturityDateAbove("H8")
+        subscription.maturityDateBelow("I9")
+        subscription.couponRateAbove(7.5)
+        subscription.couponRateBelow(8.5)
+        subscription.excludeConvertible("J1")
+        subscription.scannerSettingPairs("K2")
+        subscription.stockTypeFilter("L3")
+
+        self.assertEqual(self.client.serverVersion(), 24)
+        self.stream.truncate(0)
+        self.client.reqScannerSubscription(5, subscription)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x005\x001\x00A1\x00B2\x00C3\x001.5\x002.5\x003\x005.5\x006.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x007.5\x008.5\x00J1\x00" %
+                         self.client.REQ_SCANNER_SUBSCRIPTION,
+                         self.stream.getvalue())
+
+        self.client._server_version = 25
+        self.assertEqual(self.client.serverVersion(), 25)
+        self.stream.truncate(0)
+        self.client.reqScannerSubscription(6, subscription)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x006\x001\x00A1\x00B2\x00C3\x001.5\x002.5\x003\x005.5\x006.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x007.5\x008.5\x00J1\x004\x00K2\x00" %
+                         self.client.REQ_SCANNER_SUBSCRIPTION,
+                         self.stream.getvalue())
+
+        self.client._server_version = 27
+        self.assertEqual(self.client.serverVersion(), 27)
+        self.stream.truncate(0)
+        self.client.reqScannerSubscription(7, subscription)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x007\x001\x00A1\x00B2\x00C3\x001.5\x002.5\x003\x005.5\x006.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x007.5\x008.5\x00J1\x004\x00K2\x00L3\x00" %
+                         self.client.REQ_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
