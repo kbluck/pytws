@@ -217,3 +217,8 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x002\x00" %
                          self.client.CANCEL_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
+
+        self.client._send = None    # Forces exception
+        self.client.cancelScannerSubscription(3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual(self.wrapper.errors[-1][:2], (3, 525))
