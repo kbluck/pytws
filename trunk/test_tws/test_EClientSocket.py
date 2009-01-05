@@ -190,6 +190,7 @@ class test_EClientSocket(unittest.TestCase):
 
         @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_ticker=True)        
         def test_raise_with_ticker(self, ticker_id):
+            assert type(ticker_id) == int
             raise Exception()
 
         self._check_connection_required(test_call, self.client)
@@ -207,6 +208,10 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[3][:2], (123, 505))
         self.assertEqual(self.wrapper.errors[4][:2], (321, 505))
         self.assertEqual(self.wrapper.errors[3][2], "Fatal Error: Unknown message id.: test_raise_with_ticker")
+
+        # Check assertion is not caught by wrapper
+        if __debug__:
+            self.assertRaises(AssertionError, test_raise_with_ticker, self.client, None)
 
         # Check successful call
         test_call(self.client)

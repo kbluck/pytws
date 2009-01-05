@@ -41,7 +41,9 @@ def requestmethod(min_server=0, has_ticker=False,
                     return
                 # Call wrapped method
                 return method(self, *args, **kwds)
-            # On exception, report generic error instance to EWrapper._error()
+            # Reraise assertion errors.
+            except AssertionError: raise
+            # Any other exception report generic error instance to EWrapper._error()
             except:
                 self._error(_EClientErrors.TwsError(
                                 source=generic_error,
