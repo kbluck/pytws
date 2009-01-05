@@ -154,7 +154,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
         self.client.eConnect()
 
-
     def _check_min_server(self, version, method, *args, **kwds):
         self.assertTrue(self.client.serverVersion() < version)
 
@@ -167,6 +166,16 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS.code()))
 
         self.client._server_version = version
+
+    def _check_error_raised(self, error, ticker_id, method, *args, **kwds):
+        error_count = len(self.wrapper.errors)
+        old_send = self.client._send
+        self.client._send = None    # Forces exception
+        method(*args, **kwds)
+        self.client._send = old_send
+
+        self.assertEqual(len(self.wrapper.errors), error_count + 1)
+        self.assertEqual(self.wrapper.errors[-1][:2], (ticker_id, error.code()))
 
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
@@ -187,10 +196,7 @@ class test_EClientSocket(unittest.TestCase):
         self._check_min_server(2000, test_call, self.client)
 
         # Check exception raised for no ticker method
-        test_raise_no_ticker(self.client)
-        self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 3)
-        self.assertEqual(self.wrapper.errors[-1][:2], (-1, 505))
+        self._check_error_raised(EClientErrors.UNKNOWN_ID, -1, test_raise_no_ticker, self.client)
         self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id.: Test123")
 
         # Check exception raised for ticker method, both positional and keyword
@@ -211,32 +217,24 @@ class test_EClientSocket(unittest.TestCase):
     def test_cancelScannerSubscription(self):
         self._check_connection_required(self.client.cancelScannerSubscription, 0)
         self._check_min_server(24, self.client.cancelScannerSubscription, 1)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANSCANNER, 2,
+                                 self.client.cancelScannerSubscription, 2)
 
-        self.client.cancelScannerSubscription(2)
-        self.assertEqual(len(self.wrapper.errors), 2)
-        self.assertEqual("%s\x001\x002\x00" %
-                         self.client.CANCEL_SCANNER_SUBSCRIPTION,
-                         self.stream.getvalue())
-
-        self.client._send = None    # Forces exception
         self.client.cancelScannerSubscription(3)
         self.assertEqual(len(self.wrapper.errors), 3)
-        self.assertEqual(self.wrapper.errors[-1][:2],
-                         (3, EClientErrors.FAIL_SEND_CANSCANNER.code()))
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_SCANNER_SUBSCRIPTION,
+                         self.stream.getvalue())
 
     def test_reqScannerParameters(self):
         self._check_connection_required(self.client.cancelScannerSubscription)
         self._check_min_server(24, self.client.cancelScannerSubscription)
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS,
+                                 EClientErrors.NO_VALID_ID,
+                                 self.client.reqScannerParameters)
 
         self.client.reqScannerParameters()
-        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual(len(self.wrapper.errors), 3)
         self.assertEqual("%s\x001\x00" %
                          self.client.REQ_SCANNER_PARAMETERS,
                          self.stream.getvalue())
-
-        self.client._send = None    # Forces exception
-        self.client.reqScannerParameters(3)
-        self.assertEqual(len(self.wrapper.errors), 3)
-        self.assertEqual(self.wrapper.errors[-1][:2],
-                         (EClientErrors.NO_VALID_ID,
-                          EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS.code()))
