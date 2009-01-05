@@ -224,6 +224,7 @@ class test_EClientSocket(unittest.TestCase):
     def test_cancelScannerSubscription(self):
         self._check_connection_required(self.client.cancelScannerSubscription, 0)
         self._check_min_server(24, self.client.cancelScannerSubscription, 1)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support API scanner subscription.")
         self._check_error_raised(EClientErrors.FAIL_SEND_CANSCANNER, 2,
                                  self.client.cancelScannerSubscription, 2)
 
@@ -239,6 +240,7 @@ class test_EClientSocket(unittest.TestCase):
     def test_reqScannerParameters(self):
         self._check_connection_required(self.client.cancelScannerSubscription)
         self._check_min_server(24, self.client.cancelScannerSubscription)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support API scanner subscription.")
         self._check_error_raised(EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS,
                                  EClientErrors.NO_VALID_ID,
                                  self.client.reqScannerParameters)
@@ -255,6 +257,7 @@ class test_EClientSocket(unittest.TestCase):
         
         self._check_connection_required(self.client.reqScannerSubscription, 1, subscription)
         self._check_min_server(24, self.client.reqScannerSubscription, 2, subscription)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support API scanner subscription.")
         self._check_error_raised(EClientErrors.FAIL_SEND_REQSCANNER, 3,
                                  self.client.reqScannerSubscription,
                                  3, subscription)
