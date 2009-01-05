@@ -11,17 +11,19 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
-def requestmethod(min_server=0, has_ticker=False,
+def requestmethod(has_ticker=False, min_server=0, 
+                  min_server_error_suffix="",
                   generic_error=_EClientErrors.TwsError(),
-                  error_suffix=""):
+                  generic_error_suffix=""):
     '''Socket request-method decorator.
 
        Eliminates repetitive error-checking boilerplate from request methods.   
     '''
-    assert type(min_server) == int
     assert type(has_ticker) == bool
+    assert type(min_server) == int
+    assert type(min_server_error_suffix) == str
     assert isinstance(generic_error, _EClientErrors.TwsError)
-    assert type(error_suffix) == str
+    assert type(generic_error_suffix) == str
 
     def _decorator(method):
         assert  (__import__("inspect").getargspec(method)[0][0] == "self")
@@ -37,7 +39,9 @@ def requestmethod(min_server=0, has_ticker=False,
                     return
                 # Enforce minimum server version, if any.
                 if self._server_version < min_server:
-                    self._error(_EClientErrors.UPDATE_TWS)
+                    self._error(_EClientErrors.TwsError(
+                                source=_EClientErrors.UPDATE_TWS,
+                                msg=min_server_error_suffix))
                     return
                 # Call wrapped method
                 return method(self, *args, **kwds)
@@ -49,7 +53,7 @@ def requestmethod(min_server=0, has_ticker=False,
                                 source=generic_error,
                                 id=kwds.get("ticker_id", args[0] if args else None) 
                                     if has_ticker else _EClientErrors.NO_VALID_ID,
-                                msg=error_suffix or method.__name__))
+                                msg=generic_error_suffix or method.__name__))
 
         return _decorated
     return _decorator
@@ -235,7 +239,8 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(min_server=24, has_ticker=True,
+    @requestmethod(has_ticker=True, min_server=24,
+                   min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_CANSCANNER)
     def cancelScannerSubscription(self, ticker_id):
         assert type(ticker_id) is int
@@ -248,6 +253,7 @@ class EClientSocket(object):
 
     @synchronized
     @requestmethod(min_server=24,
+                   min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS)
     def reqScannerParameters(self):
         VERSION = 1
@@ -257,7 +263,8 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(min_server=24, has_ticker=True,
+    @requestmethod(has_ticker=True, min_server=24,
+                   min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNER)
     def reqScannerSubscription(self, ticker_id, subscription):
         assert type(ticker_id) == int

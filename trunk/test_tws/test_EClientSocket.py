@@ -180,11 +180,11 @@ class test_EClientSocket(unittest.TestCase):
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
 
-        @_requestmethod(min_server=2000)        
+        @_requestmethod(min_server=2000, min_server_error_suffix="Test2000")        
         def test_call(self):
             self._wrapper.test_call()
         
-        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, error_suffix="Test123")        
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, generic_error_suffix="Test123")        
         def test_raise_no_ticker(self):
             raise Exception()
 
@@ -194,11 +194,13 @@ class test_EClientSocket(unittest.TestCase):
             raise Exception()
 
         self._check_connection_required(test_call, self.client)
+
         self._check_min_server(2000, test_call, self.client)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. Test2000")
 
         # Check exception raised for no ticker method
         self._check_error_raised(EClientErrors.UNKNOWN_ID, -1, test_raise_no_ticker, self.client)
-        self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id.: Test123")
+        self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id. Test123")
 
         # Check exception raised for ticker method, both positional and keyword
         test_raise_with_ticker(self.client, 123)
@@ -207,7 +209,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 5)
         self.assertEqual(self.wrapper.errors[3][:2], (123, 505))
         self.assertEqual(self.wrapper.errors[4][:2], (321, 505))
-        self.assertEqual(self.wrapper.errors[3][2], "Fatal Error: Unknown message id.: test_raise_with_ticker")
+        self.assertEqual(self.wrapper.errors[3][2], "Fatal Error: Unknown message id. test_raise_with_ticker")
 
         # Check assertion is not caught by wrapper
         if __debug__:
