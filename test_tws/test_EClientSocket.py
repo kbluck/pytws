@@ -156,6 +156,7 @@ class test_EClientSocket(unittest.TestCase):
         self.client.eConnect()
 
     def _check_min_server(self, version, ticker_id, method, *args, **kwds):
+        self.client._server_version = (version - 1)
         self.assertTrue(self.client.serverVersion() < version)
 
         calldata_count = len(self.wrapper.calldata)
