@@ -207,3 +207,13 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(len(self.wrapper.errors), 5)
         self.assertEqual(self.wrapper.calldata[0][0], "test_call")
+
+    def test_cancelScannerSubscription(self):
+        self._check_connection_required(self.client.cancelScannerSubscription, 0)
+        self._check_min_server(24, self.client.cancelScannerSubscription, 1)
+
+        self.client.cancelScannerSubscription(2)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x002\x00" %
+                         self.client.CANCEL_SCANNER_SUBSCRIPTION,
+                         self.stream.getvalue())

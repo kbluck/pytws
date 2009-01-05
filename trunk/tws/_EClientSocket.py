@@ -232,6 +232,17 @@ class EClientSocket(object):
         self._connected = False
 
 
+    @synchronized
+    @requestmethod(min_server=24, has_ticker=True,
+                   generic_error=_EClientErrors.FAIL_SEND_CANSCANNER,
+                   error_suffix="")
+    def cancelScannerSubscription(self, ticker_id):
+        VERSION = 1
+        self._send(self.CANCEL_SCANNER_SUBSCRIPTION)
+        self._send(VERSION)
+        self._send(ticker_id)
+
+
 _requestmethod = requestmethod
 del requestmethod
 del synchronized
