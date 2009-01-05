@@ -234,13 +234,21 @@ class EClientSocket(object):
 
     @synchronized
     @requestmethod(min_server=24, has_ticker=True,
-                   generic_error=_EClientErrors.FAIL_SEND_CANSCANNER,
-                   error_suffix="")
+                   generic_error=_EClientErrors.FAIL_SEND_CANSCANNER)
     def cancelScannerSubscription(self, ticker_id):
         VERSION = 1
         self._send(self.CANCEL_SCANNER_SUBSCRIPTION)
         self._send(VERSION)
         self._send(ticker_id)
+
+
+    @synchronized
+    @requestmethod(min_server=24,
+                   generic_error=_EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS)
+    def reqScannerParameters(self):
+        VERSION = 1
+        self._send(self.REQ_SCANNER_PARAMETERS)
+        self._send(VERSION)
 
 
 _requestmethod = requestmethod

@@ -221,4 +221,22 @@ class test_EClientSocket(unittest.TestCase):
         self.client._send = None    # Forces exception
         self.client.cancelScannerSubscription(3)
         self.assertEqual(len(self.wrapper.errors), 3)
-        self.assertEqual(self.wrapper.errors[-1][:2], (3, 525))
+        self.assertEqual(self.wrapper.errors[-1][:2],
+                         (3, EClientErrors.FAIL_SEND_CANSCANNER.code()))
+
+    def test_reqScannerParameters(self):
+        self._check_connection_required(self.client.cancelScannerSubscription)
+        self._check_min_server(24, self.client.cancelScannerSubscription)
+
+        self.client.reqScannerParameters()
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x00" %
+                         self.client.REQ_SCANNER_PARAMETERS,
+                         self.stream.getvalue())
+
+        self.client._send = None    # Forces exception
+        self.client.reqScannerParameters(3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual(self.wrapper.errors[-1][:2],
+                         (EClientErrors.NO_VALID_ID,
+                          EClientErrors.FAIL_SEND_REQSCANNERPARAMETERS.code()))
