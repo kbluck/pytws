@@ -144,6 +144,19 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(self.wrapper.calldata[0], ('connectionClosed', (), {}))
 
+    def _check_connection_required(self, method, *args, **kwds):
+        self.assertFalse(self.client.isConnected())
+
+        calldata_count = len(self.wrapper.calldata)
+        error_count = len(self.wrapper.errors)
+        method(self.client)
+
+        self.assertEqual(len(self.wrapper.calldata), calldata_count)
+        self.assertEqual(len(self.wrapper.errors), error_count + 1)
+        self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
+        self.client.eConnect()
+
+
     def _check_min_server(self, version, method, *args, **kwds):
         self.assertTrue(self.client.serverVersion() < version)
 
@@ -172,32 +185,25 @@ class test_EClientSocket(unittest.TestCase):
         def test_raise_with_ticker(self, ticker_id):
             raise Exception()
 
-        # Check connection required        
-        test_call(self.client)
-        self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 1)
-        self.assertEqual(self.wrapper.errors[0][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
-        self.client.eConnect()
-        
+        self._check_connection_required(test_call, self.client)
+        self._check_min_server(2000, test_call, self.client)
+
         # Check exception raised for no ticker method
         test_raise_no_ticker(self.client)
         self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 2)
-        self.assertEqual(self.wrapper.errors[1][:2], (-1, 505))
-        self.assertEqual(self.wrapper.errors[1][2], "Fatal Error: Unknown message id.: Test123")
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual(self.wrapper.errors[-1][:2], (-1, 505))
+        self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id.: Test123")
 
         # Check exception raised for ticker method, both positional and keyword
         test_raise_with_ticker(self.client, 123)
         test_raise_with_ticker(self.client, ticker_id=321)
         self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 4)
-        self.assertEqual(self.wrapper.errors[2][:2], (123, 505))
-        self.assertEqual(self.wrapper.errors[3][:2], (321, 505))
-        self.assertEqual(self.wrapper.errors[2][2], "Fatal Error: Unknown message id.: test_raise_with_ticker")
+        self.assertEqual(len(self.wrapper.errors), 5)
+        self.assertEqual(self.wrapper.errors[3][:2], (123, 505))
+        self.assertEqual(self.wrapper.errors[4][:2], (321, 505))
+        self.assertEqual(self.wrapper.errors[3][2], "Fatal Error: Unknown message id.: test_raise_with_ticker")
 
-        # Check min_server
-        self._check_min_server(2000, test_call, self.client)
-        
         # Check successful call
         test_call(self.client)
         self.assertEqual(len(self.wrapper.calldata), 1)
