@@ -144,10 +144,23 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 1)
         self.assertEqual(self.wrapper.calldata[0], ('connectionClosed', (), {}))
 
+    def _check_min_server(self, version, method, *args, **kwds):
+        self.assertTrue(self.client.serverVersion() < version)
+
+        calldata_count = len(self.wrapper.calldata)
+        error_count = len(self.wrapper.errors)
+        method(*args, **kwds)
+
+        self.assertEqual(len(self.wrapper.calldata), calldata_count)
+        self.assertEqual(len(self.wrapper.errors), error_count + 1)
+        self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS.code()))
+
+        self.client._server_version = version
+
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
 
-        @_requestmethod(min_server=24)        
+        @_requestmethod(min_server=2000)        
         def test_call(self):
             self._wrapper.test_call()
         
@@ -183,12 +196,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[2][2], "Fatal Error: Unknown message id.: test_raise_with_ticker")
 
         # Check min_server
-        self.assertTrue(self.client.serverVersion() < 24)
-        test_call(self.client)
-        self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 5)
-        self.assertEqual(self.wrapper.errors[4][:2], (EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS.code()))
-        self.client._server_version = 24
+        self._check_min_server(2000, test_call, self.client)
         
         # Check successful call
         test_call(self.client)
