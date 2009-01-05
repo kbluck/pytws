@@ -23,3 +23,7 @@ class UnderComp(object):
             (self.m_delta == other.m_delta) and
             (self.m_price == other.m_price)
         ) else False
+
+
+    def __nonzero__(self):
+        return True if (self.m_conId or self.m_delta or self.m_price) else False
