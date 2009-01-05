@@ -24,7 +24,7 @@ class TwsError(StandardError):
 
         self._id = id
         self._code = source.code() if source else code
-        self._msg = ((("%s: %s" % (source.msg(), msg)) if msg else source.msg()) 
+        self._msg = ((("%s %s" % (source.msg(), msg)) if msg else source.msg()) 
                         if source else msg)
 
         self.message = "%s: %s (Ticker ID: %s)" % (self._code, self._msg, self._id)
