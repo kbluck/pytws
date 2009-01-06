@@ -358,6 +358,19 @@ class EClientSocket(object):
             self._send(snapshot)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=24,
+                   min_server_error_suffix="It does not support historical data query cancellation.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANHISTDATA)
+    def cancelHistoricalData(self, ticker_id):
+        assert type(ticker_id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_HISTORICAL_DATA)
+        self._send(VERSION)
+        self._send(ticker_id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

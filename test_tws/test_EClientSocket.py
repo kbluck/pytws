@@ -452,3 +452,19 @@ class test_EClientSocket(unittest.TestCase):
            self.assertRaises(AssertionError, self.client.reqMktData, 1, None, "", False)
            self.assertRaises(AssertionError, self.client.reqMktData, 1, tws.Contract(), None, False)
            self.assertRaises(AssertionError, self.client.reqMktData, 1, tws.Contract(), "", None)
+
+    def test_cancelHistoricalData(self):
+        self._check_connection_required(self.client.cancelHistoricalData, 0)
+        self._check_min_server(24, 1, self.client.cancelHistoricalData, 1)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support historical data query cancellation.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANHISTDATA, 2,
+                                 self.client.cancelHistoricalData, 2)
+
+        self.client.cancelHistoricalData(3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_HISTORICAL_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelHistoricalData, 3.5)
