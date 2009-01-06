@@ -45,8 +45,10 @@ def requestmethod(has_ticker=False, min_server=0,
                                 source=_EClientErrors.UPDATE_TWS,
                                 msg=min_server_error_suffix or None))
                     return
-                # Call wrapped method
-                return method(self, *args, **kwds)
+                # Call wrapped method, ensuring stream gets flushed.
+                result = method(self, *args, **kwds)
+                self._stream.flush()
+                return result
             # Reraise assertion errors.
             except AssertionError: raise
             # Any other exception report generic error instance to EWrapper._error()
