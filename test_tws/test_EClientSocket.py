@@ -485,7 +485,7 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelRealTimeBars, 3.5)
 
-    def test_reqMktData(self):
+    def test_reqHistoricalData(self):
         self._check_connection_required(self.client.reqHistoricalData, 0, tws.Contract(), "", False)
         self._check_min_server(16, 1, self.client.reqHistoricalData, 1)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support historical data backfill.")
