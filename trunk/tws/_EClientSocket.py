@@ -544,6 +544,38 @@ class EClientSocket(object):
         self._send(ticker_id)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=21,
+                   min_server_error_suffix="It does not support options exercise from the API.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQMKT)  # Error type per Java, IB bug?
+    def exerciseOptions(self, ticker_id, contract, exercise_action,
+                        exercise_quantity, account, override):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(exercise_action) == int
+        assert type(exercise_quantity) == int
+        assert type(account) == str
+        assert type(override) == int
+        VERSION = 1
+
+        self._send(self.EXERCISE_OPTIONS)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        self._send(exercise_action)
+        self._send(exercise_quantity)
+        self._send(account)
+        self._send(override)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
