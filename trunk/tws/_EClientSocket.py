@@ -492,6 +492,33 @@ class EClientSocket(object):
             self._send(contract.m_includeExpired)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=6,
+                   min_server_error_suffix="It does not support market depth.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQMKTDEPTH)
+    def reqMktDepth(self, ticker_id, contract, num_rows):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(num_rows) == int
+        VERSION = 3
+
+        self._send(self.REQ_MKT_DEPTH)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        if self._server_version >= 15:
+            self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        if self._server_version >= 19:
+            self._send(num_rows)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
