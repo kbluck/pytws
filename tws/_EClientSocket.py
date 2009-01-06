@@ -531,6 +531,19 @@ class EClientSocket(object):
         self._send(ticker_id)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=6,
+                   min_server_error_suffix="It does not support market depth.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANMKTDEPTH)
+    def cancelMktDepth(self, ticker_id):
+        assert type(ticker_id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_MKT_DEPTH)
+        self._send(VERSION)
+        self._send(ticker_id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
