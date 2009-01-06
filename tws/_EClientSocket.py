@@ -371,6 +371,19 @@ class EClientSocket(object):
         self._send(ticker_id)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
+                   min_server_error_suffix="It does not support realtime bar data query cancellation.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANRTBARS)
+    def cancelRealTimeBars(self, ticker_id):
+        assert type(ticker_id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_REAL_TIME_BARS)
+        self._send(VERSION)
+        self._send(ticker_id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

@@ -468,3 +468,19 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelHistoricalData, 3.5)
+
+    def test_cancelRealTimeBars(self):
+        self._check_connection_required(self.client.cancelRealTimeBars, 0)
+        self._check_min_server(self.client.MIN_SERVER_VER_REAL_TIME_BARS, 1, self.client.cancelRealTimeBars, 1)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support realtime bar data query cancellation.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANRTBARS, 2,
+                                 self.client.cancelRealTimeBars, 2)
+
+        self.client.cancelRealTimeBars(3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_REAL_TIME_BARS,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelRealTimeBars, 3.5)
