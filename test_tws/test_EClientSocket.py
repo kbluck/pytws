@@ -708,3 +708,28 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelMktDepth, "")
+
+    def test_exerciseOptions(self):
+        self._check_connection_required(self.client.exerciseOptions, 0, tws.Contract(),0,0,"",0)
+        self._check_min_server(21, 1, self.client.exerciseOptions, 1, tws.Contract(),0,0,"",0)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support options exercise from the API.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQMKT, 2, # Error type per Java, IB bug?
+                                 self.client.exerciseOptions, 2, tws.Contract(),0,0,"",0)
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True)
+
+        self.client.exerciseOptions(3, contract, 4, 5, "A1", 7)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x003\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x004\x005\x00A1\x007\x00" %
+                         self.client.EXERCISE_OPTIONS,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.exerciseOptions, "",tws.Contract(),0,0,"",0)
+            self.assertRaises(AssertionError, self.client.exerciseOptions, 0,"",0,0,"",0)
+            self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),"",0,"",0)
+            self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,"","",0)
+            self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,0,0,0)
+            self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,0,"","")
