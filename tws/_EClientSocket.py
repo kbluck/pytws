@@ -464,6 +464,34 @@ class EClientSocket(object):
         self._send(use_RTH)
 
 
+    @synchronized
+    @requestmethod(min_server=4, min_server_error_suffix="It does not support contract details.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQCONTRACT)
+    def reqContractDetails(self, req_id, contract):
+        assert type(req_id) == int
+        assert type(contract) == __import__("tws").Contract
+        VERSION = 5
+
+        self._send(self.REQ_CONTRACT_DATA)
+        self._send(VERSION)
+        if self._server_version >= self.MIN_SERVER_VER_CONTRACT_DATA_CHAIN:
+            self._send(req_id)
+        if self._server_version >= self.MIN_SERVER_VER_CONTRACT_CONID:
+            self._send(contract.m_conId)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        if self._server_version >= 15:
+            self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        if self._server_version >= 31:
+            self._send(contract.m_includeExpired)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

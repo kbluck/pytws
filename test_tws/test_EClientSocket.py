@@ -578,3 +578,63 @@ class test_EClientSocket(unittest.TestCase):
            self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),1,"",0)
            self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),"",1,0)
            self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),"","","")
+
+    def test_reqContractDetails(self):
+        self._check_connection_required(self.client.reqContractDetails, 0, tws.Contract())
+        self._check_min_server(4, EClientErrors.NO_VALID_ID, self.client.reqContractDetails, 1, tws.Contract())
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support contract details.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQCONTRACT, EClientErrors.NO_VALID_ID,
+                                 self.client.reqContractDetails, 2, tws.Contract())
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True)
+
+        self.client._server_version = 4
+        self.assertEqual(self.client.serverVersion(), 4)
+        self.stream.truncate(0)
+        self.client.reqContractDetails(4, contract)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x005\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_CONTRACT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 15
+        self.assertEqual(self.client.serverVersion(), 15)
+        self.stream.truncate(0)
+        self.client.reqContractDetails(5, contract)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x005\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_CONTRACT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 31
+        self.assertEqual(self.client.serverVersion(), 31)
+        self.stream.truncate(0)
+        self.client.reqContractDetails(6, contract)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x005\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x00" %
+                         self.client.REQ_CONTRACT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = self.client.MIN_SERVER_VER_CONTRACT_CONID
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_CONTRACT_CONID)
+        self.stream.truncate(0)
+        self.client.reqContractDetails(4, contract)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x005\x001\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x00" %
+                         self.client.REQ_CONTRACT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = self.client.MIN_SERVER_VER_CONTRACT_DATA_CHAIN
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_CONTRACT_DATA_CHAIN)
+        self.stream.truncate(0)
+        self.client.reqContractDetails(4, contract)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x005\x004\x001\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x00" %
+                         self.client.REQ_CONTRACT_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+           self.assertRaises(AssertionError, self.client.reqContractDetails, 1.5,tws.Contract())
+           self.assertRaises(AssertionError, self.client.reqContractDetails, 1, "")
