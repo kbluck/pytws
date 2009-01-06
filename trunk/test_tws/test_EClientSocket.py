@@ -484,3 +484,70 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelRealTimeBars, 3.5)
+
+    def test_reqMktData(self):
+        self._check_connection_required(self.client.reqHistoricalData, 0, tws.Contract(), "", False)
+        self._check_min_server(16, 1, self.client.reqHistoricalData, 1)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support historical data backfill.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQHISTDATA, 1,
+                                 self.client.reqHistoricalData, 1, tws.Contract(), "", False)
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True,
+                                combo_legs=[tws.ComboLeg(3, 4, "J1", "K2", 5, 6, "L3"),
+                                            tws.ComboLeg(7, 8, "M4", "N5", 9, 10, "O6")])
+
+        self.client._server_version = 16
+        self.assertEqual(self.client.serverVersion(), 16)
+        self.stream.truncate(0)
+        self.client.reqHistoricalData(14, contract, "P7", "Q8", "R9", "S1", 11, 12)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x004\x0014\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00Q8\x0011\x00S1\x00" %
+                         self.client.REQ_HISTORICAL_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 17
+        self.assertEqual(self.client.serverVersion(), 17)
+        self.stream.truncate(0)
+        self.client.reqHistoricalData(15, contract, "P7", "Q8", "R9", "S1", 11, 12)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x004\x0015\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00Q8\x0011\x00S1\x0012\x00" %
+                         self.client.REQ_HISTORICAL_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 20
+        self.assertEqual(self.client.serverVersion(), 20)
+        self.stream.truncate(0)
+        self.client.reqHistoricalData(16, contract, "P7", "Q8", "R9", "S1", 11, 12)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x004\x0016\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00P7\x00R9\x00Q8\x0011\x00S1\x0012\x00" %
+                         self.client.REQ_HISTORICAL_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 31
+        self.assertEqual(self.client.serverVersion(), 31)
+        self.stream.truncate(0)
+        self.client.reqHistoricalData(17, contract, "P7", "Q8", "R9", "S1", 11, 12)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x004\x0017\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00P7\x00R9\x00Q8\x0011\x00S1\x0012\x00" %
+                         self.client.REQ_HISTORICAL_DATA,
+                         self.stream.getvalue())
+       
+        contract.m_secType = self.client.BAG_SEC_TYPE        
+        self.stream.truncate(0)
+        self.client.reqHistoricalData(17, contract, "P7", "Q8", "R9", "S1", 11, 12)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x004\x0017\x00A1\x00BAG\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00P7\x00R9\x00Q8\x0011\x00S1\x0012\x002\x003\x004\x00J1\x00K2\x007\x008\x00M4\x00N5\x00" %
+                         self.client.REQ_HISTORICAL_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1.5,tws.Contract(),"","","","",0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1, "","","","","",0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),1,"","","",0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"",1,"","",0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","",1,"",0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","",1,0,0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","","","",0)
+           self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","","",0,"")
