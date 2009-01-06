@@ -691,3 +691,20 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelMktData, "")
+
+
+    def test_cancelMktDepth(self):
+        self._check_connection_required(self.client.cancelMktDepth, 0)
+        self._check_min_server(6, 1, self.client.cancelMktDepth, 1, tws.Contract(), 0)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support market depth.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANMKTDEPTH, 2,
+                                 self.client.cancelMktDepth, 2)
+
+        self.client.cancelMktDepth(3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_MKT_DEPTH,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelMktDepth, "")
