@@ -301,6 +301,63 @@ class EClientSocket(object):
             self._send(subscription.stockTypeFilter())
 
 
+    @synchronized
+    @requestmethod(has_ticker=True,
+                   generic_error=_EClientErrors.FAIL_SEND_REQMKT)
+    def reqMktData(self, ticker_id, contract, generic_tick_list, snapshot):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(generic_tick_list) == str
+        assert type(snapshot) == bool
+        VERSION = 8
+
+        if contract.m_underComp and (self._server_version < self.MIN_SERVER_VER_UNDER_COMP):
+            self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                            id=ticker_id,
+                            msg="It does not support delta-neutral orders."))
+            return
+        if snapshot and (self._server_version < self.MIN_SERVER_VER_SNAPSHOT_MKT_DATA):
+            self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                            id=ticker_id,
+                            msg="It does not support snapshot market data requests."))
+            return
+
+        self._send(self.REQ_MKT_DATA)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        if self._server_version >= 15:
+            self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        if self._server_version >= 14:
+            self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        if self._server_version >= 2:
+            self._send(contract.m_localSymbol)
+        if (self._server_version >= 8):
+            if self.BAG_SEC_TYPE.lower() == contract.m_secType.lower():
+                self._send(len(contract.m_comboLegs))
+                for leg in contract.m_comboLegs:
+                    self._send(leg.m_conId)
+                    self._send(leg.m_ratio)
+                    self._send(leg.m_action)
+                    self._send(leg.m_exchange)
+        if self._server_version >= self.MIN_SERVER_VER_UNDER_COMP:
+            self._send(bool(contract.m_underComp))
+            if contract.m_underComp:
+                self._send(contract.m_underComp.m_conId)
+                self._send(contract.m_underComp.m_delta)
+                self._send(contract.m_underComp.m_price)
+        if self._server_version >= 31:
+            self._send(generic_tick_list)
+        if self._server_version >= self.MIN_SERVER_VER_SNAPSHOT_MKT_DATA:
+            self._send(snapshot)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
