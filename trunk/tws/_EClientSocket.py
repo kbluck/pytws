@@ -519,6 +519,18 @@ class EClientSocket(object):
             self._send(num_rows)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, 
+                   generic_error=_EClientErrors.FAIL_SEND_CANMKT)
+    def cancelMktData(self, ticker_id):
+        assert type(ticker_id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_MKT_DATA)
+        self._send(VERSION)
+        self._send(ticker_id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
