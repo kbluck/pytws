@@ -384,6 +384,53 @@ class EClientSocket(object):
         self._send(ticker_id)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=16,
+                   min_server_error_suffix="It does not support historical data backfill.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQHISTDATA)
+    def reqHistoricalData(self, ticker_id, contract, end_date_time, duration_str,
+                          bar_size_setting, what_to_show, use_RTH, format_date):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(end_date_time) == str
+        assert type(duration_str) == str
+        assert type(bar_size_setting) == str
+        assert type(what_to_show) == str
+        assert type(use_RTH) == int
+        assert type(format_date) == int
+        VERSION = 4
+
+        self._send(self.REQ_HISTORICAL_DATA)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        if self._server_version >= 31:
+            self._send(bool(contract.m_includeExpired))
+        if self._server_version >= 20:
+            self._send(end_date_time)
+            self._send(bar_size_setting)
+        self._send(duration_str)
+        self._send(use_RTH)
+        self._send(what_to_show)
+        if self._server_version >= 17:
+            self._send(format_date)
+        if self.BAG_SEC_TYPE.lower() == contract.m_secType.lower():
+            self._send(len(contract.m_comboLegs))
+            for leg in contract.m_comboLegs:
+                self._send(leg.m_conId)
+                self._send(leg.m_ratio)
+                self._send(leg.m_action)
+                self._send(leg.m_exchange)
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
