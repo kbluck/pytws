@@ -551,3 +551,30 @@ class test_EClientSocket(unittest.TestCase):
            self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","",1,0,0)
            self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","","","",0)
            self.assertRaises(AssertionError, self.client.reqHistoricalData, 1,tws.Contract(),"","","","",0,"")
+
+    def test_reqRealTimeBars(self):
+        self._check_connection_required(self.client.reqRealTimeBars, 0, tws.Contract(),"","",0)
+        self._check_min_server(self.client.MIN_SERVER_VER_REAL_TIME_BARS, 1, self.client.reqRealTimeBars, 1, tws.Contract(),"","",0)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support real time bars.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQRTBARS, 2,
+                                 self.client.reqRealTimeBars, 2, tws.Contract(),"","",0)
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True)
+
+        self.client._server_version = self.client.MIN_SERVER_VER_REAL_TIME_BARS
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_REAL_TIME_BARS)
+        self.stream.truncate(0)
+        self.client.reqRealTimeBars(4, contract, "P7", "Q8", 11)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x004\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00P7\x00Q8\x0011\x00" %
+                         self.client.REQ_REAL_TIME_BARS,
+                         self.stream.getvalue())
+
+        if __debug__:
+           self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1.5,tws.Contract(),"","",0)
+           self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1, "","","",0)
+           self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),1,"",0)
+           self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),"",1,0)
+           self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1,tws.Contract(),"","","")
