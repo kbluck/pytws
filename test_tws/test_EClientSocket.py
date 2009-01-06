@@ -677,3 +677,17 @@ class test_EClientSocket(unittest.TestCase):
            self.assertRaises(AssertionError, self.client.reqMktDepth, "",tws.Contract(),0)
            self.assertRaises(AssertionError, self.client.reqMktDepth, 1,"",0)
            self.assertRaises(AssertionError, self.client.reqMktDepth, 1,tws.Contract(),"")
+
+    def test_cancelMktData(self):
+        self._check_connection_required(self.client.cancelMktData, 0)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANMKT, 2,
+                                 self.client.cancelMktData, 2)
+
+        self.client.cancelMktData(3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_MKT_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelMktData, "")
