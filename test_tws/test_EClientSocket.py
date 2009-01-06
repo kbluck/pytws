@@ -635,6 +635,45 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.REQ_CONTRACT_DATA,
                          self.stream.getvalue())
 
+    def test_reqMktDepth(self):
+        self._check_connection_required(self.client.reqMktDepth, 0, tws.Contract(), 0)
+        self._check_min_server(6, 1, self.client.reqMktDepth, 1, tws.Contract(), 0)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support market depth.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQMKTDEPTH, 2,
+                                 self.client.reqMktDepth, 2, tws.Contract(), 0)
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True)
+
+        self.client._server_version = 6
+        self.assertEqual(self.client.serverVersion(), 6)
+        self.stream.truncate(0)
+        self.client.reqMktDepth(4, contract, 3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x004\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DEPTH,
+                         self.stream.getvalue())
+
+        self.client._server_version = 15
+        self.assertEqual(self.client.serverVersion(), 15)
+        self.stream.truncate(0)
+        self.client.reqMktDepth(5, contract, 3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x005\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DEPTH,
+                         self.stream.getvalue())
+
+        self.client._server_version = 19
+        self.assertEqual(self.client.serverVersion(), 19)
+        self.stream.truncate(0)
+        self.client.reqMktDepth(6, contract, 3)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x003\x006\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x003\x00" %
+                         self.client.REQ_MKT_DEPTH,
+                         self.stream.getvalue())
+
         if __debug__:
-           self.assertRaises(AssertionError, self.client.reqContractDetails, 1.5,tws.Contract())
-           self.assertRaises(AssertionError, self.client.reqContractDetails, 1, "")
+           self.assertRaises(AssertionError, self.client.reqMktDepth, "",tws.Contract(),0)
+           self.assertRaises(AssertionError, self.client.reqMktDepth, 1,"",0)
+           self.assertRaises(AssertionError, self.client.reqMktDepth, 1,tws.Contract(),"")
