@@ -431,6 +431,37 @@ class EClientSocket(object):
                 self._send(leg.m_action)
                 self._send(leg.m_exchange)
 
+
+    @synchronized
+    @requestmethod(has_ticker=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
+                   min_server_error_suffix="It does not support real time bars.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQRTBARS)
+    def reqRealTimeBars(self, ticker_id, contract, bar_size, what_to_show, use_RTH):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(bar_size) == str
+        assert type(what_to_show) == str
+        assert type(use_RTH) == int
+        VERSION = 1
+
+        self._send(self.REQ_REAL_TIME_BARS)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        self._send(bar_size)
+        self._send(what_to_show)
+        self._send(use_RTH)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
