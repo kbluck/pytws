@@ -322,3 +322,133 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3.5, subscription)
             self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3, None)
+
+    def test_reqMktData(self):
+        self._check_connection_required(self.client.reqMktData, 0, tws.Contract(), "", False)
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQMKT, 1,
+                                 self.client.reqMktData, 1, tws.Contract(), "", False)
+
+        contract = tws.Contract()
+        contract.m_underComp.m_conId = 1 
+        self._check_min_server(self.client.MIN_SERVER_VER_UNDER_COMP, 1, self.client.reqMktData,
+                               1, contract, "", False)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support delta-neutral orders.")
+        
+        self._check_min_server(self.client.MIN_SERVER_VER_SNAPSHOT_MKT_DATA, 2, self.client.reqMktData,
+                               2, tws.Contract(), "", True)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support snapshot market data requests.")
+
+        contract = tws.Contract(con_id=1, symbol="A1", sec_type="B2", expiry="C3", strike=2.5,
+                                right="D4", multiplier="E5", exchange="F6", currency="G7",
+                                local_symbol="H8", primary_exch="I9", include_expired=True,
+                                combo_legs=[tws.ComboLeg(3, 4, "J1", "K2", 5, 6, "L3"),
+                                            tws.ComboLeg(7, 8, "M4", "N5", 9, 10, "O6")])
+
+        self.client._server_version = 1
+        self.assertEqual(self.client.serverVersion(), 1)
+        self.stream.truncate(0)
+        self.client.reqMktData(11, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0011\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00G7\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 2
+        self.assertEqual(self.client.serverVersion(), 2)
+        self.stream.truncate(0)
+        self.client.reqMktData(12, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0012\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 8
+        self.assertEqual(self.client.serverVersion(), 8)
+        self.stream.truncate(0)
+        self.client.reqMktData(13, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0013\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        legs = contract.m_comboLegs
+        contract.m_comboLegs = []
+        contract.m_secType = self.client.BAG_SEC_TYPE        
+        self.stream.truncate(0)
+        self.client.reqMktData(14, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0014\x00A1\x00BAG\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x000\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        contract.m_comboLegs = legs
+        self.stream.truncate(0)
+        self.client.reqMktData(15, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0015\x00A1\x00BAG\x00C3\x002.5\x00D4\x00F6\x00G7\x00H8\x002\x003\x004\x00J1\x00K2\x007\x008\x00M4\x00N5\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+        contract.m_secType = "B2"
+
+        self.client._server_version = 14
+        self.assertEqual(self.client.serverVersion(), 14)
+        self.stream.truncate(0)
+        self.client.reqMktData(16, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0016\x00A1\x00B2\x00C3\x002.5\x00D4\x00F6\x00I9\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 15
+        self.assertEqual(self.client.serverVersion(), 15)
+        self.stream.truncate(0)
+        self.client.reqMktData(17, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0017\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 31
+        self.assertEqual(self.client.serverVersion(), 31)
+        self.stream.truncate(0)
+        self.client.reqMktData(18, contract, "P7", False)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0018\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00P7\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = self.client.MIN_SERVER_VER_SNAPSHOT_MKT_DATA
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_SNAPSHOT_MKT_DATA)
+        self.stream.truncate(0)
+        self.client.reqMktData(19, contract, "P7", True)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0019\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00P7\x001\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+
+        self.client._server_version = self.client.MIN_SERVER_VER_UNDER_COMP
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_UNDER_COMP)
+        self.stream.truncate(0)
+        self.client.reqMktData(20, contract, "P7", True)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0020\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x000\x00P7\x001\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        contract.m_underComp.m_conId = 100
+        contract.m_underComp.m_delta = 200.5
+        contract.m_underComp.m_price = 300.5
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_UNDER_COMP)
+        self.stream.truncate(0)
+        self.client.reqMktData(20, contract, "P7", True)
+        self.assertEqual(len(self.wrapper.errors), 4)
+        self.assertEqual("%s\x008\x0020\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00100\x00200.5\x00300.5\x00P7\x001\x00" %
+                         self.client.REQ_MKT_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+           self.assertRaises(AssertionError, self.client.reqMktData, 1.5, tws.Contract(), "", False)
+           self.assertRaises(AssertionError, self.client.reqMktData, 1, None, "", False)
+           self.assertRaises(AssertionError, self.client.reqMktData, 1, tws.Contract(), None, False)
+           self.assertRaises(AssertionError, self.client.reqMktData, 1, tws.Contract(), "", None)
