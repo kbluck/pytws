@@ -229,17 +229,14 @@ class EClientSocket(object):
 
 
     @synchronized
-    def eConnect(self, client_id, socket=None, host="", port=0, stream=None):
+    def eConnect(self, client_id, start_reader=True, *args, **kwds):
         assert type(client_id) == int
-        assert hasattr(socket, "makefile") or not socket
-        assert type(host) == str
-        assert type(port) == int
-        assert hasattr(stream, "read") or not stream
-
+        assert (len(args) + len(kwds)) <= 2
+        
         if self._connected: return
-
+        
         self._connected = True
-
+        assert not start_reader
 
     @synchronized
     def eDisconnect(self):
