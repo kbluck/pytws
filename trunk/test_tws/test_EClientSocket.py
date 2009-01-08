@@ -1279,3 +1279,17 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.replaceFA, "", "")
             self.assertRaises(AssertionError, self.client.replaceFA, 0, 0)
+
+    def test_reqCurrentTime(self):
+        self._check_connection_required(self.client.reqCurrentTime)
+        self._check_min_server(33, EClientErrors.NO_VALID_ID, self.client.reqCurrentTime)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support current time requests.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_REQCURRTIME, EClientErrors.NO_VALID_ID,
+                                 self.client.reqCurrentTime)
+
+        self.stream.truncate(0)
+        self.client.reqCurrentTime()
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x00" %
+                         self.client.REQ_CURRENT_TIME,
+                         self.stream.getvalue())
