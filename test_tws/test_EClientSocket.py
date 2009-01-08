@@ -155,7 +155,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
         self.client.eConnect()
 
-    def _check_min_server(self, version, ticker_id, method, *args, **kwds):
+    def _check_min_server(self, version, id, method, *args, **kwds):
         self.client._server_version = (version - 1)
         self.assertTrue(self.client.serverVersion() < version)
 
@@ -165,11 +165,11 @@ class test_EClientSocket(unittest.TestCase):
 
         self.assertEqual(len(self.wrapper.calldata), calldata_count)
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
-        self.assertEqual(self.wrapper.errors[-1][:2], (ticker_id, EClientErrors.UPDATE_TWS.code()))
+        self.assertEqual(self.wrapper.errors[-1][:2], (id, EClientErrors.UPDATE_TWS.code()))
 
         self.client._server_version = version
 
-    def _check_error_raised(self, error, ticker_id, method, *args, **kwds):
+    def _check_error_raised(self, error, id, method, *args, **kwds):
         error_count = len(self.wrapper.errors)
         old_send = self.client._send
         self.client._send = None    # Forces exception
@@ -177,7 +177,7 @@ class test_EClientSocket(unittest.TestCase):
         self.client._send = old_send
 
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
-        self.assertEqual(self.wrapper.errors[-1][:2], (ticker_id, error.code()))
+        self.assertEqual(self.wrapper.errors[-1][:2], (id, error.code()))
 
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
@@ -190,9 +190,9 @@ class test_EClientSocket(unittest.TestCase):
         def test_raise_no_ticker(self):
             raise Exception()
 
-        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_ticker=True)        
-        def test_raise_with_ticker(self, ticker_id):
-            assert type(ticker_id) == int
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_id=True)        
+        def test_raise_with_ticker(self, id):
+            assert type(id) == int
             raise Exception()
 
         self._check_connection_required(test_call, self.client)
@@ -206,7 +206,7 @@ class test_EClientSocket(unittest.TestCase):
 
         # Check exception raised for ticker method, both positional and keyword
         test_raise_with_ticker(self.client, 123)
-        test_raise_with_ticker(self.client, ticker_id=321)
+        test_raise_with_ticker(self.client, id=321)
         self.assertEqual(len(self.wrapper.calldata), 0)
         self.assertEqual(len(self.wrapper.errors), 5)
         self.assertEqual(self.wrapper.errors[3][:2], (123, 505))
