@@ -1084,3 +1084,40 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", "")
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", True)
+
+    def test_reqExecutions(self):
+        self._check_connection_required(self.client.reqExecutions, 2, tws.ExecutionFilter())
+        self._check_error_raised(EClientErrors.FAIL_SEND_EXEC, EClientErrors.NO_VALID_ID,
+                                 self.client.reqExecutions, 3, tws.ExecutionFilter())
+        
+        filter = tws.ExecutionFilter(1, "ab", "cd", "ef", "gh", "ij", "kl")
+
+        self.assertTrue(self.client.serverVersion() < self.client.MIN_SERVER_VER_EXECUTION_DATA_CHAIN)
+        self.stream.truncate(0)
+        self.client.reqExecutions(4, filter)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x003\x00" %
+                         self.client.REQ_EXECUTIONS,
+                         self.stream.getvalue())
+
+        self.client._server_version = 9
+        self.assertEqual(self.client.serverVersion(), 9)
+        self.stream.truncate(0)
+        self.client.reqExecutions(4, filter)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x003\x001\x00ab\x00cd\x00ef\x00gh\x00ij\x00kl\x00" %
+                         self.client.REQ_EXECUTIONS,
+                         self.stream.getvalue())
+
+        self.client._server_version = self.client.MIN_SERVER_VER_EXECUTION_DATA_CHAIN
+        self.assertEqual(self.client.serverVersion(), self.client.MIN_SERVER_VER_EXECUTION_DATA_CHAIN)
+        self.stream.truncate(0)
+        self.client.reqExecutions(4, filter)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x003\x004\x001\x00ab\x00cd\x00ef\x00gh\x00ij\x00kl\x00" %
+                         self.client.REQ_EXECUTIONS,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", tws.ExecutionFilter())
+            self.assertRaises(AssertionError, self.client.reqAccountUpdates, 0, "")
