@@ -259,18 +259,16 @@ class EClientSocket(object):
                 self._server_version = self._reader._readInt();
                 if stdout:
                     stdout.write("Server Version: %d\n" % self._server_version);
-                if self._server_version >= 20:
-                    self._tws_time = self._reader._readStr()
-                    if stdout:
-                        stdout.write("TWS Time at connection: %s\n" % self._tws_time)
                 if self._server_version < self.SERVER_VERSION:
                     self.eDisconnect()
                     self._wrapper.error(_EClientErrors.TwsError(source=_EClientErrors.UPDATE_TWS))
                     return
-                if self._server_version >= 3:
-                    self._stream.seek(0, 2)
-                    self._send(client_id)
-                    self._stream.flush()
+                self._tws_time = self._reader._readStr()
+                if stdout:
+                    stdout.write("TWS Time at connection: %s\n" % self._tws_time)
+                self._stream.seek(0, 2)
+                self._send(client_id)
+                self._stream.flush()
 
             if self._connected and start_reader:
                 self._reader.start()
