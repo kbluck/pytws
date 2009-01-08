@@ -1163,3 +1163,18 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqIds, "")
+
+    def test_reqNewsBulletins(self):
+        self._check_connection_required(self.client.reqNewsBulletins, True)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CORDER, EClientErrors.NO_VALID_ID,
+                                 self.client.reqNewsBulletins, True)
+
+        self.stream.truncate(0)
+        self.client.reqNewsBulletins(True)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x001\x00" %
+                         self.client.REQ_NEWS_BULLETINS,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.reqNewsBulletins, "")
