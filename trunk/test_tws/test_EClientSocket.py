@@ -1244,3 +1244,20 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x00" %
                          self.client.REQ_MANAGED_ACCTS,
                          self.stream.getvalue())
+
+    def test_requestFA(self):
+        self._check_connection_required(self.client.requestFA, 1)
+        self._check_min_server(13, EClientErrors.NO_VALID_ID, self.client.requestFA, 2)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support FA request.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_FA_REQUEST, EClientErrors.NO_VALID_ID,
+                                 self.client.requestFA, 3)
+
+        self.stream.truncate(0)
+        self.client.requestFA(4)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x004\x00" %
+                         self.client.REQ_FA,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.requestFA, "")

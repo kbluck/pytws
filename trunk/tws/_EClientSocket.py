@@ -877,6 +877,18 @@ class EClientSocket(object):
         self._send(self.REQ_MANAGED_ACCTS)
         self._send(VERSION)
 
+    @synchronized
+    @requestmethod(min_server=13,
+                   min_server_error_suffix="It does not support FA request.",
+                   generic_error=_EClientErrors.FAIL_SEND_FA_REQUEST)  # Error type per Java, IB bug?
+    def requestFA(self, fa_data_type):
+        assert type(fa_data_type) == int
+        VERSION = 1
+
+        self._send(self.REQ_FA)
+        self._send(VERSION)
+        self._send(fa_data_type)
+
 
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
