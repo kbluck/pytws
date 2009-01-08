@@ -890,6 +890,21 @@ class EClientSocket(object):
         self._send(fa_data_type)
 
 
+    @synchronized
+    @requestmethod(min_server=13,
+                   min_server_error_suffix="It does not support FA request.",
+                   generic_error=_EClientErrors.FAIL_SEND_FA_REPLACE)  # Error type per Java, IB bug?
+    def replaceFA(self, fa_data_type, xml):
+        assert type(fa_data_type) == int
+        assert type(xml) == str
+        VERSION = 1
+
+        self._send(self.REPLACE_FA)
+        self._send(VERSION)
+        self._send(fa_data_type)
+        self._send(xml)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
