@@ -860,6 +860,15 @@ class EClientSocket(object):
         self._send(auto_bind)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_OORDER)  # Error type per Java, IB bug?
+    def reqAllOpenOrders(self):
+        VERSION = 1
+
+        self._send(self.REQ_ALL_OPEN_ORDERS)
+        self._send(VERSION)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
