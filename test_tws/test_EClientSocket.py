@@ -733,3 +733,323 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,"","",0)
             self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,0,0,0)
             self.assertRaises(AssertionError, self.client.exerciseOptions, 0,tws.Contract(),0,0,"","")
+
+    def test_placeOrder(self):
+        self.client._server_version = 41
+        self._check_connection_required(self.client.placeOrder, 1, tws.Contract(), tws.Order())
+        self._check_error_raised(EClientErrors.FAIL_SEND_ORDER, 2,
+                                 self.client.placeOrder, 2, tws.Contract(), tws.Order())
+
+        contract = tws.Contract()
+        order = tws.Order()
+
+        order.m_scaleInitLevelSize = 1.5
+        order.m_scalePriceIncrement = order._DOUBLE_MAX_VALUE
+        self._check_min_server(self.client.MIN_SERVER_VER_SCALE_ORDERS, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support Scale orders.")
+
+        order.m_scaleInitLevelSize = order._DOUBLE_MAX_VALUE
+        order.m_scalePriceIncrement = 2.5
+        self._check_min_server(self.client.MIN_SERVER_VER_SCALE_ORDERS, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support Scale orders.")
+        order = tws.Order()
+
+        contract.m_comboLegs = [tws.ComboLeg(short_sale_slot=1)]
+        self._check_min_server(self.client.MIN_SERVER_VER_SSHORT_COMBO_LEGS, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support SSHORT flag for combo legs.")
+
+        order.m_whatIf = True
+        self._check_min_server(self.client.MIN_SERVER_VER_WHAT_IF_ORDERS, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support what-if orders.")
+
+        contract.m_underComp.m_conId = 1
+        self._check_min_server(self.client.MIN_SERVER_VER_UNDER_COMP, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support delta-neutral orders.")
+        contract.m_underComp = tws.UnderComp()
+
+        order.m_scaleSubsLevelSize = 1
+        self._check_min_server(self.client.MIN_SERVER_VER_SCALE_ORDERS2, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support Subsequent Level Size for Scale orders.")
+
+        order.m_algoStrategy = "Test"
+        self._check_min_server(self.client.MIN_SERVER_VER_ALGO_ORDERS, 3, self.client.placeOrder,
+                               3, contract, order)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support algo orders.")
+
+        order = tws.Order()
+        order.m_orderId = 1; order.m_clientId = 2; order.m_permId = 3; order.m_action = 'a1'
+        order.m_totalQuantity = 4; order.m_orderType = 'b2'; order.m_lmtPrice = 1.5
+        order.m_auxPrice = 2.5; order.m_tif = 'c3'; order.m_ocaGroup = 'd4'
+        order.m_ocaType = 5; order.m_orderRef = 'e5'; order.m_transmit = False
+        order.m_parentId = 6; order.m_blockOrder = True; order.m_sweepToFill = True
+        order.m_displaySize = 7; order.m_triggerMethod = 8; order.m_outsideRth = True
+        order.m_hidden = True; order.m_goodAfterTime = 'f7'; order.m_goodTillDate = 'g8'
+        order.m_overridePercentageConstraints = True; order.m_rule80A = 'h9'
+        order.m_allOrNone = True; order.m_minQty = 9; order.m_percentOffset = 3.5
+        order.m_trailStopPrice = 4.5; order.m_faGroup = 'i1'; order.m_faProfile = 'j2'
+        order.m_faMethod = 'k3'; order.m_faPercentage = 'l4'; order.m_openClose = "1"
+        order.m_origin = tws.Order.FIRM; order.m_shortSaleSlot = 10;
+        order.m_designatedLocation = 'm5'; order.m_discretionaryAmt = 5.5
+        order.m_eTradeOnly = True; order.m_firmQuoteOnly = True; order.m_nbboPriceCap = 6.5
+        order.m_auctionStrategy = 11; order.m_startingPrice = 7.5; order.m_stockRefPrice = 8.5
+        order.m_delta = 9.5; order.m_stockRangeLower = 10.5; order.m_stockRangeUpper = 11.5
+        order.m_volatility = 12.5; order.m_volatilityType = 12; order.m_continuousUpdate = 13
+        order.m_referencePriceType = 14; order.m_deltaNeutralOrderType = 'n6';
+        order.m_deltaNeutralAuxPrice = 13.5; order.m_basisPoints = 14.5;
+        order.m_basisPointsType = 15; order.m_account = 'o7'; order.m_settlingFirm = 'p8';
+        order.m_clearingAccount = 'q9'; order.m_clearingIntent = 'r1';
+        order.m_algoParams = ['t3','u4'];
+        contract = tws.Contract(con_id=18, symbol="v5", sec_type="w6", expiry="x7", strike=19.5,
+                                right="y8", multiplier="z9", exchange="a2", currency="b3",
+                                local_symbol="c4", primary_exch="d5", include_expired=True,
+                                combo_legs=[tws.ComboLeg(3, 4, "J1", "K2", 5, 0, ""),
+                                            tws.ComboLeg(7, 8, "M4", "N5", 9, 0, "")])
+
+        self.assertEqual(len(self.wrapper.errors), 9)
+
+        self.client._server_version = 2
+        self.assertEqual(self.client.serverVersion(), 2)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 4
+        self.assertEqual(self.client.serverVersion(), 4)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 5
+        self.assertEqual(self.client.serverVersion(), 5)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 7
+        self.assertEqual(self.client.serverVersion(), 7)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 8
+        self.assertEqual(self.client.serverVersion(), 8)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        contract.m_secType = self.client.BAG_SEC_TYPE        
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00BAG\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x002\x003\x004\x00J1\x00K2\x005\x007\x008\x00M4\x00N5\x009\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+        contract.m_secType = "w6"        
+
+        self.client._server_version = 9
+        self.assertEqual(self.client.serverVersion(), 9)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 10
+        self.assertEqual(self.client.serverVersion(), 10)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 11
+        self.assertEqual(self.client.serverVersion(), 11)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 12
+        self.assertEqual(self.client.serverVersion(), 12)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 13
+        self.assertEqual(self.client.serverVersion(), 13)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 14
+        self.assertEqual(self.client.serverVersion(), 14)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 15
+        self.assertEqual(self.client.serverVersion(), 15)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 18
+        self.assertEqual(self.client.serverVersion(), 18)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 19
+        self.assertEqual(self.client.serverVersion(), 19)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 22
+        self.assertEqual(self.client.serverVersion(), 22)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 26
+        self.assertEqual(self.client.serverVersion(), 26)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00false\x0013\x00\x00\x0014\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        order.m_orderType = "VOL"
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00VOL\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x00\x00\x001\x0012.5\x0012\x00false\x0013\x0010.5\x0011.5\x0014\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 27
+        self.assertEqual(self.client.serverVersion(), 27)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00VOL\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00false\x0013\x00\x00\x0014\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+        order.m_orderType = "b2"
+
+        self.client._server_version = 28
+        self.assertEqual(self.client.serverVersion(), 28)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 30
+        self.assertEqual(self.client.serverVersion(), 30)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        order.m_scaleInitLevelSize = 20.5
+        order.m_scalePriceIncrement = 21.5
+        self.client._server_version = 35
+        self.assertEqual(self.client.serverVersion(), 35)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x00\x0020.5\x0021.5\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        order.m_whatIf = True
+        self.client._server_version = 36
+        self.assertEqual(self.client.serverVersion(), 36)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x000\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x00\x0020.5\x0021.5\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        self.client._server_version = 38
+        self.assertEqual(self.client.serverVersion(), 38)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x001\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x00\x0020.5\x0021.5\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        contract.m_underComp.m_conId = 22 
+        order.m_scaleSubsLevelSize = 23.5
+        self.client._server_version = 40
+        self.assertEqual(self.client.serverVersion(), 40)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x001\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x0020.5\x0023.5\x0021.5\x00q9\x00r1\x001\x0022\x000.0\x000.0\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
+
+        order.m_algoStrategy = "v5" 
+        order.m_algoParams = [tws.TagValue('t3','u4'),tws.TagValue('v5','w6')]
+        self.client._server_version = 41
+        self.assertEqual(self.client.serverVersion(), 41)
+        self.stream.truncate(0)
+        self.client.placeOrder(1, contract, order)
+        self.assertEqual(len(self.wrapper.errors), 9)
+        self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x001\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x0020.5\x0023.5\x0021.5\x00q9\x00r1\x001\x0022\x000.0\x000.0\x00v5\x002\x00t3\x00u4\x00v5\x00w6\x001\x00" %
+                         self.client.PLACE_ORDER,
+                         self.stream.getvalue())
