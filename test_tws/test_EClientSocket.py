@@ -1190,3 +1190,18 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x00" %
                          self.client.CANCEL_NEWS_BULLETINS,
                          self.stream.getvalue())
+
+    def test_setServerLogLevel(self):
+        self._check_connection_required(self.client.setServerLogLevel, 1)
+        self._check_error_raised(EClientErrors.FAIL_SEND_SERVER_LOG_LEVEL, EClientErrors.NO_VALID_ID,
+                                 self.client.setServerLogLevel, 2)
+
+        self.stream.truncate(0)
+        self.client.setServerLogLevel(3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.SET_SERVER_LOGLEVEL,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.setServerLogLevel, "")
