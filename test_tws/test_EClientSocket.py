@@ -1152,7 +1152,7 @@ class test_EClientSocket(unittest.TestCase):
     def test_reqIds(self):
         self._check_connection_required(self.client.reqIds, 1)
         self._check_error_raised(EClientErrors.FAIL_SEND_CORDER, EClientErrors.NO_VALID_ID,
-                                 self.client.reqIds)
+                                 self.client.reqIds, 2)
 
         self.stream.truncate(0)
         self.client.reqIds(3)
