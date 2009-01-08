@@ -67,16 +67,14 @@ class EClientSocket(object):
     '''Socket client which connects to the TWS socket server.
     '''
 
-    def __init__(self, wrapper, socket_factory=__import__("socket").socket):
+    def __init__(self, wrapper):
         assert issubclass(type(wrapper), __import__("tws").EWrapper)
-        assert callable(socket_factory)
 
         self._wrapper = wrapper
         self._reader = None
         self._connected = False
         self._server_version = 0
         self._tws_time = 0
-        self._socket_factory = socket_factory
 
 
     @synchronized
@@ -231,11 +229,12 @@ class EClientSocket(object):
 
 
     @synchronized
-    def eConnect(self, client_id, socket=None, host="", port=0):
+    def eConnect(self, client_id, socket=None, host="", port=0, stream=None):
         assert type(client_id) == int
         assert hasattr(socket, "makefile") or not socket
         assert type(host) == str
         assert type(port) == int
+        assert hasattr(stream, "read") or not stream
 
         if self._connected: return
 
