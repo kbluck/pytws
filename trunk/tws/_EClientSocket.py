@@ -286,7 +286,7 @@ class EClientSocket(object):
     @synchronized
     def eDisconnect(self):
         if not self._connected: return
-        
+
         self._connected = False
         self._server_version = 0
         self._tws_time = ""

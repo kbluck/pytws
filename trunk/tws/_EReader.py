@@ -41,7 +41,7 @@ class EReader(_thread_type):
     def interrupt(self):
         self._stream.close()
 
-        # Wait only a second for thread to terminate.        
+        # Wait only a second for thread to terminate.
         if self.isAlive():
             self.join(1.0)
 

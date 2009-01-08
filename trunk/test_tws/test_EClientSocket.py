@@ -87,7 +87,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertTrue(self.client.isConnected())
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
-        
+
         if __debug__:
             self.client.eDisconnect()
 
