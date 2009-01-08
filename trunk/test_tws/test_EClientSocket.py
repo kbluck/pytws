@@ -1148,3 +1148,18 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x00" %
                          self.client.REQ_OPEN_ORDERS,
                          self.stream.getvalue())
+
+    def test_reqIds(self):
+        self._check_connection_required(self.client.reqIds, 1)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CORDER, EClientErrors.NO_VALID_ID,
+                                 self.client.reqIds)
+
+        self.stream.truncate(0)
+        self.client.reqIds(3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.REQ_IDS,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.reqIds, "")
