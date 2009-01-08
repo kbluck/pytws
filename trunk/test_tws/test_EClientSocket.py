@@ -1316,3 +1316,20 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, self.client.reqFundamentalData, "", tws.Contract(), "")
             self.assertRaises(AssertionError, self.client.reqFundamentalData, 0, "", "")
             self.assertRaises(AssertionError, self.client.reqFundamentalData, 0, tws.Contract(), 0)
+
+    def test_cancelFundamentalData(self):
+        self._check_connection_required(self.client.cancelFundamentalData, 1)
+        self._check_min_server(self.client.MIN_SERVER_VER_FUNDAMENTAL_DATA, 2, self.client.cancelFundamentalData, 2)
+        self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support fundamental data requests.")
+        self._check_error_raised(EClientErrors.FAIL_SEND_CANFUNDDATA, 3,
+                                 self.client.cancelFundamentalData, 3)
+
+        self.stream.truncate(0)
+        self.client.cancelFundamentalData(4)
+        self.assertEqual(len(self.wrapper.errors), 3)
+        self.assertEqual("%s\x001\x004\x00" %
+                         self.client.CANCEL_FUNDAMENTAL_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelFundamentalData, "")
