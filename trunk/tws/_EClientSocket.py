@@ -218,7 +218,7 @@ class EClientSocket(object):
 
     def connectionError(self):
         self._wrapper.error(_EClientErrors.CONNECT_FAIL)
-        self.m_reader = None
+        self._reader = None
 
 
     def createReader(self, input_stream):
@@ -239,8 +239,8 @@ class EClientSocket(object):
         assert (socket and not stream) or (not socket)
 
         if self._connected: return
-        
-        self._connected = True
+
+        self._connected = stream and not stream.closed
 
 
     @synchronized
