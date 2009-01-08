@@ -240,7 +240,15 @@ class EClientSocket(object):
 
         if self._connected: return
 
-        self._connected = stream and not stream.closed
+        try:
+            self._reader = self.createReader(stream)
+            self._connected = stream and not stream.closed
+            if self._connected and start_reader:
+                self._reader.start()
+        except:
+            self._connected = False
+            raise
+
 
 
     @synchronized
