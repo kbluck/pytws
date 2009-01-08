@@ -275,17 +275,24 @@ class EClientSocket(object):
             if self._connected and start_reader:
                 self._reader.start()
         except:
-            self._connected = False
+            self.eDisconnect()
             raise
-
 
 
     @synchronized
     def eDisconnect(self):
         if not self._connected: return
-
-        # Trivial stub for now.
+        
         self._connected = False
+        self._server_version = 0
+        self._tws_time = ""
+
+        try:
+            self._reader.interrupt()
+            assert self._stream.closed
+        finally:
+            self._reader = None
+            self._stream = None
 
 
     @synchronized
