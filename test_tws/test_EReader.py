@@ -28,9 +28,9 @@ class test_EReader(unittest.TestCase):
             self.assertRaises(AssertionError, EReader, self.connection, 1)
 
     def test_interrupt(self):
-        self.assertFalse(self.reader._interrupted)
+        self.assertFalse(self.reader._stream.closed)
         self.reader.interrupt()
-        self.assertTrue(self.reader._interrupted)
+        self.assertTrue(self.reader._stream.closed)
 
     def test_run(self):
         self.stream.write("52\x001\x002\x00")
@@ -52,6 +52,7 @@ class test_EReader(unittest.TestCase):
         self.stream.write("53\x001\x00")
         self.stream.write("-1\x00")
         self.stream.write("54\x001\x00A1\x00")
+        self.stream.write("654321\x00")
         self.stream.write("654321\x00")
         self.stream.write("654321\x00")
 
@@ -84,7 +85,16 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(return_values), 7)
         self.assertEqual(len(self.wrapper.calldata), 3)
         self.assertEqual(len(self.wrapper.errors), 2)
-        self.assertFalse(return_values[6]) 
+        self.assertFalse(return_values[6])
+        
+        # Once thread is interrupted, exceptions no longer sent to EWrapper.error()
+        self.reader.interrupt()
+        return_values.append(self.reader._readNextMessage())
+        self.assertEqual(len(return_values), 8)
+        self.assertEqual(len(self.wrapper.calldata), 3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertFalse(return_values[6])
+         
         
 
     def test_readStr(self):
