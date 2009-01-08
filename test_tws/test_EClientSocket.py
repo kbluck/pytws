@@ -1054,6 +1054,11 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
 
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.placeOrder, "",tws.Contract(),tws.Order())
+            self.assertRaises(AssertionError, self.client.placeOrder, 0,"",tws.Order())
+            self.assertRaises(AssertionError, self.client.placeOrder, 0,tws.Contract(),"")
+
     def test_reqAccountUpdates(self):
         self._check_connection_required(self.client.reqAccountUpdates, True, "")
         self._check_error_raised(EClientErrors.FAIL_SEND_ACCT, EClientErrors.NO_VALID_ID,
