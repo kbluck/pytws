@@ -880,7 +880,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(min_server=13,
                    min_server_error_suffix="It does not support FA request.",
-                   generic_error=_EClientErrors.FAIL_SEND_FA_REQUEST)  # Error type per Java, IB bug?
+                   generic_error=_EClientErrors.FAIL_SEND_FA_REQUEST)
     def requestFA(self, fa_data_type):
         assert type(fa_data_type) == int
         VERSION = 1
@@ -893,7 +893,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(min_server=13,
                    min_server_error_suffix="It does not support FA request.",
-                   generic_error=_EClientErrors.FAIL_SEND_FA_REPLACE)  # Error type per Java, IB bug?
+                   generic_error=_EClientErrors.FAIL_SEND_FA_REPLACE)
     def replaceFA(self, fa_data_type, xml):
         assert type(fa_data_type) == int
         assert type(xml) == str
@@ -908,7 +908,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(min_server=33,
                    min_server_error_suffix="It does not support current time requests.",
-                   generic_error=_EClientErrors.FAIL_SEND_REQCURRTIME)  # Error type per Java, IB bug?
+                   generic_error=_EClientErrors.FAIL_SEND_REQCURRTIME)
     def reqCurrentTime(self):
         VERSION = 1
 
