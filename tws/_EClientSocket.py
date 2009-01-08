@@ -252,7 +252,6 @@ class EClientSocket(object):
             socket.close() # Won't actually close until stream does.
 
         self._stream = stream
-        del stream
         self._reader = self.createReader(self._stream)
 
         try:
