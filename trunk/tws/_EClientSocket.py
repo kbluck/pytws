@@ -576,6 +576,180 @@ class EClientSocket(object):
         self._send(override)
 
 
+    @synchronized
+    @requestmethod(has_ticker=True, 
+                   generic_error=_EClientErrors.FAIL_SEND_ORDER)
+    def placeOrder(self, ticker_id, contract, order):
+        assert type(ticker_id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(order) == __import__("tws").Order
+        VERSION = 27
+
+        if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS:
+            if (order.m_scaleInitLevelSize < order._DOUBLE_MAX_VALUE) or (order.m_scalePriceIncrement < order._DOUBLE_MAX_VALUE):
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=ticker_id,
+                                msg="It does not support Scale orders."))
+                return
+        if self._server_version < self.MIN_SERVER_VER_SSHORT_COMBO_LEGS:
+            for leg in contract.m_comboLegs:
+                if leg.m_shortSaleSlot or leg.m_designatedLocation:
+                    self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                    id=ticker_id,
+                                    msg="It does not support SSHORT flag for combo legs."))
+                    return
+        if self._server_version < self.MIN_SERVER_VER_WHAT_IF_ORDERS:
+            if order.m_whatIf:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=ticker_id,
+                                msg="It does not support what-if orders."))
+                return
+        if self._server_version < self.MIN_SERVER_VER_UNDER_COMP:
+            if contract.m_underComp:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=ticker_id,
+                                msg="It does not support delta-neutral orders."))
+                return
+        if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS2:
+            if (order.m_scaleSubsLevelSize < order._DOUBLE_MAX_VALUE):
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=ticker_id,
+                                msg="It does not support Subsequent Level Size for Scale orders."))
+                return
+        if self._server_version < self.MIN_SERVER_VER_ALGO_ORDERS:
+            if order.m_algoStrategy:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=ticker_id,
+                                msg="It does not support algo orders."))
+                return
+
+        self._send(self.PLACE_ORDER)
+        self._send(VERSION)
+        self._send(ticker_id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        if self._server_version >= 15:
+            self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        if self._server_version >= 14:
+            self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        if self._server_version >= 2:
+            self._send(contract.m_localSymbol)
+        self._send(order.m_action)
+        self._send(order.m_totalQuantity)
+        self._send(order.m_orderType)
+        self._send(order.m_lmtPrice)
+        self._send(order.m_auxPrice)
+        self._send(order.m_tif)
+        self._send(order.m_ocaGroup)
+        self._send(order.m_account)
+        self._send(order.m_openClose)
+        self._send(order.m_origin)
+        self._send(order.m_orderRef)
+        self._send(order.m_transmit)
+        if self._server_version >= 4:
+            self._send(order.m_parentId)
+        if self._server_version >= 5:
+            self._send(order.m_blockOrder)
+            self._send(order.m_sweepToFill)
+            self._send(order.m_displaySize)
+            self._send(order.m_triggerMethod)
+            self._send(True if (self._server_version >= 38) and order.m_outsideRth else False)
+        if self._server_version >= 7:
+            self._send(order.m_hidden)
+        if self._server_version >= 8:
+            if self.BAG_SEC_TYPE.lower() == contract.m_secType.lower():
+                self._send(len(contract.m_comboLegs))
+                for leg in contract.m_comboLegs:
+                    self._send(leg.m_conId)
+                    self._send(leg.m_ratio)
+                    self._send(leg.m_action)
+                    self._send(leg.m_exchange)
+                    self._send(leg.m_openClose)
+                    if self._server_version >= self.MIN_SERVER_VER_SSHORT_COMBO_LEGS:
+                        self._send(leg.m_shortSaleSlot)
+                        self._send(leg.m_designatedLocation)
+        if self._server_version >= 9:
+            self._send("")
+        if self._server_version >= 10:
+            self._send(order.m_discretionaryAmt)
+        if self._server_version >= 11:
+            self._send(order.m_goodAfterTime)
+        if self._server_version >= 12:
+            self._send(order.m_goodTillDate)
+        if self._server_version >= 13:
+            self._send(order.m_faGroup)
+            self._send(order.m_faMethod)
+            self._send(order.m_faPercentage)
+            self._send(order.m_faProfile)
+        if self._server_version >= 18:
+            self._send(order.m_shortSaleSlot)
+            self._send(order.m_designatedLocation)
+        if self._server_version >= 19:
+            self._send(order.m_ocaType)
+            if self._server_version < 38:
+                self._send(False)
+            self._send(order.m_rule80A)
+            self._send(order.m_settlingFirm)
+            self._send(order.m_allOrNone)
+            self._sendMax(order.m_minQty)
+            self._sendMax(order.m_percentOffset)
+            self._send(order.m_eTradeOnly)
+            self._send(order.m_firmQuoteOnly)
+            self._sendMax(order.m_nbboPriceCap)
+            self._sendMax(order.m_auctionStrategy)
+            self._sendMax(order.m_startingPrice)
+            self._sendMax(order.m_stockRefPrice)
+            self._sendMax(order.m_delta)
+            self._sendMax(order._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeLower)
+            self._sendMax(order._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeUpper)
+        if self._server_version >= 22:
+            self._send(order.m_overridePercentageConstraints)
+        if self._server_version >= 26:
+            self._sendMax(order.m_volatility)
+            self._sendMax(order.m_volatilityType)
+            if self._server_version < 28:
+                self._send("true" if order.m_deltaNeutralOrderType.upper() == "MKT" else "false")
+            else:
+                self._send(order.m_deltaNeutralOrderType)
+                self._sendMax(order.m_deltaNeutralAuxPrice)
+            self._send(order.m_continuousUpdate)
+            self._sendMax(order.m_stockRangeLower if (self._server_version == 26) and order.m_orderType == "VOL" else order._DOUBLE_MAX_VALUE)
+            self._sendMax(order.m_stockRangeUpper if (self._server_version == 26) and order.m_orderType == "VOL" else order._DOUBLE_MAX_VALUE)
+            self._sendMax(order.m_referencePriceType)
+        if self._server_version >= 30:
+            self._sendMax(order.m_trailStopPrice)
+        if self._server_version >= self.MIN_SERVER_VER_SCALE_ORDERS:
+            if self._server_version >= self.MIN_SERVER_VER_SCALE_ORDERS2:
+                self._sendMax(order.m_scaleInitLevelSize)
+                self._sendMax(order.m_scaleSubsLevelSize)
+            else:
+                self._send("")
+                self._sendMax(order.m_scaleInitLevelSize)
+            self._sendMax(order.m_scalePriceIncrement)
+        if self._server_version >= self.MIN_SERVER_VER_PTA_ORDERS:
+            self._send(order.m_clearingAccount)
+            self._send(order.m_clearingIntent)
+        if self._server_version >= self.MIN_SERVER_VER_UNDER_COMP:
+            self._send(bool(contract.m_underComp))
+            if contract.m_underComp:
+                self._send(contract.m_underComp.m_conId)
+                self._send(contract.m_underComp.m_delta)
+                self._send(contract.m_underComp.m_price)
+        if self._server_version >= self.MIN_SERVER_VER_ALGO_ORDERS:
+            self._send(order.m_algoStrategy)
+            if order.m_algoStrategy:
+                self._send(len(order.m_algoParams))
+                for tagvalue in order.m_algoParams:
+                    self._send(tagvalue.m_tag)
+                    self._send(tagvalue.m_value)
+        if self._server_version >= self.MIN_SERVER_VER_WHAT_IF_ORDERS:
+            self._send(order.m_whatIf)
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
