@@ -1121,3 +1121,18 @@ class test_EClientSocket(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", tws.ExecutionFilter())
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, 0, "")
+
+    def test_cancelOrder(self):
+        self._check_connection_required(self.client.cancelOrder, 1)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CORDER, 2,
+                                 self.client.cancelOrder, 2)
+
+        self.stream.truncate(0)
+        self.client.cancelOrder(3)
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x003\x00" %
+                         self.client.CANCEL_ORDER,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.cancelOrder, "")

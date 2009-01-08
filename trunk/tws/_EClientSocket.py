@@ -765,6 +765,39 @@ class EClientSocket(object):
             self._send(acct_code)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_EXEC)
+    def reqExecutions(self, id, filter):
+        assert type(id) == int
+        assert type(filter) == __import__("tws").ExecutionFilter
+        VERSION = 3
+
+        self._send(self.REQ_EXECUTIONS)
+        self._send(VERSION)
+        if self._server_version >= self.MIN_SERVER_VER_EXECUTION_DATA_CHAIN:
+            self._send(id)
+        if self._server_version >= 9:
+            self._send(filter.m_clientId)
+            self._send(filter.m_acctCode)
+            self._send(filter.m_time)
+            self._send(filter.m_symbol)
+            self._send(filter.m_secType)
+            self._send(filter.m_exchange)
+            self._send(filter.m_side)
+
+
+    @synchronized
+    @requestmethod(has_id=True,
+                   generic_error=_EClientErrors.FAIL_SEND_CORDER)
+    def cancelOrder(self, id):
+        assert type(id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_ORDER)
+        self._send(VERSION)
+        self._send(id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
