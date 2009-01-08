@@ -1178,3 +1178,15 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqNewsBulletins, "")
+
+    def test_cancelNewsBulletins(self):
+        self._check_connection_required(self.client.cancelNewsBulletins)
+        self._check_error_raised(EClientErrors.FAIL_SEND_CORDER, EClientErrors.NO_VALID_ID,
+                                 self.client.cancelNewsBulletins)
+
+        self.stream.truncate(0)
+        self.client.cancelNewsBulletins()
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x00" %
+                         self.client.CANCEL_NEWS_BULLETINS,
+                         self.stream.getvalue())
