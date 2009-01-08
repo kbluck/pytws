@@ -116,7 +116,6 @@ class test_EClientSocket(unittest.TestCase):
                          test_stream.getvalue())
 
     def test_eDisconnect(self):
-        # Method is stubbed for now.
         self.assertFalse(self.client.isConnected())
         self.client.eConnect(0, stream=StringIO(), negotiate=False, start_reader=False)
         self.assertTrue(self.client.isConnected())
