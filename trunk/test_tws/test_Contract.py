@@ -14,7 +14,7 @@ class test_Contract(unittest.TestCase):
         test1 = Contract()
         test2 = Contract(1, "ab", "cd", "ef", 2.5, "gh", "ij", "kl",
                          "mn", "op", [ComboLeg()], "qr", True)
-    
+
         self.assertEqual(test1.m_conId, 0)
         self.assertEqual(test1.m_symbol, "")
         self.assertEqual(test1.m_secType, "")
@@ -84,7 +84,7 @@ class test_Contract(unittest.TestCase):
         test2 = Contract()
         test3 = Contract(1, "ab", "cd", "ef", 2.5, "gh", "ij", "kl",
                          "mn", "op", [ComboLeg()], "qr", True)
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)

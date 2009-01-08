@@ -39,7 +39,7 @@ class ContractDetails(object):
         self.m_notes = ""
 
 
-    def __eq__(self, other):  # Not in Java source. IB bug?  
+    def __eq__(self, other):  # Not in Java source. IB bug?
         if not isinstance(other, self.__class__): return False
         return True if (
             (self.m_summary == other.m_summary) and

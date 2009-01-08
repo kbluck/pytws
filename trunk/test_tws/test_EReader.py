@@ -12,7 +12,7 @@ from test_tws import mock_wrapper
 
 class test_EReader(unittest.TestCase):
     '''Test class "tws.EReader"'''
-    
+
     def setUp(self):
         self.wrapper = mock_wrapper()
         self.connection = EClientSocket(self.wrapper)
@@ -59,7 +59,7 @@ class test_EReader(unittest.TestCase):
 
         def _raise(x=1, y=2): raise Exception(654321)
         self.reader._reader_map[654321] = _raise
-        
+
         self.stream.seek(0)
         return_values = []
         for i in xrange(6): return_values.append(self.reader._readNextMessage())
@@ -67,19 +67,19 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(return_values), 6)
         self.assertEqual(len(self.wrapper.calldata), 3)
         self.assertEqual(len(self.wrapper.errors), 2)
-        self.assertTrue(return_values[0]) 
+        self.assertTrue(return_values[0])
         self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
-        self.assertFalse(return_values[1]) 
-        self.assertTrue(return_values[2]) 
+        self.assertFalse(return_values[1])
+        self.assertTrue(return_values[2])
         self.assertEqual(self.wrapper.calldata[1], ("openOrderEnd", (), {}))
-        self.assertFalse(return_values[3]) 
+        self.assertFalse(return_values[3])
         self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,
                                                   EClientErrors.UNKNOWN_ID.code(),
                                                   EClientErrors.UNKNOWN_ID.msg() +
                                                   " Message ID: 123456"))
-        self.assertTrue(return_values[4]) 
+        self.assertTrue(return_values[4])
         self.assertEqual(self.wrapper.calldata[2], ("accountDownloadEnd", ("A1",), {}))
-        self.assertFalse(return_values[5]) 
+        self.assertFalse(return_values[5])
         self.assertEqual(self.wrapper.errors[1], (-1,Exception,(654321,)))
 
         self.wrapper.error = _raise
@@ -88,7 +88,7 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 3)
         self.assertEqual(len(self.wrapper.errors), 2)
         self.assertFalse(return_values[6])
-        
+
         # Once thread is interrupted, exceptions no longer sent to EWrapper.error()
         self.reader.interrupt()
         return_values.append(self.reader._readNextMessage())
@@ -96,8 +96,8 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), 3)
         self.assertEqual(len(self.wrapper.errors), 2)
         self.assertFalse(return_values[6])
-         
-        
+
+
 
     def test_readStr(self):
         self.stream.write("test1\x00test2\x00\x00test3\x00")
@@ -436,7 +436,7 @@ class test_EReader(unittest.TestCase):
         order.m_parentId = 12
         order.m_triggerMethod = 13
         self.assertEqual(self.wrapper.calldata[9], ("openOrder", (2,contract,order,orderstate), {}))
-        # V11 
+        # V11
         order.m_volatility = 13.5
         order.m_volatilityType = 14
         order.m_deltaNeutralOrderType = "MKT"
@@ -460,7 +460,7 @@ class test_EReader(unittest.TestCase):
         order.m_basisPointsType = 17
         contract.m_comboLegsDescrip = "Y7"
         self.assertEqual(self.wrapper.calldata[14], ("openOrder", (2,contract,order,orderstate), {}))
-        # V15        
+        # V15
         order.m_scaleInitLevelSize = 18
         order.m_scalePriceIncrement = 20.5
         self.assertEqual(self.wrapper.calldata[15], ("openOrder", (2,contract,order,orderstate), {}))

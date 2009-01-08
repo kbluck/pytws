@@ -28,8 +28,8 @@ class EReader(_thread_type):
     def __init__(self, connection, input_stream, name=None):
         assert issubclass(type(connection), __import__("tws").EClientSocket)
         assert hasattr(input_stream, "read")
-        
-        _thread_type.__init__(self, name=name)        
+
+        _thread_type.__init__(self, name=name)
         self.setDaemon(True)
 
         self._connection = connection
@@ -50,7 +50,7 @@ class EReader(_thread_type):
             assert False  # Should never happen.
 
         if self._connection.isConnected():
-            self._connection.close()        
+            self._connection.close()
 
 
     def _readNextMessage(self):
@@ -127,7 +127,7 @@ class EReader(_thread_type):
         if version >= 2:
             size_tick_type = _TickType.BID_SIZE  if price_tick_type == _TickType.BID  else \
                              _TickType.ASK_SIZE  if price_tick_type == _TickType.ASK  else \
-                             _TickType.LAST_SIZE if price_tick_type == _TickType.LAST else -1 
+                             _TickType.LAST_SIZE if price_tick_type == _TickType.LAST else -1
             if (size_tick_type != -1):
                 self._wrapper.tickSize(ticker_id, size_tick_type, size)
 
@@ -152,7 +152,7 @@ class EReader(_thread_type):
         else:
             model_price = pv_dividend = self._DOUBLE_MAX_VALUE
 
-        self._wrapper.tickOptionComputation(ticker_id, tick_type, 
+        self._wrapper.tickOptionComputation(ticker_id, tick_type,
                                             implied_vol if implied_vol >= 0.0 else self._DOUBLE_MAX_VALUE,
                                             delta if abs(delta) <= 1.0 else self._DOUBLE_MAX_VALUE,
                                             model_price, pv_dividend)
@@ -422,7 +422,7 @@ class EReader(_thread_type):
             contract.m_tradingClass = self._readStr()
             distance = self._readStr()
             benchmark = self._readStr()
-            projection = self._readStr()            
+            projection = self._readStr()
             legs = self._readStr() if version >= 2 else None
             self._wrapper.scannerData(ticker_id, rank, contract, distance, benchmark, projection, legs)
         self._wrapper.scannerDataEnd(ticker_id)

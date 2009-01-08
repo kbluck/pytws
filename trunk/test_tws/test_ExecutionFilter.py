@@ -13,7 +13,7 @@ class test_ExecutionFilter(unittest.TestCase):
     def test_init(self):
         test1 = ExecutionFilter()
         test2 = ExecutionFilter(1, "ab", "cd", "ef", "gh", "ij", "kl")
-    
+
         self.assertEqual(test1.m_clientId, 0)
         self.assertEqual(test1.m_acctCode, "")
         self.assertEqual(test1.m_time, "")
@@ -53,7 +53,7 @@ class test_ExecutionFilter(unittest.TestCase):
         test1 = ExecutionFilter()
         test2 = ExecutionFilter()
         test3 = ExecutionFilter(1, "ab", "cd", "ef", "gh", "ij", "kl")
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)

@@ -13,7 +13,7 @@ class test_ContractDetails(unittest.TestCase):
     def test_init(self):
         test1 = ContractDetails()
         test2 = ContractDetails(Contract(), "ab", "cd", 1.5, "ef", "gh", 2)
-    
+
         self.assertEqual(test1.m_summary, Contract())
         self.assertEqual(test1.m_marketName, "")
         self.assertEqual(test1.m_tradingClass, "")
@@ -113,7 +113,7 @@ class test_ContractDetails(unittest.TestCase):
         test1 = ContractDetails()
         test2 = ContractDetails()
         test3 = ContractDetails(Contract(), "ab", "cd", 1.5, "ef", "gh", 2)
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)

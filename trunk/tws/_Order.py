@@ -109,8 +109,8 @@ class Order(object):
             (self.m_auctionStrategy == other.m_auctionStrategy) and
             (self.m_startingPrice == other.m_startingPrice) and
             (self.m_stockRefPrice == other.m_stockRefPrice) and
-            (self.m_delta == other.m_delta) and 
-            (self.m_stockRangeLower == other.m_stockRangeLower) and 
+            (self.m_delta == other.m_delta) and
+            (self.m_stockRangeLower == other.m_stockRangeLower) and
             (self.m_stockRangeUpper == other.m_stockRangeUpper) and
             (self.m_volatility == other.m_volatility) and
             (self.m_volatilityType == other.m_volatilityType) and
