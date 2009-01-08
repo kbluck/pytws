@@ -938,6 +938,19 @@ class EClientSocket(object):
         self._send(report_type)
 
 
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_FUNDAMENTAL_DATA,
+                   min_server_error_suffix="It does not support fundamental data requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANFUNDDATA)
+    def cancelFundamentalData(self, id):
+        assert type(id) == int
+        VERSION = 1
+
+        self._send(self.CANCEL_FUNDAMENTAL_DATA)
+        self._send(VERSION)
+        self._send(id)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
