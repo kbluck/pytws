@@ -235,7 +235,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelScannerSubscription, 3.5)
 
@@ -318,7 +317,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x003\x007\x001\x00A1\x00B2\x00C3\x001.5\x002.5\x003\x005.5\x006.5\x00D4\x00E5\x00F6\x00G7\x00H8\x00I9\x007.5\x008.5\x00J1\x004\x00K2\x00L3\x00" %
                          self.client.REQ_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3.5, subscription)
             self.assertRaises(AssertionError, self.client.reqScannerSubscription, 3, None)
@@ -446,7 +444,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x008\x0020\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00100\x00200.5\x00300.5\x00P7\x001\x00" %
                          self.client.REQ_MKT_DATA,
                          self.stream.getvalue())
-
         if __debug__:
            self.assertRaises(AssertionError, self.client.reqMktData, 1.5, tws.Contract(), "", False)
            self.assertRaises(AssertionError, self.client.reqMktData, 1, None, "", False)
@@ -465,7 +462,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_HISTORICAL_DATA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelHistoricalData, 3.5)
 
@@ -481,7 +477,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_REAL_TIME_BARS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelRealTimeBars, 3.5)
 
@@ -541,7 +536,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x004\x0017\x00A1\x00BAG\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00P7\x00R9\x00Q8\x0011\x00S1\x0012\x002\x003\x004\x00J1\x00K2\x007\x008\x00M4\x00N5\x00" %
                          self.client.REQ_HISTORICAL_DATA,
                          self.stream.getvalue())
-
         if __debug__:
            self.assertRaises(AssertionError, self.client.reqHistoricalData, 1.5,tws.Contract(),"","","","",0,0)
            self.assertRaises(AssertionError, self.client.reqHistoricalData, 1, "","","","","",0,0)
@@ -571,7 +565,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x004\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x00P7\x00Q8\x0011\x00" %
                          self.client.REQ_REAL_TIME_BARS,
                          self.stream.getvalue())
-
         if __debug__:
            self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1.5,tws.Contract(),"","",0)
            self.assertRaises(AssertionError, self.client.reqRealTimeBars, 1, "","","",0)
@@ -634,6 +627,9 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x005\x004\x001\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x001\x00" %
                          self.client.REQ_CONTRACT_DATA,
                          self.stream.getvalue())
+        if __debug__:
+           self.assertRaises(AssertionError, self.client.reqContractDetails, "",tws.Contract())
+           self.assertRaises(AssertionError, self.client.reqContractDetails, 1,"")
 
     def test_reqMktDepth(self):
         self._check_connection_required(self.client.reqMktDepth, 0, tws.Contract(), 0)
@@ -672,7 +668,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x003\x006\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x003\x00" %
                          self.client.REQ_MKT_DEPTH,
                          self.stream.getvalue())
-
         if __debug__:
            self.assertRaises(AssertionError, self.client.reqMktDepth, "",tws.Contract(),0)
            self.assertRaises(AssertionError, self.client.reqMktDepth, 1,"",0)
@@ -688,7 +683,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_MKT_DATA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelMktData, "")
 
@@ -705,7 +699,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_MKT_DEPTH,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelMktDepth, "")
 
@@ -725,7 +718,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00G7\x00H8\x004\x005\x00A1\x007\x00" %
                          self.client.EXERCISE_OPTIONS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.exerciseOptions, "",tws.Contract(),0,0,"",0)
             self.assertRaises(AssertionError, self.client.exerciseOptions, 0,"",0,0,"",0)
@@ -1053,7 +1045,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x001\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x0020.5\x0023.5\x0021.5\x00q9\x00r1\x001\x0022\x000.0\x000.0\x00v5\x002\x00t3\x00u4\x00v5\x00w6\x001\x00" %
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.placeOrder, "",tws.Contract(),tws.Order())
             self.assertRaises(AssertionError, self.client.placeOrder, 0,"",tws.Order())
@@ -1080,7 +1071,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x002\x001\x00A1\x00" %
                          self.client.REQ_ACCOUNT_DATA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", "")
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", True)
@@ -1117,7 +1107,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x003\x004\x001\x00ab\x00cd\x00ef\x00gh\x00ij\x00kl\x00" %
                          self.client.REQ_EXECUTIONS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", tws.ExecutionFilter())
             self.assertRaises(AssertionError, self.client.reqAccountUpdates, 0, "")
@@ -1133,7 +1122,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.CANCEL_ORDER,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelOrder, "")
 
@@ -1160,7 +1148,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.REQ_IDS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqIds, "")
 
@@ -1175,7 +1162,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x001\x00" %
                          self.client.REQ_NEWS_BULLETINS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqNewsBulletins, "")
 
@@ -1202,7 +1188,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x003\x00" %
                          self.client.SET_SERVER_LOGLEVEL,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.setServerLogLevel, "")
 
@@ -1217,7 +1202,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x001\x00" %
                          self.client.REQ_AUTO_OPEN_ORDERS,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqAutoOpenOrders, "")
 
@@ -1258,7 +1242,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x004\x00" %
                          self.client.REQ_FA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.requestFA, "")
 
@@ -1275,7 +1258,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x004\x00A1\x00" %
                          self.client.REPLACE_FA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.replaceFA, "", "")
             self.assertRaises(AssertionError, self.client.replaceFA, 0, 0)
@@ -1311,7 +1293,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x004\x00v5\x00w6\x00a2\x00d5\x00b3\x00c4\x00A1\x00" %
                          self.client.REQ_FUNDAMENTAL_DATA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.reqFundamentalData, "", tws.Contract(), "")
             self.assertRaises(AssertionError, self.client.reqFundamentalData, 0, "", "")
@@ -1330,6 +1311,5 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x004\x00" %
                          self.client.CANCEL_FUNDAMENTAL_DATA,
                          self.stream.getvalue())
-
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelFundamentalData, "")
