@@ -11,7 +11,7 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
-def requestmethod(has_ticker=False, min_server=0, 
+def requestmethod(has_id=False, min_server=0, 
                   min_server_error_suffix="",
                   generic_error=_EClientErrors.TwsError(),
                   generic_error_suffix=""):
@@ -19,7 +19,7 @@ def requestmethod(has_ticker=False, min_server=0,
 
        Eliminates repetitive error-checking boilerplate from request methods.   
     '''
-    assert type(has_ticker) == bool
+    assert type(has_id) == bool
     assert type(min_server) == int
     assert type(min_server_error_suffix) == str
     assert isinstance(generic_error, _EClientErrors.TwsError)
@@ -27,7 +27,7 @@ def requestmethod(has_ticker=False, min_server=0,
 
     def _decorator(method):
         assert  (__import__("inspect").getargspec(method)[0][0] == "self")
-        assert  (not has_ticker) or (__import__("inspect").getargspec(method)[0][1] == "ticker_id")
+        assert  (not has_id) or (__import__("inspect").getargspec(method)[0][1] == "id")
 
         def _decorated(self, *args, **kwds):
             assert type(self) == EClientSocket
@@ -40,8 +40,8 @@ def requestmethod(has_ticker=False, min_server=0,
                 # Enforce minimum server version, if any.
                 if self._server_version < min_server:
                     self._error(_EClientErrors.TwsError(
-                                id=kwds.get("ticker_id", args[0] if args else _EClientErrors.NO_VALID_ID) 
-                                    if has_ticker else _EClientErrors.NO_VALID_ID,
+                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID) 
+                                    if has_id else _EClientErrors.NO_VALID_ID,
                                 source=_EClientErrors.UPDATE_TWS,
                                 msg=min_server_error_suffix or None))
                     return
@@ -55,8 +55,8 @@ def requestmethod(has_ticker=False, min_server=0,
             except:
                 self._error(_EClientErrors.TwsError(
                                 source=generic_error,
-                                id=kwds.get("ticker_id", args[0] if args else _EClientErrors.NO_VALID_ID) 
-                                    if has_ticker else _EClientErrors.NO_VALID_ID,
+                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID) 
+                                    if has_id else _EClientErrors.NO_VALID_ID,
                                 msg=generic_error_suffix or method.__name__))
 
         return _decorated
@@ -243,16 +243,16 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=24,
+    @requestmethod(has_id=True, min_server=24,
                    min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_CANSCANNER)
-    def cancelScannerSubscription(self, ticker_id):
-        assert type(ticker_id) is int
+    def cancelScannerSubscription(self, id):
+        assert type(id) is int
         VERSION = 1
 
         self._send(self.CANCEL_SCANNER_SUBSCRIPTION)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
 
 
     @synchronized
@@ -267,17 +267,17 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=24,
+    @requestmethod(has_id=True, min_server=24,
                    min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNER)
-    def reqScannerSubscription(self, ticker_id, subscription):
-        assert type(ticker_id) == int
+    def reqScannerSubscription(self, id, subscription):
+        assert type(id) == int
         assert type(subscription) == __import__("tws").ScannerSubscription
         VERSION = 3
 
         self._send(self.REQ_SCANNER_SUBSCRIPTION)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._sendMax(subscription.numberOfRows())
         self._send(subscription.instrument())
         self._send(subscription.locationCode())
@@ -304,10 +304,10 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True,
+    @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_REQMKT)
-    def reqMktData(self, ticker_id, contract, generic_tick_list, snapshot):
-        assert type(ticker_id) == int
+    def reqMktData(self, id, contract, generic_tick_list, snapshot):
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(generic_tick_list) == str
         assert type(snapshot) == bool
@@ -315,18 +315,18 @@ class EClientSocket(object):
 
         if contract.m_underComp and (self._server_version < self.MIN_SERVER_VER_UNDER_COMP):
             self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                            id=ticker_id,
+                            id=id,
                             msg="It does not support delta-neutral orders."))
             return
         if snapshot and (self._server_version < self.MIN_SERVER_VER_SNAPSHOT_MKT_DATA):
             self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                            id=ticker_id,
+                            id=id,
                             msg="It does not support snapshot market data requests."))
             return
 
         self._send(self.REQ_MKT_DATA)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -361,38 +361,38 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=24,
+    @requestmethod(has_id=True, min_server=24,
                    min_server_error_suffix="It does not support historical data query cancellation.",
                    generic_error=_EClientErrors.FAIL_SEND_CANHISTDATA)
-    def cancelHistoricalData(self, ticker_id):
-        assert type(ticker_id) == int
+    def cancelHistoricalData(self, id):
+        assert type(id) == int
         VERSION = 1
 
         self._send(self.CANCEL_HISTORICAL_DATA)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
                    min_server_error_suffix="It does not support realtime bar data query cancellation.",
                    generic_error=_EClientErrors.FAIL_SEND_CANRTBARS)
-    def cancelRealTimeBars(self, ticker_id):
-        assert type(ticker_id) == int
+    def cancelRealTimeBars(self, id):
+        assert type(id) == int
         VERSION = 1
 
         self._send(self.CANCEL_REAL_TIME_BARS)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=16,
+    @requestmethod(has_id=True, min_server=16,
                    min_server_error_suffix="It does not support historical data backfill.",
                    generic_error=_EClientErrors.FAIL_SEND_REQHISTDATA)
-    def reqHistoricalData(self, ticker_id, contract, end_date_time, duration_str,
+    def reqHistoricalData(self, id, contract, end_date_time, duration_str,
                           bar_size_setting, what_to_show, use_RTH, format_date):
-        assert type(ticker_id) == int
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(end_date_time) == str
         assert type(duration_str) == str
@@ -404,7 +404,7 @@ class EClientSocket(object):
 
         self._send(self.REQ_HISTORICAL_DATA)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -435,11 +435,11 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_REAL_TIME_BARS,
                    min_server_error_suffix="It does not support real time bars.",
                    generic_error=_EClientErrors.FAIL_SEND_REQRTBARS)
-    def reqRealTimeBars(self, ticker_id, contract, bar_size, what_to_show, use_RTH):
-        assert type(ticker_id) == int
+    def reqRealTimeBars(self, id, contract, bar_size, what_to_show, use_RTH):
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(bar_size) == str
         assert type(what_to_show) == str
@@ -448,7 +448,7 @@ class EClientSocket(object):
 
         self._send(self.REQ_REAL_TIME_BARS)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -493,18 +493,18 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=6,
+    @requestmethod(has_id=True, min_server=6,
                    min_server_error_suffix="It does not support market depth.",
                    generic_error=_EClientErrors.FAIL_SEND_REQMKTDEPTH)
-    def reqMktDepth(self, ticker_id, contract, num_rows):
-        assert type(ticker_id) == int
+    def reqMktDepth(self, id, contract, num_rows):
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(num_rows) == int
         VERSION = 3
 
         self._send(self.REQ_MKT_DEPTH)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -520,37 +520,37 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, 
+    @requestmethod(has_id=True, 
                    generic_error=_EClientErrors.FAIL_SEND_CANMKT)
-    def cancelMktData(self, ticker_id):
-        assert type(ticker_id) == int
+    def cancelMktData(self, id):
+        assert type(id) == int
         VERSION = 1
 
         self._send(self.CANCEL_MKT_DATA)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=6,
+    @requestmethod(has_id=True, min_server=6,
                    min_server_error_suffix="It does not support market depth.",
                    generic_error=_EClientErrors.FAIL_SEND_CANMKTDEPTH)
-    def cancelMktDepth(self, ticker_id):
-        assert type(ticker_id) == int
+    def cancelMktDepth(self, id):
+        assert type(id) == int
         VERSION = 1
 
         self._send(self.CANCEL_MKT_DEPTH)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
 
 
     @synchronized
-    @requestmethod(has_ticker=True, min_server=21,
+    @requestmethod(has_id=True, min_server=21,
                    min_server_error_suffix="It does not support options exercise from the API.",
                    generic_error=_EClientErrors.FAIL_SEND_REQMKT)  # Error type per Java, IB bug?
-    def exerciseOptions(self, ticker_id, contract, exercise_action,
+    def exerciseOptions(self, id, contract, exercise_action,
                         exercise_quantity, account, override):
-        assert type(ticker_id) == int
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(exercise_action) == int
         assert type(exercise_quantity) == int
@@ -560,7 +560,7 @@ class EClientSocket(object):
 
         self._send(self.EXERCISE_OPTIONS)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -577,10 +577,10 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_ticker=True, 
+    @requestmethod(has_id=True, 
                    generic_error=_EClientErrors.FAIL_SEND_ORDER)
-    def placeOrder(self, ticker_id, contract, order):
-        assert type(ticker_id) == int
+    def placeOrder(self, id, contract, order):
+        assert type(id) == int
         assert type(contract) == __import__("tws").Contract
         assert type(order) == __import__("tws").Order
         VERSION = 27
@@ -588,44 +588,44 @@ class EClientSocket(object):
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS:
             if (order.m_scaleInitLevelSize < order._DOUBLE_MAX_VALUE) or (order.m_scalePriceIncrement < order._DOUBLE_MAX_VALUE):
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                id=ticker_id,
+                                id=id,
                                 msg="It does not support Scale orders."))
                 return
         if self._server_version < self.MIN_SERVER_VER_SSHORT_COMBO_LEGS:
             for leg in contract.m_comboLegs:
                 if leg.m_shortSaleSlot or leg.m_designatedLocation:
                     self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                    id=ticker_id,
+                                    id=id,
                                     msg="It does not support SSHORT flag for combo legs."))
                     return
         if self._server_version < self.MIN_SERVER_VER_WHAT_IF_ORDERS:
             if order.m_whatIf:
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                id=ticker_id,
+                                id=id,
                                 msg="It does not support what-if orders."))
                 return
         if self._server_version < self.MIN_SERVER_VER_UNDER_COMP:
             if contract.m_underComp:
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                id=ticker_id,
+                                id=id,
                                 msg="It does not support delta-neutral orders."))
                 return
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS2:
             if (order.m_scaleSubsLevelSize < order._DOUBLE_MAX_VALUE):
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                id=ticker_id,
+                                id=id,
                                 msg="It does not support Subsequent Level Size for Scale orders."))
                 return
         if self._server_version < self.MIN_SERVER_VER_ALGO_ORDERS:
             if order.m_algoStrategy:
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
-                                id=ticker_id,
+                                id=id,
                                 msg="It does not support algo orders."))
                 return
 
         self._send(self.PLACE_ORDER)
         self._send(VERSION)
-        self._send(ticker_id)
+        self._send(id)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
