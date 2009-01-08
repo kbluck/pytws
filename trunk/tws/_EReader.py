@@ -61,9 +61,8 @@ class EReader(_thread_type):
 
                 reader_method = self._reader_map.get(message_id, None)
                 if not reader_method:
-                    raise _EClientErrors.TwsError(message_id,
-                                                  _EClientErrors.UNKNOWN_ID.code(),
-                                                  _EClientErrors.UNKNOWN_ID.msg())
+                    raise _EClientErrors.TwsError(source=_EClientErrors.UNKNOWN_ID,
+                                                  msg="Message ID: %d" % message_id)
                 reader_method(self)
 
             except Exception, e:
