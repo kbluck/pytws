@@ -838,6 +838,17 @@ class EClientSocket(object):
         self._send(VERSION)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_SERVER_LOG_LEVEL)
+    def setServerLogLevel(self, log_level):
+        assert type(log_level) == int
+        VERSION = 1
+
+        self._send(self.SET_SERVER_LOGLEVEL)
+        self._send(VERSION)
+        self._send(log_level)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
