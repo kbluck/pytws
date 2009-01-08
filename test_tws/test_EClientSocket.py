@@ -89,6 +89,21 @@ class test_EClientSocket(unittest.TestCase):
         self.assertTrue(self.client.isConnected())
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
+        
+        if __debug__:
+            self.client.eDisconnect()
+
+            self.assertRaises(AssertionError, self.client.eConnect, "")
+            self.assertRaises(AssertionError, self.client.eConnect, 0, start_reader=0)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, host=1, port=1)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, host="1", port="1")
+            self.assertRaises(AssertionError, self.client.eConnect, 0, socket=1)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, stream=1)
+
+            self.assertRaises(AssertionError, self.client.eConnect, 0, mock_socket, "123", 0, start_reader=False)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, host="123", port=1, socket=mock_socket)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, host="123", port=1, stream=StringIO())
+            self.assertRaises(AssertionError, self.client.eConnect, 0, socket=mock_socket, stream=StringIO())
 
     def test_eDisconnect(self):
         # Method is stubbed for now.
