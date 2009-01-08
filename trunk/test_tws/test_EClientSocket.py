@@ -82,9 +82,8 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, EClientSocket.faMsgTypeName, 4)
 
     def test_eConnect(self):
-        # Method is stubbed for now.
         self.assertFalse(self.client.isConnected())
-        self.client.eConnect(0, stream=StringIO(), start_reader=False)
+        self.client.eConnect(0, stream=StringIO(), negotiate=False, start_reader=False)
         self.assertTrue(self.client.isConnected())
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
@@ -93,6 +92,7 @@ class test_EClientSocket(unittest.TestCase):
             self.client.eDisconnect()
 
             self.assertRaises(AssertionError, self.client.eConnect, "")
+            self.assertRaises(AssertionError, self.client.eConnect, 0, negotiate=0)
             self.assertRaises(AssertionError, self.client.eConnect, 0, start_reader=0)
             self.assertRaises(AssertionError, self.client.eConnect, 0, host=1, port=1)
             self.assertRaises(AssertionError, self.client.eConnect, 0, host="1", port="1")
@@ -104,10 +104,20 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, self.client.eConnect, 0, host="123", port=1, stream=StringIO())
             self.assertRaises(AssertionError, self.client.eConnect, 0, socket=mock_socket, stream=StringIO())
 
+    def test_eConnect_negotiation(self):
+        test_stream = StringIO("%d\x00A1\x00" % self.client.SERVER_VERSION)
+        self.assertFalse(self.client.isConnected())
+        self.client.eConnect(0, stream=test_stream, start_reader=False)
+        self.assertTrue(self.client.isConnected())
+        self.assertEqual(len(self.wrapper.errors), 0)
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual("38\x00A1\x0042\x000\x00",
+                         test_stream.getvalue())
+
     def test_eDisconnect(self):
         # Method is stubbed for now.
         self.assertFalse(self.client.isConnected())
-        self.client.eConnect(0, stream=StringIO(), start_reader=False)
+        self.client.eConnect(0, stream=StringIO(), negotiate=False, start_reader=False)
         self.assertTrue(self.client.isConnected())
         self.client.eDisconnect()
         self.assertFalse(self.client.isConnected())
@@ -146,7 +156,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[0], (-1, Exception, ()))
 
     def test_close(self):
-        self.client.eConnect(0, stream=StringIO(), start_reader=False)
+        self.client.eConnect(0, stream=StringIO(), negotiate=False, start_reader=False)
         self.assertTrue(self.client.isConnected())
         self.client._close()
         self.assertFalse(self.client.isConnected())
@@ -165,7 +175,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), calldata_count)
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
         self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
-        self.client.eConnect(0, stream=StringIO(), start_reader=False)
+        self.client.eConnect(0, stream=self.stream, negotiate=False, start_reader=False)
 
     def _check_min_server(self, version, id, method, *args, **kwds):
         self.client._server_version = (version - 1)
