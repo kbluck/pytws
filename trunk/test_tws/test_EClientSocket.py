@@ -22,11 +22,9 @@ class test_EClientSocket(unittest.TestCase):
 
     def test_init(self):
         self.assertTrue(EClientSocket(mock_wrapper()))
-        self.assertTrue(EClientSocket(mock_wrapper(), mock_socket))
 
         if __debug__:
             self.assertRaises(AssertionError, EClientSocket, 0)
-            self.assertRaises(AssertionError, EClientSocket, self.wrapper, 0)
 
     def test_api_versions(self):
         # Want to make sure to notice version changes.
