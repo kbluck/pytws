@@ -244,6 +244,13 @@ class EClientSocket(object):
 
         if self._connected: return
 
+        if (host and port) and not socket:
+            socket = _socket_factory((host, port))
+
+        if socket and not stream:
+            stream = socket.makefile()
+            socket.close() # Won't actually close until stream does.
+
         self._stream = stream
         del stream
         self._reader = self.createReader(self._stream)
