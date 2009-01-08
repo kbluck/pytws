@@ -1232,3 +1232,15 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x001\x00" %
                          self.client.REQ_ALL_OPEN_ORDERS,
                          self.stream.getvalue())
+
+    def test_reqManagedAccts(self):
+        self._check_connection_required(self.client.reqManagedAccts)
+        self._check_error_raised(EClientErrors.FAIL_SEND_OORDER, EClientErrors.NO_VALID_ID,
+                                 self.client.reqManagedAccts)
+
+        self.stream.truncate(0)
+        self.client.reqManagedAccts()
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x00" %
+                         self.client.REQ_MANAGED_ACCTS,
+                         self.stream.getvalue())

@@ -869,6 +869,15 @@ class EClientSocket(object):
         self._send(VERSION)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_OORDER)  # Error type per Java, IB bug?
+    def reqManagedAccts(self):
+        VERSION = 1
+
+        self._send(self.REQ_MANAGED_ACCTS)
+        self._send(VERSION)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
