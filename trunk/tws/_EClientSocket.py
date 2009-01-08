@@ -798,6 +798,15 @@ class EClientSocket(object):
         self._send(id)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_OORDER)
+    def reqOpenOrders(self):
+        VERSION = 1
+
+        self._send(self.REQ_OPEN_ORDERS)
+        self._send(VERSION)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

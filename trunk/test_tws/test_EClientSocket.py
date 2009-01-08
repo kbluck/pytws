@@ -1136,3 +1136,15 @@ class test_EClientSocket(unittest.TestCase):
 
         if __debug__:
             self.assertRaises(AssertionError, self.client.cancelOrder, "")
+
+    def test_reqOpenOrders(self):
+        self._check_connection_required(self.client.reqOpenOrders)
+        self._check_error_raised(EClientErrors.FAIL_SEND_OORDER, EClientErrors.NO_VALID_ID,
+                                 self.client.reqOpenOrders)
+
+        self.stream.truncate(0)
+        self.client.reqOpenOrders()
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x001\x00" %
+                         self.client.REQ_OPEN_ORDERS,
+                         self.stream.getvalue())
