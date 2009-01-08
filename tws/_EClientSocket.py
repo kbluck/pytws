@@ -905,6 +905,17 @@ class EClientSocket(object):
         self._send(xml)
 
 
+    @synchronized
+    @requestmethod(min_server=33,
+                   min_server_error_suffix="It does not support current time requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQCURRTIME)  # Error type per Java, IB bug?
+    def reqCurrentTime(self):
+        VERSION = 1
+
+        self._send(self.REQ_CURRENT_TIME)
+        self._send(VERSION)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
