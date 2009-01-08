@@ -818,6 +818,17 @@ class EClientSocket(object):
         self._send(num_ids)
 
 
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_CORDER)   # Error type per Java, IB bug?
+    def reqNewsBulletins(self, all_msgs):
+        assert type(all_msgs) == bool
+        VERSION = 1
+
+        self._send(self.REQ_NEWS_BULLETINS)
+        self._send(VERSION)
+        self._send(all_msgs)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
