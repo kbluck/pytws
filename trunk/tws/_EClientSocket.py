@@ -916,6 +916,28 @@ class EClientSocket(object):
         self._send(VERSION)
 
 
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_FUNDAMENTAL_DATA,
+                   min_server_error_suffix="It does not support fundamental data requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQFUNDDATA)
+    def reqFundamentalData(self, id, contract, report_type):
+        assert type(id) == int
+        assert type(contract) == __import__("tws").Contract
+        assert type(report_type) == str
+        VERSION = 1
+
+        self._send(self.REQ_FUNDAMENTAL_DATA)
+        self._send(VERSION)
+        self._send(id)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_exchange)
+        self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        self._send(report_type)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
