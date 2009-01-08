@@ -87,7 +87,7 @@ class test_EClientSocket(unittest.TestCase):
     def test_eConnect(self):
         # Method is stubbed for now.
         self.assertFalse(self.client.isConnected())
-        self.client.eConnect()
+        self.client.eConnect(0)
         self.assertTrue(self.client.isConnected())
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
@@ -95,7 +95,7 @@ class test_EClientSocket(unittest.TestCase):
     def test_eDisconnect(self):
         # Method is stubbed for now.
         self.assertFalse(self.client.isConnected())
-        self.client.eConnect()
+        self.client.eConnect(0)
         self.assertTrue(self.client.isConnected())
         self.client.eDisconnect()
         self.assertFalse(self.client.isConnected())
@@ -134,7 +134,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[0], (-1, Exception, ()))
 
     def test_close(self):
-        self.client.eConnect()
+        self.client.eConnect(0)
         self.assertTrue(self.client.isConnected())
         self.client._close()
         self.assertFalse(self.client.isConnected())
@@ -153,7 +153,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.calldata), calldata_count)
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
         self.assertEqual(self.wrapper.errors[-1][:2], (EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED.code()))
-        self.client.eConnect()
+        self.client.eConnect(0)
 
     def _check_min_server(self, version, id, method, *args, **kwds):
         self.client._server_version = (version - 1)

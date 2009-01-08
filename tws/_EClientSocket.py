@@ -231,13 +231,21 @@ class EClientSocket(object):
 
 
     @synchronized
-    def eConnect(self):
-        # Trivial stub for now.
+    def eConnect(self, client_id, socket=None, host="", port=0):
+        assert type(client_id) == int
+        assert hasattr(socket, "makefile") or not socket
+        assert type(host) == str
+        assert type(port) == int
+        
+        if self._connected: return
+
         self._connected = True
 
 
     @synchronized
     def eDisconnect(self):
+        if not self._connected: return
+        
         # Trivial stub for now.
         self._connected = False
 
