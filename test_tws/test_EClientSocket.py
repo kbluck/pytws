@@ -60,11 +60,10 @@ class test_EClientSocket(unittest.TestCase):
 
     def test_createReader(self):
         self.assertTrue(issubclass(type(
-            self.client.createReader(self.client, StringIO())), EReader))
+            self.client.createReader(StringIO())), EReader))
 
         if __debug__:
-            self.assertRaises(AssertionError, self.client.createReader, 1, StringIO())
-            self.assertRaises(AssertionError, self.client.createReader, self.client, 1)
+            self.assertRaises(AssertionError, self.client.createReader, 1)
 
     def test_getters(self):
         self.assertEqual(self.client.wrapper(), self.wrapper)

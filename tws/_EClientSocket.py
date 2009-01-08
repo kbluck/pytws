@@ -221,11 +221,10 @@ class EClientSocket(object):
         self.m_reader = None
 
 
-    def createReader(self, connection, input_stream):
-        assert issubclass(type(connection), type(self))
+    def createReader(self, input_stream):
         assert hasattr(input_stream, "read")
 
-        return __import__("tws").EReader(connection, input_stream)
+        return __import__("tws").EReader(self, input_stream)
 
 
     @synchronized

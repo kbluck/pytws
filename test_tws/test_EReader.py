@@ -17,7 +17,7 @@ class test_EReader(unittest.TestCase):
         self.wrapper = mock_wrapper()
         self.connection = EClientSocket(self.wrapper)
         self.stream = StringIO()
-        self.reader = self.connection.createReader(self.connection, self.stream)
+        self.reader = self.connection.createReader(self.stream)
         self.calldata = []
 
     def test_init(self):
