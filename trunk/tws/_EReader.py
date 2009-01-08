@@ -39,12 +39,12 @@ class EReader(_thread_type):
 
 
     def interrupt(self):
-        self._interrupted = True
+        self._stream.close()
 
 
     def run(self):
         try:
-            while not self._interrupted and self._readNextMessage():
+            while not self._stream.closed and self._readNextMessage():
                 pass
         except Exception:
             assert False  # Should never happen.
@@ -68,7 +68,8 @@ class EReader(_thread_type):
 
             except Exception, e:
                 try:
-                    self._wrapper.error(e)
+                    if not self._stream.closed:
+                        self._wrapper.error(e)
                 except: pass
                 return False
 
