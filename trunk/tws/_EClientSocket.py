@@ -750,6 +750,21 @@ class EClientSocket(object):
         if self._server_version >= self.MIN_SERVER_VER_WHAT_IF_ORDERS:
             self._send(order.m_whatIf)
 
+
+    @synchronized
+    @requestmethod(generic_error=_EClientErrors.FAIL_SEND_ACCT)
+    def reqAccountUpdates(self, subscribe, acct_code):
+        assert type(subscribe) == bool
+        assert type(acct_code) == str
+        VERSION = 2
+
+        self._send(self.REQ_ACCOUNT_DATA)
+        self._send(VERSION)
+        self._send(subscribe)
+        if self._server_version >= 9:
+            self._send(acct_code)
+
+
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod

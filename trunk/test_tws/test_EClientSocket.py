@@ -1053,3 +1053,29 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x0027\x001\x00v5\x00w6\x00x7\x0019.5\x00y8\x00z9\x00a2\x00d5\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x001\x001\x00\x005.5\x00f7\x00g8\x00i1\x00k3\x00l4\x00j2\x0010\x00m5\x005\x00h9\x00p8\x001\x009\x003.5\x001\x001\x006.5\x0011\x007.5\x008.5\x009.5\x0010.5\x0011.5\x001\x0012.5\x0012\x00n6\x0013.5\x0013\x00\x00\x0014\x004.5\x0020.5\x0023.5\x0021.5\x00q9\x00r1\x001\x0022\x000.0\x000.0\x00v5\x002\x00t3\x00u4\x00v5\x00w6\x001\x00" %
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
+
+    def test_reqAccountUpdates(self):
+        self._check_connection_required(self.client.reqAccountUpdates, True, "")
+        self._check_error_raised(EClientErrors.FAIL_SEND_ACCT, EClientErrors.NO_VALID_ID,
+                                 self.client.reqAccountUpdates, True, "")
+
+        self.assertTrue(self.client.serverVersion() < 9)
+        self.stream.truncate(0)
+        self.client.reqAccountUpdates(True, "A1")
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x002\x001\x00" %
+                         self.client.REQ_ACCOUNT_DATA,
+                         self.stream.getvalue())
+
+        self.client._server_version = 9
+        self.assertEqual(self.client.serverVersion(), 9)
+        self.stream.truncate(0)
+        self.client.reqAccountUpdates(True, "A1")
+        self.assertEqual(len(self.wrapper.errors), 2)
+        self.assertEqual("%s\x002\x001\x00A1\x00" %
+                         self.client.REQ_ACCOUNT_DATA,
+                         self.stream.getvalue())
+
+        if __debug__:
+            self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", "")
+            self.assertRaises(AssertionError, self.client.reqAccountUpdates, "", True)
