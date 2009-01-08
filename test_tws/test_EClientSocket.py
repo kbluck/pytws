@@ -98,6 +98,7 @@ class test_EClientSocket(unittest.TestCase):
             self.assertRaises(AssertionError, self.client.eConnect, 0, host="1", port="1")
             self.assertRaises(AssertionError, self.client.eConnect, 0, socket=1)
             self.assertRaises(AssertionError, self.client.eConnect, 0, stream=1)
+            self.assertRaises(AssertionError, self.client.eConnect, 0, stdout=1)
 
             self.assertRaises(AssertionError, self.client.eConnect, 0, mock_socket, "123", 0, start_reader=False)
             self.assertRaises(AssertionError, self.client.eConnect, 0, host="123", port=1, socket=mock_socket)

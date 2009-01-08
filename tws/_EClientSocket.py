@@ -229,10 +229,12 @@ class EClientSocket(object):
 
     @synchronized
     def eConnect(self, client_id, stream=None, socket=None, host="", port=0,
-                 negotiate=True, start_reader=True):
+                 negotiate=True, start_reader=True,
+                 stdout=__import__("sys").stdout):
         assert type(client_id) == int
         assert type(negotiate) == bool
         assert type(start_reader) == bool
+        assert hasattr(stdout, "write") or not stdout
         assert hasattr(stream, "read") or not stream
         assert hasattr(socket, "makefile") or not socket
         assert type(host) == str
@@ -255,10 +257,12 @@ class EClientSocket(object):
                 self._stream.flush()
                 self._stream.seek(0, 0)
                 self._server_version = self._reader._readInt();
-                print("Server Version: %d" % self._server_version);
+                if stdout:
+                    stdout.write("Server Version: %d\n" % self._server_version);
                 if self._server_version >= 20:
                     self._tws_time = self._reader._readStr()
-                    print("TWS Time at connection: %s" % self._tws_time)
+                    if stdout:
+                        stdout.write("TWS Time at connection: %s\n" % self._tws_time)
                 if self._server_version < self.SERVER_VERSION:
                     self.eDisconnect()
                     self._wrapper.error(_EClientErrors.TwsError(source=_EClientErrors.UPDATE_TWS))
