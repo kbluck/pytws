@@ -14,6 +14,6 @@ class _wrapper(EWrapper):
 
 class test_EWrapper(unittest.TestCase):
     '''Test class "tws.EWrapper"'''
-    
+
     def setUp(self):
         self.wrapper = _wrapper()

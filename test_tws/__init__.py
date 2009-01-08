@@ -29,7 +29,7 @@ class mock_wrapper(tws.EWrapper):
 
     def __getattr__(self, name):
         # Any arbitrary unknown attribute is mapped to a function call which is
-        # recorded into self.calldata. 
+        # recorded into self.calldata.
         return lambda *args, **kwds: self.calldata.append((name, args, kwds))
 
 
@@ -54,7 +54,7 @@ class test_synchronized(unittest.TestCase):
     '''Test decorator "tws.synchronized"'''
 
     def setUp(self):
-        self._mutex = threading.Lock() 
+        self._mutex = threading.Lock()
         self._old_mutex = tws._mutex
         tws._mutex = self._mutex
 

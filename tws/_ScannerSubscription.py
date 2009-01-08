@@ -7,7 +7,7 @@ __version__   = "$Id$"
 class ScannerSubscription(object):
     '''Data structure containing attributes used to describe the elements
        of a market scan.
-       
+
        Somebody at IB decided to undertake a completely superfluous exercise
        in overloaded "getter/setter" methods for absolutely no useful reason
        that I can see. Grr...
@@ -163,7 +163,7 @@ class ScannerSubscription(object):
 
     def stockTypeFilter(self, val=None):
         '''Include only specified types of stocks.
-        
+
            Valid values are:
            * ALL (excludes nothing)
            * STOCK (excludes ETFs)

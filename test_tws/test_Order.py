@@ -12,7 +12,7 @@ class test_Order(unittest.TestCase):
 
     def test_init(self):
         test1 = Order()
-    
+
         self.assertEqual(test1.m_orderId, 0)
         self.assertEqual(test1.m_clientId, 0)
         self.assertEqual(test1.m_permId, 0)
@@ -216,7 +216,7 @@ class test_Order(unittest.TestCase):
         test2 = Order()
         test3 = Order()
         test4 = Order()
-        
+
         test3.m_permId = 3
 
         test4.m_orderId = 1

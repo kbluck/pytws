@@ -6,7 +6,7 @@ __version__   = "$Id$"
 
 class TagValue(object):
     '''Tag/Value pair data structure.
-    
+
        Used to pass parameters for Algo orders.
     '''
 

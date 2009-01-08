@@ -30,7 +30,7 @@ class Contract(object):
         # Combos
         self.m_comboLegs = combo_legs
         self.m_comboLegsDescrip = ""
-    
+
         # delta neutrals
         self.m_underComp = self._undercomp_factory();
 

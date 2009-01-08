@@ -21,7 +21,7 @@ class test_ComboLeg(unittest.TestCase):
     def test_init(self):
         test1 = ComboLeg()
         test2 = ComboLeg(1, 2, "ab", "cd", 3, 4, "ef")
-    
+
         self.assertEqual(test1.m_conId, 0)
         self.assertEqual(test1.m_ratio, 0)
         self.assertEqual(test1.m_action, "")
@@ -61,7 +61,7 @@ class test_ComboLeg(unittest.TestCase):
         test1 = ComboLeg()
         test2 = ComboLeg()
         test3 = ComboLeg(1, 2, "ab", "cd", 3, 4, "ef")
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)
@@ -74,4 +74,3 @@ class test_ComboLeg(unittest.TestCase):
          self.assertEqual(ComboLeg.OPEN, 1)
          self.assertEqual(ComboLeg.CLOSE, 2)
          self.assertEqual(ComboLeg.UNKNOWN, 3)
- 

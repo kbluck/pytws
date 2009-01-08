@@ -13,7 +13,7 @@ class test_Execution(unittest.TestCase):
     def test_init(self):
         test1 = Execution()
         test2 = Execution(1, 2, "ab", "cd", "ef", "gh", "ij", 3, 3.5, 4, 5, 6, 7.5)
-    
+
         self.assertEqual(test1.m_orderId, 0)
         self.assertEqual(test1.m_clientId, 0)
         self.assertEqual(test1.m_execId, "")
@@ -77,11 +77,10 @@ class test_Execution(unittest.TestCase):
         test1 = Execution()
         test2 = Execution()
         test3 = Execution(1, 2, "ab")
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)
         self.assertNotEqual(test1, "")
         self.assertEqual(test3, test3)
         self.assertNotEqual(test1, test3)
-        

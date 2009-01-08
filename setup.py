@@ -6,7 +6,7 @@
    Brokers LLC Trader Workstation software.  PyTWS implements the same
    interface and functionality as the proprietary Java API distributed by
    Interactive Brokers.
-   
+
    PyTWS is not reviewed, supported or endorsed by Interactive Brokers LLC.
 '''
 

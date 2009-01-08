@@ -9,7 +9,7 @@ class ComboLeg(object):
        combination orders.
     '''
 
-    def __init__(self, con_id=0, ratio=0, action="", exchange="", open_close=0, 
+    def __init__(self, con_id=0, ratio=0, action="", exchange="", open_close=0,
                        short_sale_slot=0, designated_location=""):
         self.m_conId = con_id
         self.m_ratio = ratio

@@ -33,7 +33,7 @@ class test_UnderComp(unittest.TestCase):
         test3.m_conId = 1
         test3.m_delta = 2.5
         test3.m_price = 3.0
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)
@@ -49,4 +49,3 @@ class test_UnderComp(unittest.TestCase):
         test2.m_price = 3.0
         self.assertFalse(test1)
         self.assertTrue(test2)
-        

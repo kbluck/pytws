@@ -13,7 +13,7 @@ class test_OrderState(unittest.TestCase):
     def test_init(self):
         test1 = OrderState()
         test2 = OrderState("ab", "cd", "ef", "gh", 3.5, 4.5, 5.5, "ij", "kl")
-    
+
         self.assertEqual(test1.m_status, "")
         self.assertEqual(test1.m_initMargin, "")
         self.assertEqual(test1.m_maintMargin, "")
@@ -61,11 +61,10 @@ class test_OrderState(unittest.TestCase):
         test1 = OrderState()
         test2 = OrderState()
         test3 = OrderState("ab", "cd", "ef", "gh", 3.5, 4.5, 5.5, "ij", "kl")
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)
         self.assertNotEqual(test1, "")
         self.assertEqual(test3, test3)
         self.assertNotEqual(test1, test3)
-        

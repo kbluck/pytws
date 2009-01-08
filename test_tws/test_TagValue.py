@@ -29,11 +29,10 @@ class test_TagValue(unittest.TestCase):
         test1 = TagValue()
         test2 = TagValue()
         test3 = TagValue("AB","CD")
-        
+
         self.assertEqual(test1, test1)
         self.assertEqual(test1, test2)
         self.assertNotEqual(test1, None)
         self.assertNotEqual(test1, "")
         self.assertEqual(test3, test3)
         self.assertNotEqual(test1, test3)
-        

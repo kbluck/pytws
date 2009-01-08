@@ -11,13 +11,13 @@ import tws.EClientErrors as _EClientErrors
 from tws import synchronized
 
 
-def requestmethod(has_id=False, min_server=0, 
+def requestmethod(has_id=False, min_server=0,
                   min_server_error_suffix="",
                   generic_error=_EClientErrors.TwsError(),
                   generic_error_suffix=""):
     '''Socket request-method decorator.
 
-       Eliminates repetitive error-checking boilerplate from request methods.   
+       Eliminates repetitive error-checking boilerplate from request methods.
     '''
     assert type(has_id) == bool
     assert type(min_server) == int
@@ -40,7 +40,7 @@ def requestmethod(has_id=False, min_server=0,
                 # Enforce minimum server version, if any.
                 if self._server_version < min_server:
                     self._error(_EClientErrors.TwsError(
-                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID) 
+                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID)
                                     if has_id else _EClientErrors.NO_VALID_ID,
                                 source=_EClientErrors.UPDATE_TWS,
                                 msg=min_server_error_suffix or None))
@@ -55,7 +55,7 @@ def requestmethod(has_id=False, min_server=0,
             except:
                 self._error(_EClientErrors.TwsError(
                                 source=generic_error,
-                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID) 
+                                id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID)
                                     if has_id else _EClientErrors.NO_VALID_ID,
                                 msg=generic_error_suffix or method.__name__))
 
@@ -68,7 +68,7 @@ class EClientSocket(object):
     '''
 
     def __init__(self, wrapper, socket_factory=__import__("socket").socket):
-        assert issubclass(type(wrapper), __import__("tws").EWrapper)  
+        assert issubclass(type(wrapper), __import__("tws").EWrapper)
         assert callable(socket_factory)
 
         self._wrapper = wrapper
@@ -210,7 +210,7 @@ class EClientSocket(object):
 
 
     def checkConnected(self, host):
-        assert issubclass(type(host), str) or (host == None)  
+        assert issubclass(type(host), str) or (host == None)
 
         if self._connected:
             self._wrapper.error(_EClientErrors.ALREADY_CONNECTED)
@@ -236,7 +236,7 @@ class EClientSocket(object):
         assert hasattr(socket, "makefile") or not socket
         assert type(host) == str
         assert type(port) == int
-        
+
         if self._connected: return
 
         self._connected = True
@@ -245,7 +245,7 @@ class EClientSocket(object):
     @synchronized
     def eDisconnect(self):
         if not self._connected: return
-        
+
         # Trivial stub for now.
         self._connected = False
 
@@ -528,7 +528,7 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_id=True, 
+    @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_CANMKT)
     def cancelMktData(self, id):
         assert type(id) == int
@@ -585,7 +585,7 @@ class EClientSocket(object):
 
 
     @synchronized
-    @requestmethod(has_id=True, 
+    @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_ORDER)
     def placeOrder(self, id, contract, order):
         assert type(id) == int

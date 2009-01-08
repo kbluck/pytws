@@ -39,7 +39,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.client.checkConnected(None), None)
         self.assertEqual(1, len(self.wrapper.errors))
         self.assertEqual(self.wrapper.errors[0],
-                         (EClientErrors.NO_VALID_ID, 
+                         (EClientErrors.NO_VALID_ID,
                           EClientErrors.ALREADY_CONNECTED.code(),
                           EClientErrors.ALREADY_CONNECTED.msg()))
 
@@ -56,7 +56,7 @@ class test_EClientSocket(unittest.TestCase):
         self.client.connectionError()
         self.assertEqual(1, len(self.wrapper.errors))
         self.assertEqual(self.wrapper.errors[0],
-                         (EClientErrors.NO_VALID_ID, 
+                         (EClientErrors.NO_VALID_ID,
                           EClientErrors.CONNECT_FAIL.code(),
                           EClientErrors.CONNECT_FAIL.msg()))
 
@@ -182,15 +182,15 @@ class test_EClientSocket(unittest.TestCase):
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
 
-        @_requestmethod(min_server=2000, min_server_error_suffix="Test2000")        
+        @_requestmethod(min_server=2000, min_server_error_suffix="Test2000")
         def test_call(self):
             self._wrapper.test_call()
-        
-        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, generic_error_suffix="Test123")        
+
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, generic_error_suffix="Test123")
         def test_raise_no_ticker(self):
             raise Exception()
 
-        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_id=True)        
+        @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_id=True)
         def test_raise_with_ticker(self, id):
             assert type(id) == int
             raise Exception()
@@ -255,7 +255,7 @@ class test_EClientSocket(unittest.TestCase):
 
     def test_reqScannerSubscription(self):
         subscription = tws.ScannerSubscription()
-        
+
         self._check_connection_required(self.client.reqScannerSubscription, 1, subscription)
         self._check_min_server(24, 2, self.client.reqScannerSubscription, 2, subscription)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support API scanner subscription.")
@@ -269,7 +269,7 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x003\x004\x00-1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" %
                          self.client.REQ_SCANNER_SUBSCRIPTION,
                          self.stream.getvalue())
-        
+
         subscription.numberOfRows(1)
         subscription.instrument("A1")
         subscription.locationCode("B2")
@@ -327,11 +327,11 @@ class test_EClientSocket(unittest.TestCase):
                                  self.client.reqMktData, 1, tws.Contract(), "", False)
 
         contract = tws.Contract()
-        contract.m_underComp.m_conId = 1 
+        contract.m_underComp.m_conId = 1
         self._check_min_server(self.client.MIN_SERVER_VER_UNDER_COMP, 1, self.client.reqMktData,
                                1, contract, "", False)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support delta-neutral orders.")
-        
+
         self._check_min_server(self.client.MIN_SERVER_VER_SNAPSHOT_MKT_DATA, 2, self.client.reqMktData,
                                2, tws.Contract(), "", True)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support snapshot market data requests.")
@@ -371,7 +371,7 @@ class test_EClientSocket(unittest.TestCase):
 
         legs = contract.m_comboLegs
         contract.m_comboLegs = []
-        contract.m_secType = self.client.BAG_SEC_TYPE        
+        contract.m_secType = self.client.BAG_SEC_TYPE
         self.stream.truncate(0)
         self.client.reqMktData(14, contract, "P7", False)
         self.assertEqual(len(self.wrapper.errors), 4)
@@ -528,8 +528,8 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual("%s\x004\x0017\x00A1\x00B2\x00C3\x002.5\x00D4\x00E5\x00F6\x00I9\x00G7\x00H8\x001\x00P7\x00R9\x00Q8\x0011\x00S1\x0012\x00" %
                          self.client.REQ_HISTORICAL_DATA,
                          self.stream.getvalue())
-       
-        contract.m_secType = self.client.BAG_SEC_TYPE        
+
+        contract.m_secType = self.client.BAG_SEC_TYPE
         self.stream.truncate(0)
         self.client.reqHistoricalData(17, contract, "P7", "Q8", "R9", "S1", 11, 12)
         self.assertEqual(len(self.wrapper.errors), 3)
@@ -850,14 +850,14 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
 
-        contract.m_secType = self.client.BAG_SEC_TYPE        
+        contract.m_secType = self.client.BAG_SEC_TYPE
         self.stream.truncate(0)
         self.client.placeOrder(1, contract, order)
         self.assertEqual(len(self.wrapper.errors), 9)
         self.assertEqual("%s\x0027\x001\x00v5\x00BAG\x00x7\x0019.5\x00y8\x00a2\x00b3\x00c4\x00a1\x004\x00b2\x001.5\x002.5\x00c3\x00d4\x00o7\x001\x001\x00e5\x000\x006\x001\x001\x007\x008\x000\x001\x002\x003\x004\x00J1\x00K2\x005\x007\x008\x00M4\x00N5\x009\x00" %
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
-        contract.m_secType = "w6"        
+        contract.m_secType = "w6"
 
         self.client._server_version = 9
         self.assertEqual(self.client.serverVersion(), 9)
@@ -1024,7 +1024,7 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
 
-        contract.m_underComp.m_conId = 22 
+        contract.m_underComp.m_conId = 22
         order.m_scaleSubsLevelSize = 23.5
         self.client._server_version = 40
         self.assertEqual(self.client.serverVersion(), 40)
@@ -1035,7 +1035,7 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
 
-        order.m_algoStrategy = "v5" 
+        order.m_algoStrategy = "v5"
         order.m_algoParams = [tws.TagValue('t3','u4'),tws.TagValue('v5','w6')]
         self.client._server_version = 41
         self.assertEqual(self.client.serverVersion(), 41)
@@ -1079,7 +1079,7 @@ class test_EClientSocket(unittest.TestCase):
         self._check_connection_required(self.client.reqExecutions, 2, tws.ExecutionFilter())
         self._check_error_raised(EClientErrors.FAIL_SEND_EXEC, EClientErrors.NO_VALID_ID,
                                  self.client.reqExecutions, 3, tws.ExecutionFilter())
-        
+
         filter = tws.ExecutionFilter(1, "ab", "cd", "ef", "gh", "ij", "kl")
 
         self.assertTrue(self.client.serverVersion() < self.client.MIN_SERVER_VER_EXECUTION_DATA_CHAIN)

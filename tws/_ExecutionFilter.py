@@ -9,7 +9,7 @@ class ExecutionFilter(object):
        criteria.
     '''
 
-    def __init__(self, client_id=0, acct_code="", time="", symbol="", 
+    def __init__(self, client_id=0, acct_code="", time="", symbol="",
                        sec_type="", exchange="", side=""):
         self.m_clientId = client_id
         self.m_acctCode = acct_code
@@ -24,7 +24,7 @@ class ExecutionFilter(object):
         if id(self) == id(other): return True
         if not isinstance(other, self.__class__): return False
         return True if (
-            (self.m_clientId == other.m_clientId) and 
+            (self.m_clientId == other.m_clientId) and
             (self.m_acctCode.lower() == other.m_acctCode.lower()) and
             (self.m_time.lower() == other.m_time.lower()) and
             (self.m_symbol.lower() == other.m_symbol.lower()) and
