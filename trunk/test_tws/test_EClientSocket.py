@@ -108,11 +108,11 @@ class test_EClientSocket(unittest.TestCase):
     def test_eConnect_negotiation(self):
         test_stream = StringIO("%d\x00A1\x00" % self.client.SERVER_VERSION)
         self.assertFalse(self.client.isConnected())
-        self.client.eConnect(0, stream=test_stream, start_reader=False)
+        self.client.eConnect(1, stream=test_stream, start_reader=False)
         self.assertTrue(self.client.isConnected())
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual("38\x00A1\x0042\x000\x00",
+        self.assertEqual("38\x00A1\x0042\x001\x00",
                          test_stream.getvalue())
 
     def test_eDisconnect(self):
@@ -122,6 +122,10 @@ class test_EClientSocket(unittest.TestCase):
         self.assertTrue(self.client.isConnected())
         self.client.eDisconnect()
         self.assertFalse(self.client.isConnected())
+        self.assertEqual(self.client.serverVersion(),0)
+        self.assertEqual(self.client.TwsConnectionTime(), "")
+        self.assertFalse(self.client._stream)
+        self.assertFalse(self.client._reader)
         self.assertEqual(len(self.wrapper.errors), 0)
         self.assertEqual(len(self.wrapper.calldata), 0)
 
