@@ -66,6 +66,8 @@ def requestmethod(has_id=False, min_server=0,
 class EClientSocket(object):
     '''Socket client which connects to the TWS socket server.
     '''
+    
+    from socket import socket as _socket_factory
 
     def __init__(self, wrapper):
         assert issubclass(type(wrapper), __import__("tws").EWrapper)
@@ -245,10 +247,11 @@ class EClientSocket(object):
         if self._connected: return
 
         if (host and port) and not socket:
-            socket = _socket_factory((host, port))
+            socket = self._socket_factory()
+            socket.connect((host, port))
 
         if socket and not stream:
-            stream = socket.makefile()
+            stream = socket.makefile("r+")
             socket.close() # Won't actually close until stream does.
 
         self._stream = stream
@@ -258,10 +261,12 @@ class EClientSocket(object):
             self._connected = self._stream and not self._stream.closed
 
             if negotiate:
-                self._stream.seek(0, 2)
+                if hasattr(self._stream, "seek"):
+                    self._stream.seek(0, 2)
                 self._send(self.CLIENT_VERSION);
                 self._stream.flush()
-                self._stream.seek(0, 0)
+                if hasattr(self._stream, "seek"):
+                    self._stream.seek(0, 0)
                 self._server_version = self._reader._readInt();
                 if stdout:
                     stdout.write("Server Version: %d\n" % self._server_version);
@@ -272,7 +277,8 @@ class EClientSocket(object):
                 self._tws_time = self._reader._readStr()
                 if stdout:
                     stdout.write("TWS Time at connection: %s\n" % self._tws_time)
-                self._stream.seek(0, 2)
+                if hasattr(self._stream, "seek"):
+                    self._stream.seek(0, 2)
                 self._send(client_id)
                 self._stream.flush()
 
