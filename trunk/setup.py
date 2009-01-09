@@ -3,23 +3,23 @@
 '''PyTWS - Interactive Brokers Python API
 
    PyTWS is a Python port of the API used for controlling the Interactive
-   Brokers LLC Trader Workstation software.  PyTWS implements the same
+   Brokers LLC Trader Workstation software.  PyTWS implements similar
    interface and functionality as the proprietary Java API distributed by
    Interactive Brokers.
 
    PyTWS is not reviewed, supported or endorsed by Interactive Brokers LLC.
 '''
 
-__copyright__ = "Copyright (c) 2008 Kevin J Bluck"
+__copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
 
 from distutils.core import setup
 
 
 classifiers = '''
-    Development Status :: 2 - Pre-Alpha
+    Development Status :: 3 - Alpha
     Intended Audience :: Developers
-    License :: OSI Approved :: MIT/X Consortium License
+    OSI Approved :: BSD License (revised)
     Natural Language :: English
     Operating System :: OS Independent
     Programming Language :: Python
@@ -30,12 +30,12 @@ classifiers = '''
 
 setup(
     name = "PyTWS",
-    version = "0.0.1-9.61b",
+    version = "9.60b-a1",
     description = __doc__.split("\n")[0],
     author = "Kevin Bluck",
     author_email = "kevin.bluck@gmail.com",
     url = "",
-    license = "MIT License",
+    license = "BSD License (revised)",
     packages = ["tws"],
     classifiers = filter(None, classifiers.split("\n")),
     long_description = "\n".join(__doc__.split("\n")[2:]),
