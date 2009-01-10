@@ -2,3 +2,6 @@
 
 __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
+
+
+from tws.helper._wrapper import QueueWrapper, SynchronizedWrapper
