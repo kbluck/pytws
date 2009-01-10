@@ -215,10 +215,8 @@ class test_EClientSocket(unittest.TestCase):
         
         # Restore client connection which was closed by error condition.
         self.stream = StringIO()
-        self.client._stream = self.stream
         self.client._server_version = server_version
-        self.client._connected = True
-        self.client._reader = self.client.createReader(self.stream)
+        self.client.eConnect(0, stream=self.stream, negotiate=False, start_reader=False)
 
     def test_requestmethod_decorator(self):
         from tws._EClientSocket import _requestmethod
@@ -250,14 +248,6 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id. test_raise_with_ticker")
         self._check_error_raised(EClientErrors.UNKNOWN_ID, 321, test_raise_with_ticker, self.client, id=321)
         self.assertEqual(self.wrapper.errors[-1][2], "Fatal Error: Unknown message id. test_raise_with_ticker")
-
-        """test_raise_with_ticker(self.client, 123)
-        test_raise_with_ticker(self.client, id=321)
-        self.assertEqual(len(self.wrapper.calldata), 0)
-        self.assertEqual(len(self.wrapper.errors), 5)
-        self.assertEqual(self.wrapper.errors[3][:2], (123, 505))
-        self.assertEqual(self.wrapper.errors[4][:2], (321, 505))
-        self.assertEqual(self.wrapper.errors[3][2], "Fatal Error: Unknown message id. test_raise_with_ticker")"""
 
         # Check assertion is not caught by wrapper
         if __debug__:
