@@ -10,14 +10,6 @@ from tws import ComboLeg
 class test_ComboLeg(unittest.TestCase):
     '''Test type "tws.ComboLeg"'''
 
-    m_conId = 0
-    m_ratio = 0
-    m_action = ""
-    m_exchange = ""
-    m_openClose = 0
-    m_shortSaleSlot = 0
-    m_designatedLocation = ""
-
     def test_init(self):
         test1 = ComboLeg()
         test2 = ComboLeg(1, 2, "ab", "cd", 3, 4, "ef")
