@@ -210,8 +210,8 @@ class test_EClientSocket(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), error_count + 1)
         self.assertEqual(self.wrapper.errors[error_count][:2], (test_id, error.code()))
         
-        # Truncate extra "connectionClosed" call from calldata.
-        self.wrapper.calldata = self.wrapper.calldata[:-1]
+        # Truncate extra data from wrapper; already checked.
+        self.wrapper.calldata.pop()
         
         # Restore client connection which was closed by error condition.
         self.stream = StringIO()
