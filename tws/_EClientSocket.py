@@ -58,6 +58,7 @@ def requestmethod(has_id=False, min_server=0,
                                 id=kwds.get("id", args[0] if args else _EClientErrors.NO_VALID_ID)
                                     if has_id else _EClientErrors.NO_VALID_ID,
                                 msg=generic_error_suffix or method.__name__))
+                self._close()
 
         return _decorated
     return _decorator
