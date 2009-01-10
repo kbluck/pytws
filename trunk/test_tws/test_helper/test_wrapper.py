@@ -16,6 +16,7 @@ class test_QueueWrapper(unittest.TestCase):
         self.assertTrue(isinstance(QueueWrapper(), Queue.Queue))
         self.assertTrue(QueueWrapper().empty())
         self.assertFalse(QueueWrapper().full())
+        self.assertEqual(QueueWrapper().qsize(), 0)
         self.assertRaises(Queue.Empty, QueueWrapper().get_nowait)
 
 
