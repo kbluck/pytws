@@ -1,4 +1,4 @@
-'''Useful EWrapper subclasses.'''
+'''Implements EWrapper subclass QueueWrapper.'''
 
 __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
@@ -19,19 +19,14 @@ class QueueWrapper(Queue, EWrapper):
         QueueWrapper._queue_type.put(self, item=(method_name, args, kwds),
                                      block=False, timeout=None)
 
-
     def put(self, *args, **kwds):
         '''Superclass method 'put' is not implemented.'''
         raise NotImplementedError
 
-    
+
     def put_nowait(self, *args, **kwds):
         '''Superclass method 'put_nowait' is not implemented.'''
         raise NotImplementedError
-
-
-class SynchronizedWrapper(EWrapper):
-    pass
 
 
 del EWrapper
