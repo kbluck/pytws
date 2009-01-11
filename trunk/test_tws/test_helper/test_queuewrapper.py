@@ -1,4 +1,4 @@
-'''Unit test package for module "tws.helper._wrapper".'''
+'''Unit test package for module "tws.helper._queuewrapper".'''
 
 __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
@@ -6,7 +6,7 @@ __version__   = "$Id$"
 import unittest
 import Queue
 from tws import EWrapper
-from tws.helper import QueueWrapper, SynchronizedWrapper
+from tws.helper import QueueWrapper
 
 
 class test_QueueWrapper(unittest.TestCase):
@@ -31,9 +31,3 @@ class test_QueueWrapper(unittest.TestCase):
         self.assertFalse(self.wrapper.empty())
         self.assertEqual(self.wrapper.get(), ("test",("A1",2),{"B2":3}))
         self.assertTrue(self.wrapper.empty())
-
-
-class test_SynchronizedWrapper(unittest.TestCase):
-
-    def test_init(self):
-        self.assertTrue(isinstance(SynchronizedWrapper(), EWrapper))
