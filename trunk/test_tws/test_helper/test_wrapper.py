@@ -18,6 +18,9 @@ class test_QueueWrapper(unittest.TestCase):
         self.assertFalse(QueueWrapper().full())
         self.assertEqual(QueueWrapper().qsize(), 0)
         self.assertRaises(Queue.Empty, QueueWrapper().get_nowait)
+        
+        self.assertRaises(NotImplementedError, QueueWrapper().put)
+        self.assertRaises(NotImplementedError, QueueWrapper().put_nowait)
 
 
 class test_SynchronizedWrapper(unittest.TestCase):
