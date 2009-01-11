@@ -15,18 +15,21 @@ class QueueWrapper(Queue, EWrapper):
         super(QueueWrapper, self).__init__()
 
 
+    if __debug__: # Assert structure of items put into Queue
+        def _put(self, item):
+            assert type(item) == tuple
+            assert len(item) == 3
+            assert type(item[0]) == str
+            assert type(item[1]) == tuple
+            assert type(item[2]) == dict
+
+            QueueWrapper._queue_type._put(self, item)
+
+
     def _put_wrapper_call(self, method_name, *args, **kwds):
         QueueWrapper._queue_type.put(self, item=(method_name, args, kwds),
                                      block=False, timeout=None)
 
-    def put(self, *args, **kwds):
-        '''Superclass method 'put' is not implemented.'''
-        raise NotImplementedError
-
-
-    def put_nowait(self, *args, **kwds):
-        '''Superclass method 'put_nowait' is not implemented.'''
-        raise NotImplementedError
 
 
 del EWrapper
