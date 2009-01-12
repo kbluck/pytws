@@ -33,10 +33,6 @@ class test_EClientErrors(unittest.TestCase):
         self.assertEqual(test2.args, ((4, 2, 'Test2', None),))
         self.assertEqual(test3.args, ((5, 3,  "Test3", test1),))
         self.assertEqual(test4.args, ((6, None, None, test2),))
-        self.assertEqual(test1.message, "1: Test1 (Ticker ID: 3)")
-        self.assertEqual(test2.message, "2: Test2 (Ticker ID: 4)")
-        self.assertEqual(test3.message, "1: Test1 Test3 (Ticker ID: 5)")
-        self.assertEqual(test4.message, "2: Test2 (Ticker ID: 6)")
 
         if __debug__:
             self.assertRaises(AssertionError, CodeMsgPair, id=None)
