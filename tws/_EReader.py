@@ -10,6 +10,7 @@ __version__   = "$Id$"
 from tws import EClientErrors as _EClientErrors
 from tws import TickType as _TickType
 from threading import Thread as _thread_type
+from threading import currentThread as _current_thread
 
 
 class EReader(_thread_type):
@@ -42,7 +43,7 @@ class EReader(_thread_type):
         self._stream.close()
 
         # Wait only a second for thread to terminate.
-        if self.isAlive():
+        if self.isAlive() and self != _current_thread():
             self.join(1.0)
 
 
