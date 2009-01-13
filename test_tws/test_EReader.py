@@ -35,11 +35,12 @@ class test_EReader(unittest.TestCase):
     def test_run(self):
         self.stream.write("52\x001\x002\x00")
         self.stream.write("123456\x00")
+        self.stream.write("123456\x00")
 
         self.stream.seek(0)
         self.reader.run()
 
-        self.assertEqual(len(self.wrapper.calldata), 1)
+        self.assertEqual(len(self.wrapper.calldata), 2)
         self.assertEqual(len(self.wrapper.errors), 1)
 
         self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
@@ -47,6 +48,25 @@ class test_EReader(unittest.TestCase):
                                                   EClientErrors.UNKNOWN_ID.code(),
                                                   EClientErrors.UNKNOWN_ID.msg() +
                                                   " Message ID: 123456"))
+
+    def test_run_error(self):
+        self.stream.write("123456\x00")
+
+        self.stream.seek(0)
+        self.wrapper.connectionClosed = lambda: 1.0 / 0.0
+        self.reader.run()
+
+        self.assertEqual(len(self.wrapper.calldata), 0)
+        self.assertEqual(len(self.wrapper.errors), 2)
+
+        self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,
+                                                  EClientErrors.UNKNOWN_ID.code(),
+                                                  EClientErrors.UNKNOWN_ID.msg() +
+                                                  " Message ID: 123456"))
+        self.assertEqual(self.wrapper.errors[1], (EClientErrors.NO_VALID_ID,
+                                                  ZeroDivisionError,
+                                                  ("float division",)))
+
     def test_readNextMessage(self):
         self.stream.write("52\x001\x002\x00")
         self.stream.write("123456\x00")

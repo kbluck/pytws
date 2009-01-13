@@ -53,8 +53,13 @@ class EReader(_thread_type):
         except Exception:
             assert False  # Should never happen.
 
-        if self._connection.isConnected():
-            self._connection.close()
+        try:
+            self._connection._close()
+        except Exception, e:
+            assert hasattr(self._wrapper, "error")
+            try:
+                self._wrapper.error(e)
+            except: pass
 
 
     def _readNextMessage(self):
@@ -70,9 +75,9 @@ class EReader(_thread_type):
                 reader_method(self)
 
             except Exception, e:
+                assert hasattr(self._wrapper, "error")
                 try:
-                    if not self._stream.closed:
-                        self._wrapper.error(e)
+                    self._wrapper.error(e)
                 except: pass
                 return False
 
