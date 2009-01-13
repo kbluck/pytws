@@ -28,6 +28,12 @@ class TwsError(StandardError):
                         if source else msg)
 
 
+    def __str__(self):
+        return (("TWS Error %d: %s" +
+                ((" (ID: %d)" % self._id) if self._id != NO_VALID_ID else "")) %
+                (self._code, self._msg))
+
+
     def id(self):
         return self._id
 
