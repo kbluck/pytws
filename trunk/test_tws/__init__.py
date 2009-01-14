@@ -27,6 +27,10 @@ class mock_wrapper(tws.EWrapper):
         else:
             self.errors.append((-1,type(e),e.args))
 
+    def connectionClosed(self):
+        # Override to log invocation to calldata.
+        self.calldata.append(("connectionClosed", (), {}))
+
     def __getattr__(self, name):
         # Any arbitrary unknown attribute is mapped to a function call which is
         # recorded into self.calldata.

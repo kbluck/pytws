@@ -29,3 +29,7 @@ class EWrapper(object):
     logger = property(fget=logger, fset=set_logger,
                       doc="logging.Logger object.")
     del set_logger
+
+
+    def connectionClosed(self):
+        self.logger.warning("Connection closed.")
