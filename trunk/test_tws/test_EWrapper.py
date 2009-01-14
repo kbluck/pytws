@@ -56,3 +56,11 @@ class test_EWrapper(unittest.TestCase):
                          (logging.ERROR,"TWS Error 501: Already connected.",()))
         self.assertEqual(self.wrapper.logger.logs[3], 
                          (logging.WARNING,"TWS Error 2100: Test4",()))
+
+    def test_unimplemented(self):
+        self.wrapper.bogus(1,2,x=3,y=4)
+        self.assertEqual(len(self.wrapper.logger.logs), 2)
+        self.assertEqual(self.wrapper.logger.logs[0], 
+                         (logging.ERROR,"'EWrapper' object has no attribute 'bogus'",()))
+        self.assertEqual(self.wrapper.logger.logs[1], 
+                         (logging.WARNING,"Unimplemented method 'EWrapper.bogus' invoked with args: (1, 2) and kwds: {'y': 4, 'x': 3}",()))
