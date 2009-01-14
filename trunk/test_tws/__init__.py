@@ -6,18 +6,26 @@ __version__   = "$Id$"
 import unittest
 import socket
 import threading
+import logging
 import tws
-
 
 def test_import():
     '''Verify successful import of top-level "tws" package'''
     import tws
     assert tws
 
+class mock_logger(logging.Logger):
+    def __init__(self):
+        logging.Logger.__init__(self, "mock")
+        self.setLevel(logging.DEBUG)
+        self.logs = []
+
+    def _log(self, level, msg, args):
+        self.logs.append((level, msg, args))
 
 class mock_wrapper(tws.EWrapper):
 
-    def __init__(self, logger=None):
+    def __init__(self, logger=mock_logger()):
         tws.EWrapper.__init__(self, logger)
         self.calldata = []
         self.errors = []
