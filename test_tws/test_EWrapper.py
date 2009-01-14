@@ -6,13 +6,18 @@ __version__   = "$Id$"
 import unittest
 import logging
 from tws import EWrapper
+from test_tws import mock_wrapper, mock_logger
 
 
 class test_EWrapper(unittest.TestCase):
     '''Test class "tws.EWrapper"'''
 
     def setUp(self):
-        self.wrapper = EWrapper()
+        logging.disable(0)
+        self.wrapper = EWrapper(mock_logger())
+
+    def tearDown(self):
+        logging.disable(100)
 
     def test_init(self):
         self.assertTrue(EWrapper())
@@ -29,3 +34,10 @@ class test_EWrapper(unittest.TestCase):
         if __debug__:
             try: logging.logger = 123
             except AssertionError, e: self.assertTrue(e)
+
+    def test_connectionClosed(self):
+        self.wrapper.connectionClosed()
+        self.assertEqual(len(self.wrapper.logger.logs), 1)
+        self.assertEqual(self.wrapper.logger.logs[0][1], 
+                         "Connection closed.")
+        
