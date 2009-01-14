@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 import logging
-from tws import EWrapper
+from tws import EWrapper, EClientErrors
 from test_tws import mock_wrapper, mock_logger
 
 
@@ -38,6 +38,21 @@ class test_EWrapper(unittest.TestCase):
     def test_connectionClosed(self):
         self.wrapper.connectionClosed()
         self.assertEqual(len(self.wrapper.logger.logs), 1)
-        self.assertEqual(self.wrapper.logger.logs[0][1], 
-                         "Connection closed.")
-        
+        self.assertEqual(self.wrapper.logger.logs[0], 
+                         (logging.WARNING,"Connection closed.",()))
+
+    def test_error(self):
+        self.wrapper.error(Exception("Test1"))
+        self.wrapper.error(Warning("Test2"))
+        self.wrapper.error(EClientErrors.ALREADY_CONNECTED)
+        self.wrapper.error(EClientErrors.TwsError(code=2100, msg="Test4"))
+
+        self.assertEqual(len(self.wrapper.logger.logs), 4)
+        self.assertEqual(self.wrapper.logger.logs[0], 
+                         (logging.ERROR,"Test1",()))
+        self.assertEqual(self.wrapper.logger.logs[1], 
+                         (logging.WARNING,"Test2",()))
+        self.assertEqual(self.wrapper.logger.logs[2], 
+                         (logging.ERROR,"TWS Error 501: Already connected.",()))
+        self.assertEqual(self.wrapper.logger.logs[3], 
+                         (logging.WARNING,"TWS Error 2100: Test4",()))
