@@ -17,7 +17,8 @@ def test_import():
 
 class mock_wrapper(tws.EWrapper):
 
-    def __init__(self):
+    def __init__(self, logger=None):
+        tws.EWrapper.__init__(self, logger)
         self.calldata = []
         self.errors = []
 
