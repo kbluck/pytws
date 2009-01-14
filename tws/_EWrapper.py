@@ -32,4 +32,18 @@ class EWrapper(object):
 
 
     def connectionClosed(self):
-        self.logger.warning("Connection closed.")
+        self.error(Warning("Connection closed."))
+
+
+    def error(self, e):
+        # TWS Error codes in the 2100 range are 'system warnings'
+        if hasattr(e, "code"):
+            if ((e.code() >= 2100) and (e.code() <= 2199)):
+                self._logger.warning(str(e))
+                return
+        # Warning exception types are warnings
+        if isinstance(e, Warning):
+            self._logger.warning(str(e))
+            return
+        # Everything else is considered an error.
+        self._logger.error(str(e))
