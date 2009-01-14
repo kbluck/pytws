@@ -21,14 +21,15 @@ class EWrapper(object):
         self.logger = logger
 
 
-    def logger(self):
-        return self._logger
-    def set_logger(self, new_logger):
-        assert isinstance(new_logger, __import__("logging").Logger)
-        self._logger = new_logger
-    logger = property(fget=logger, fset=set_logger,
-                      doc="logging.Logger object.")
-    del set_logger
+    def __getattr__(self, name):
+        self.error(AttributeError("'%s' object has no attribute '%s'" %
+                                  (self.__class__.__name__, name)))
+        # Any arbitrary unknown attribute is mapped to a callable stub.
+        def _mock(*args, **kwds):
+            self._logger.warning("Unimplemented method '%s.%s' invoked with "
+                                 "args: %s and kwds: %s" %
+                                 (self.__class__.__name__, name, args, kwds))
+        return _mock
 
 
     def connectionClosed(self):
@@ -47,3 +48,13 @@ class EWrapper(object):
             return
         # Everything else is considered an error.
         self._logger.error(str(e))
+
+
+    def logger(self):
+        return self._logger
+    def set_logger(self, new_logger):
+        assert isinstance(new_logger, __import__("logging").Logger)
+        self._logger = new_logger
+    logger = property(fget=logger, fset=set_logger,
+                      doc="logging.Logger object.")
+    del set_logger
