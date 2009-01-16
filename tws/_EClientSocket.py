@@ -19,18 +19,18 @@ def requestmethod(has_id=False, min_server=0,
 
        Eliminates repetitive error-checking boilerplate from request methods.
     '''
-    assert type(has_id) == bool
-    assert type(min_server) == int
-    assert type(min_server_error_suffix) == str
+    assert isinstance(has_id, bool)
+    assert isinstance(min_server, int)
+    assert isinstance(min_server_error_suffix, str)
     assert isinstance(generic_error, _EClientErrors.TwsError)
-    assert type(generic_error_suffix) == str
+    assert isinstance(generic_error_suffix, str)
 
     def _decorator(method):
         assert  (__import__("inspect").getargspec(method)[0][0] == "self")
         assert  (not has_id) or (__import__("inspect").getargspec(method)[0][1] == "id")
 
         def _decorated(self, *args, **kwds):
-            assert type(self) == EClientSocket
+            assert isinstance(self, EClientSocket)
 
             try:
                 # Socket client must be connected.
@@ -71,7 +71,7 @@ class EClientSocket(object):
     from socket import socket as _socket_factory
 
     def __init__(self, wrapper):
-        assert issubclass(type(wrapper), __import__("tws").EWrapper)
+        assert isinstance(wrapper, __import__("tws").EWrapper)
 
         self._wrapper = wrapper
         self._reader = None
@@ -211,7 +211,7 @@ class EClientSocket(object):
 
 
     def checkConnected(self, host):
-        assert issubclass(type(host), str) or (host == None)
+        assert isinstance(host, str) or (host == None)
 
         if self._connected:
             self._wrapper.error(_EClientErrors.ALREADY_CONNECTED)
@@ -234,14 +234,14 @@ class EClientSocket(object):
     def eConnect(self, client_id, stream=None, socket=None, host="", port=0,
                  negotiate=True, start_reader=True,
                  stdout=__import__("sys").stdout):
-        assert type(client_id) == int
-        assert type(negotiate) == bool
-        assert type(start_reader) == bool
+        assert isinstance(client_id, int)
+        assert isinstance(negotiate, bool)
+        assert isinstance(start_reader, bool)
         assert hasattr(stdout, "write") or not stdout
         assert hasattr(stream, "read") or not stream
         assert hasattr(socket, "makefile") or not socket
-        assert type(host) == str
-        assert type(port) == int
+        assert isinstance(host, str)
+        assert isinstance(port, int)
         assert ((host or port) and not (socket or stream)) or ((not host) and (not port))
         assert (socket and not stream) or (not socket)
 
@@ -311,7 +311,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_CANSCANNER)
     def cancelScannerSubscription(self, id):
-        assert type(id) is int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_SCANNER_SUBSCRIPTION)
@@ -335,8 +335,8 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support API scanner subscription.",
                    generic_error=_EClientErrors.FAIL_SEND_REQSCANNER)
     def reqScannerSubscription(self, id, subscription):
-        assert type(id) == int
-        assert type(subscription) == __import__("tws").ScannerSubscription
+        assert isinstance(id, int)
+        assert isinstance(subscription, __import__("tws").ScannerSubscription)
         VERSION = 3
 
         self._send(self.REQ_SCANNER_SUBSCRIPTION)
@@ -371,10 +371,10 @@ class EClientSocket(object):
     @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_REQMKT)
     def reqMktData(self, id, contract, generic_tick_list, snapshot):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(generic_tick_list) == str
-        assert type(snapshot) == bool
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(generic_tick_list, str)
+        assert isinstance(snapshot, bool)
         VERSION = 8
 
         if contract.m_underComp and (self._server_version < self.MIN_SERVER_VER_UNDER_COMP):
@@ -429,7 +429,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support historical data query cancellation.",
                    generic_error=_EClientErrors.FAIL_SEND_CANHISTDATA)
     def cancelHistoricalData(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_HISTORICAL_DATA)
@@ -442,7 +442,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support realtime bar data query cancellation.",
                    generic_error=_EClientErrors.FAIL_SEND_CANRTBARS)
     def cancelRealTimeBars(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_REAL_TIME_BARS)
@@ -456,14 +456,14 @@ class EClientSocket(object):
                    generic_error=_EClientErrors.FAIL_SEND_REQHISTDATA)
     def reqHistoricalData(self, id, contract, end_date_time, duration_str,
                           bar_size_setting, what_to_show, use_RTH, format_date):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(end_date_time) == str
-        assert type(duration_str) == str
-        assert type(bar_size_setting) == str
-        assert type(what_to_show) == str
-        assert type(use_RTH) == int
-        assert type(format_date) == int
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(end_date_time, str)
+        assert isinstance(duration_str, str)
+        assert isinstance(bar_size_setting, str)
+        assert isinstance(what_to_show, str)
+        assert isinstance(use_RTH, int)
+        assert isinstance(format_date, int)
         VERSION = 4
 
         self._send(self.REQ_HISTORICAL_DATA)
@@ -503,11 +503,11 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support real time bars.",
                    generic_error=_EClientErrors.FAIL_SEND_REQRTBARS)
     def reqRealTimeBars(self, id, contract, bar_size, what_to_show, use_RTH):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(bar_size) == str
-        assert type(what_to_show) == str
-        assert type(use_RTH) == int
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(bar_size, str)
+        assert isinstance(what_to_show, str)
+        assert isinstance(use_RTH, int)
         VERSION = 1
 
         self._send(self.REQ_REAL_TIME_BARS)
@@ -532,8 +532,8 @@ class EClientSocket(object):
     @requestmethod(min_server=4, min_server_error_suffix="It does not support contract details.",
                    generic_error=_EClientErrors.FAIL_SEND_REQCONTRACT)
     def reqContractDetails(self, req_id, contract):
-        assert type(req_id) == int
-        assert type(contract) == __import__("tws").Contract
+        assert isinstance(req_id, int)
+        assert isinstance(contract, __import__("tws").Contract)
         VERSION = 5
 
         self._send(self.REQ_CONTRACT_DATA)
@@ -561,9 +561,9 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support market depth.",
                    generic_error=_EClientErrors.FAIL_SEND_REQMKTDEPTH)
     def reqMktDepth(self, id, contract, num_rows):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(num_rows) == int
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(num_rows, int)
         VERSION = 3
 
         self._send(self.REQ_MKT_DEPTH)
@@ -587,7 +587,7 @@ class EClientSocket(object):
     @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_CANMKT)
     def cancelMktData(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_MKT_DATA)
@@ -600,7 +600,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support market depth.",
                    generic_error=_EClientErrors.FAIL_SEND_CANMKTDEPTH)
     def cancelMktDepth(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_MKT_DEPTH)
@@ -614,12 +614,12 @@ class EClientSocket(object):
                    generic_error=_EClientErrors.FAIL_SEND_REQMKT)  # Error type per Java, IB bug?
     def exerciseOptions(self, id, contract, exercise_action,
                         exercise_quantity, account, override):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(exercise_action) == int
-        assert type(exercise_quantity) == int
-        assert type(account) == str
-        assert type(override) == int
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(exercise_action, int)
+        assert isinstance(exercise_quantity, int)
+        assert isinstance(account, str)
+        assert isinstance(override, int)
         VERSION = 1
 
         self._send(self.EXERCISE_OPTIONS)
@@ -644,9 +644,9 @@ class EClientSocket(object):
     @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_ORDER)
     def placeOrder(self, id, contract, order):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(order) == __import__("tws").Order
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(order, __import__("tws").Order)
         VERSION = 27
 
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS:
@@ -818,8 +818,8 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_ACCT)
     def reqAccountUpdates(self, subscribe, acct_code):
-        assert type(subscribe) == bool
-        assert type(acct_code) == str
+        assert isinstance(subscribe, bool)
+        assert isinstance(acct_code, str)
         VERSION = 2
 
         self._send(self.REQ_ACCOUNT_DATA)
@@ -832,8 +832,8 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_EXEC)
     def reqExecutions(self, id, filter):
-        assert type(id) == int
-        assert type(filter) == __import__("tws").ExecutionFilter
+        assert isinstance(id, int)
+        assert isinstance(filter, __import__("tws").ExecutionFilter)
         VERSION = 3
 
         self._send(self.REQ_EXECUTIONS)
@@ -854,7 +854,7 @@ class EClientSocket(object):
     @requestmethod(has_id=True,
                    generic_error=_EClientErrors.FAIL_SEND_CORDER)
     def cancelOrder(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_ORDER)
@@ -874,7 +874,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_CORDER)   # Error type per Java, IB bug?
     def reqIds(self, num_ids):
-        assert type(num_ids) == int
+        assert isinstance(num_ids, int)
         VERSION = 1
 
         self._send(self.REQ_IDS)
@@ -885,7 +885,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_CORDER)   # Error type per Java, IB bug?
     def reqNewsBulletins(self, all_msgs):
-        assert type(all_msgs) == bool
+        assert isinstance(all_msgs, bool)
         VERSION = 1
 
         self._send(self.REQ_NEWS_BULLETINS)
@@ -905,7 +905,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_SERVER_LOG_LEVEL)
     def setServerLogLevel(self, log_level):
-        assert type(log_level) == int
+        assert isinstance(log_level, int)
         VERSION = 1
 
         self._send(self.SET_SERVER_LOGLEVEL)
@@ -916,7 +916,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(generic_error=_EClientErrors.FAIL_SEND_OORDER)  # Error type per Java, IB bug?
     def reqAutoOpenOrders(self, auto_bind):
-        assert type(auto_bind) == bool
+        assert isinstance(auto_bind, bool)
         VERSION = 1
 
         self._send(self.REQ_AUTO_OPEN_ORDERS)
@@ -946,7 +946,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support FA request.",
                    generic_error=_EClientErrors.FAIL_SEND_FA_REQUEST)
     def requestFA(self, fa_data_type):
-        assert type(fa_data_type) == int
+        assert isinstance(fa_data_type, int)
         VERSION = 1
 
         self._send(self.REQ_FA)
@@ -959,8 +959,8 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support FA request.",
                    generic_error=_EClientErrors.FAIL_SEND_FA_REPLACE)
     def replaceFA(self, fa_data_type, xml):
-        assert type(fa_data_type) == int
-        assert type(xml) == str
+        assert isinstance(fa_data_type, int)
+        assert isinstance(xml, str)
         VERSION = 1
 
         self._send(self.REPLACE_FA)
@@ -985,9 +985,9 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support fundamental data requests.",
                    generic_error=_EClientErrors.FAIL_SEND_REQFUNDDATA)
     def reqFundamentalData(self, id, contract, report_type):
-        assert type(id) == int
-        assert type(contract) == __import__("tws").Contract
-        assert type(report_type) == str
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+        assert isinstance(report_type, str)
         VERSION = 1
 
         self._send(self.REQ_FUNDAMENTAL_DATA)
@@ -1007,7 +1007,7 @@ class EClientSocket(object):
                    min_server_error_suffix="It does not support fundamental data requests.",
                    generic_error=_EClientErrors.FAIL_SEND_CANFUNDDATA)
     def cancelFundamentalData(self, id):
-        assert type(id) == int
+        assert isinstance(id, int)
         VERSION = 1
 
         self._send(self.CANCEL_FUNDAMENTAL_DATA)
