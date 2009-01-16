@@ -4,7 +4,7 @@ __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
-from tws.helper import StockContract, FuturesContract
+from tws.helper import StockContract, FuturesContract, OptionContract
 from tws import UnderComp
 
 
@@ -94,4 +94,47 @@ class test_helper_FuturesContract(unittest.TestCase):
         if __debug__:
             self.assertRaises(AssertionError, FuturesContract,"X",symbol="X")
             self.assertRaises(AssertionError, FuturesContract,"X",expiry="X")
-            
+
+
+class test_helper_OptionContract(unittest.TestCase):
+    '''Test type "tws.helper.OptionContract"'''
+
+    def test_init(self):
+        test1 = OptionContract(local_symbol="QAVAD")
+        test2 = OptionContract("QQQQ", "CALL", 30.0, "200901", "ISE", con_id=3)
+
+        self.assertEqual(test1.m_conId, 0)
+        self.assertEqual(test1.m_symbol, "")
+        self.assertEqual(test1.m_secType, "OPT")
+        self.assertEqual(test1.m_expiry, "")
+        self.assertEqual(test1.m_strike, 0.0)
+        self.assertEqual(test1.m_right, "")
+        self.assertEqual(test1.m_multiplier, "")
+        self.assertEqual(test1.m_exchange, "SMART")
+        self.assertEqual(test1.m_currency, "USD")
+        self.assertEqual(test1.m_localSymbol, "QAVAD")
+        self.assertEqual(test1.m_comboLegs, [])
+        self.assertEqual(test1.m_primaryExch, "")
+        self.assertEqual(test1.m_includeExpired, False)
+        self.assertEqual(test1.m_comboLegsDescrip, "")
+        self.assertEqual(test1.m_underComp, UnderComp())
+
+        self.assertEqual(test2.m_conId, 3)
+        self.assertEqual(test2.m_symbol, "QQQQ")
+        self.assertEqual(test2.m_secType, "OPT")
+        self.assertEqual(test2.m_expiry, "200901")
+        self.assertEqual(test2.m_strike, 30.0)
+        self.assertEqual(test2.m_right, "CALL")
+        self.assertEqual(test2.m_multiplier, "")
+        self.assertEqual(test2.m_exchange, "ISE")
+        self.assertEqual(test2.m_currency, "USD")
+        self.assertEqual(test2.m_localSymbol, "")
+        self.assertEqual(test2.m_comboLegs, [])
+        self.assertEqual(test2.m_primaryExch, "")
+        self.assertEqual(test2.m_includeExpired, False)
+        self.assertEqual(test2.m_comboLegsDescrip, "")
+        self.assertEqual(test2.m_underComp, UnderComp())
+
+        if __debug__:
+            self.assertRaises(AssertionError, OptionContract,"X","X")
+            self.assertRaises(AssertionError, OptionContract,"X","X",1)
