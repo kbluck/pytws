@@ -90,3 +90,8 @@ class test_helper_FuturesContract(unittest.TestCase):
         self.assertEqual(test2.m_includeExpired, False)
         self.assertEqual(test2.m_comboLegsDescrip, "")
         self.assertEqual(test2.m_underComp, UnderComp())
+
+        if __debug__:
+            self.assertRaises(AssertionError, FuturesContract,"X",symbol="X")
+            self.assertRaises(AssertionError, FuturesContract,"X",expiry="X")
+            
