@@ -9,3 +9,4 @@ from tws.helper._synchronizedwrapper import SynchronizedWrapper
 
 from tws.helper._contract import StockContract
 from tws.helper._contract import FuturesContract
+from tws.helper._contract import OptionContract

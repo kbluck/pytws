@@ -54,4 +54,38 @@ class FuturesContract(Contract):
                                               **kwds )
 
 
+
+class OptionContract(Contract):
+    '''Description of an option contract.'''
+
+    def __init__(self, symbol="", right="", strike=0.0, expiry="",
+                 exchange="SMART", currency="USD",
+                 local_symbol="", **kwds):
+        '''Specialized constructor for option contracts.
+
+           Params:
+             symbol: Required if not specifying local_symbol.
+             right:  Required if not specifying local_symbol.
+             strike: Required if not specifying local_symbol.
+             expiry: Required if not specifying local_symbol.
+             exchange: optional for US options, defaults to "Smart"
+             currency: optional for US exchanges.
+             local_symbol: May be specified instead of symbol, right,
+             strike, expiry.
+             **kwds: Any other keyword args acceptable to tws.Contract
+             may be provided as desired.
+        '''
+        assert (symbol and right and strike and expiry) or local_symbol
+
+        super(OptionContract, self).__init__(sec_type="OPT",
+                                             symbol=symbol,
+                                             right=right,
+                                             strike=strike,
+                                             expiry=expiry,
+                                             exchange=exchange,
+                                             currency=currency,
+                                             local_symbol=local_symbol,
+                                              **kwds )
+
+
 del Contract
