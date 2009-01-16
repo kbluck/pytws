@@ -17,10 +17,10 @@ class QueueWrapper(Queue, EWrapper):
         _queue_type = Queue
 
         def _put(self, item):
-            assert type(item) == tuple
+            assert isinstance(item, tuple)
             assert len(item) == 2
-            assert type(item[0]) == str
-            assert type(item[1]) == dict
+            assert isinstance(item[0], str)
+            assert isinstance(item[1], dict)
 
             QueueWrapper._queue_type._put(self, item)
 

@@ -15,10 +15,10 @@ class TwsError(StandardError):
     '''Wraps a Tws error code identifier and error text as a Python exception.'''
 
     def __init__(self, id=NO_VALID_ID, code=None, msg=None, source=None):
-        assert type(id) == int
-        assert (type(code) == int) or code is None
-        assert (type(msg) == str) or msg is None
-        assert (type(source) == TwsError) or source is None
+        assert isinstance(id, int)
+        assert (isinstance(code, int)) or code is None
+        assert (isinstance(msg, str)) or msg is None
+        assert (isinstance(source, TwsError)) or source is None
 
         StandardError.__init__(self, (id, code, msg, source))
 

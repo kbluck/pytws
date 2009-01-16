@@ -231,7 +231,7 @@ class test_EClientSocket(unittest.TestCase):
 
         @_requestmethod(generic_error=EClientErrors.UNKNOWN_ID, has_id=True)
         def test_raise_with_ticker(self, id):
-            assert type(id) == int
+            assert isinstance(id, int)
             raise Exception()
 
         self._check_connection_required(test_call, self.client)
