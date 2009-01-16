@@ -8,3 +8,4 @@ from tws.helper._queuewrapper import QueueWrapper
 from tws.helper._synchronizedwrapper import SynchronizedWrapper
 
 from tws.helper._contract import StockContract
+from tws.helper._contract import FuturesContract
