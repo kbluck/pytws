@@ -1,0 +1,9 @@
+$Id$
+
+PyTWS is installed like most any other pure Python library:
+
+1. Download and extract the source archive to some temporary location.
+2. Open a command line and change folders to the extracted 'pydev' folder.
+3. Run the command: python setup.py install
+
+Afterwards, you may delete the archive and extraction location if you like.
