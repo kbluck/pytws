@@ -13,7 +13,7 @@
 __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 classifiers = '''
@@ -31,12 +31,13 @@ classifiers = '''
 setup(
     name = "PyTWS",
     version = "9.60b-a1",
+    package_data = {'':['*.*']},
+    packages = find_packages(),
     description = __doc__.split("\n")[0],
     author = "Kevin J Bluck",
     author_email = "kevin.bluck@gmail.com",
     url = "",
     license = "BSD License (revised)",
-    packages = ["tws","tws.helper"],
     classifiers = filter(None, classifiers.split("\n")),
     long_description = "\n".join(__doc__.split("\n")[2:]),
     platforms = ["any"],
