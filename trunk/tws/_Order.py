@@ -65,8 +65,8 @@ class Order(object):
         self.m_deltaNeutralAuxPrice = self._DOUBLE_MAX_VALUE
         self.m_basisPoints = self._DOUBLE_MAX_VALUE
         self.m_basisPointsType = self._INT_MAX_VALUE
-        self.m_scaleInitLevelSize = self._DOUBLE_MAX_VALUE
-        self.m_scaleSubsLevelSize = self._DOUBLE_MAX_VALUE
+        self.m_scaleInitLevelSize = self._INT_MAX_VALUE
+        self.m_scaleSubsLevelSize = self._INT_MAX_VALUE
         self.m_scalePriceIncrement = self._DOUBLE_MAX_VALUE
         self.m_account = self.EMPTY_STR
         self.m_settlingFirm = self.EMPTY_STR
