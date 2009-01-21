@@ -769,8 +769,8 @@ class EClientSocket(object):
             self._sendMax(order.m_startingPrice)
             self._sendMax(order.m_stockRefPrice)
             self._sendMax(order.m_delta)
-            self._sendMax(order._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeLower)
-            self._sendMax(order._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeUpper)
+            self._sendMax(self._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeLower)
+            self._sendMax(self._DOUBLE_MAX_VALUE if (self._server_version == 26) and order.m_orderType == "VOL" else order.m_stockRangeUpper)
         if self._server_version >= 22:
             self._send(order.m_overridePercentageConstraints)
         if self._server_version >= 26:
@@ -782,8 +782,9 @@ class EClientSocket(object):
                 self._send(order.m_deltaNeutralOrderType)
                 self._sendMax(order.m_deltaNeutralAuxPrice)
             self._send(order.m_continuousUpdate)
-            self._sendMax(order.m_stockRangeLower if (self._server_version == 26) and order.m_orderType == "VOL" else order._DOUBLE_MAX_VALUE)
-            self._sendMax(order.m_stockRangeUpper if (self._server_version == 26) and order.m_orderType == "VOL" else order._DOUBLE_MAX_VALUE)
+            if (self._server_version == 26):
+                self._sendMax(order.m_stockRangeLower if order.m_orderType == "VOL" else self._DOUBLE_MAX_VALUE)
+                self._sendMax(order.m_stockRangeUpper if order.m_orderType == "VOL" else self._DOUBLE_MAX_VALUE)
             self._sendMax(order.m_referencePriceType)
         if self._server_version >= 30:
             self._sendMax(order.m_trailStopPrice)
