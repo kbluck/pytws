@@ -5,7 +5,7 @@ __version__   = "$Id$"
 
 import unittest
 import logging
-from tws import EWrapper, EClientErrors
+from tws import EWrapper, EClientErrors, EClientSocket
 from test_tws import mock_wrapper, mock_logger
 
 
@@ -22,6 +22,12 @@ class test_EWrapper(unittest.TestCase):
     def test_init(self):
         self.assertTrue(EWrapper())
         self.assertTrue(EWrapper(logging.getLogger("test")))
+
+    def test_client(self):
+        self.assertEqual(self.wrapper.client, None)
+        test_client = EClientSocket(self.wrapper)
+        self.assertEqual(self.wrapper.client, test_client)
+        self.assertRaises(ValueError, EClientSocket, self.wrapper)
 
     def test_logger(self):
         default_logger = self.wrapper.logger

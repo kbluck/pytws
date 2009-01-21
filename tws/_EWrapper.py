@@ -19,6 +19,7 @@ class EWrapper(object):
         if logger is None:
             logger = __import__("logging").getLogger(self.__class__.__name__)
         self.logger = logger
+        self._client = None
 
 
     def __getattr__(self, name):
@@ -48,6 +49,12 @@ class EWrapper(object):
             return
         # Everything else is considered an error.
         self._logger.error(str(e))
+
+
+    @property
+    def client(self):
+        assert isinstance(self._client, __import__("tws").EClientSocket) or (self._client is None)
+        return self._client
 
 
     def logger(self):
