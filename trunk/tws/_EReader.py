@@ -55,9 +55,9 @@ class EReader(_thread_type):
             assert False  # Should never happen.
 
         try:
-            self._connection._close()
+            if self._connection.isConnected():
+                self._connection._close()
         except Exception, e:
-            assert hasattr(self._wrapper, "error")
             try:
                 self._wrapper.error(e)
             except: pass
