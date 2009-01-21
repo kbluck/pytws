@@ -17,8 +17,8 @@ class test_EReader(unittest.TestCase):
         self.wrapper = mock_wrapper()
         self.connection = EClientSocket(self.wrapper)
         self.stream = StringIO()
-        self.reader = self.connection.createReader(self.stream)
-        self.calldata = []
+        self.connection.eConnect(1, self.stream, negotiate=False, start_reader=False)
+        self.reader = self.connection._reader
 
     def test_init(self):
         self.assertTrue(EReader(self.connection, StringIO()))
@@ -44,6 +44,7 @@ class test_EReader(unittest.TestCase):
         self.assertEqual(len(self.wrapper.errors), 1)
 
         self.assertEqual(self.wrapper.calldata[0], ("contractDetailsEnd", (2,), {}))
+        self.assertEqual(self.wrapper.calldata[1], ("connectionClosed", (), {}))
         self.assertEqual(self.wrapper.errors[0], (EClientErrors.NO_VALID_ID,
                                                   EClientErrors.UNKNOWN_ID.code(),
                                                   EClientErrors.UNKNOWN_ID.msg() +
