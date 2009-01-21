@@ -64,4 +64,8 @@ public class Execution {
         }
         return l_bRetVal;
     }
+    
+    public String toString() {
+        return m_side + " " + m_shares + " at " + m_price + " (" + m_orderId + ")";
+    }
 }

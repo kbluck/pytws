@@ -37,6 +37,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     	return "id=" + tickerId + "  " + TickType.getField( tickType) + "=" + value;
     }
     
+    static public String tickSnapshotEnd(int tickerId) {
+    	return "reqId = " + tickerId + " =============== end ===============";
+    }
+    
     static public String tickEFP(int tickerId, int tickType, double basisPoints,
 			String formattedBasisPoints, double impliedFuture, int holdDays,
 			String futureExpiry, double dividendImpact, double dividendsToExpiry) {
@@ -209,7 +213,9 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "price magnifier = " + contractDetails.m_priceMagnifier + "\n"
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
         + "validExchanges = " + contractDetails.m_validExchanges + "\n"
-        + "underConId = " + contractDetails.m_underConId + "\n";
+        + "underConId = " + contractDetails.m_underConId + "\n"
+        + "longName = " + contractDetails.m_longName + "\n"
+        + "listingEchange = " + contractDetails.m_listingExchange + "\n";
     	return msg;
     }
     

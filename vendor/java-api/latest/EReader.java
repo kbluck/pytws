@@ -44,6 +44,7 @@ public class EReader extends Thread {
     static final int ACCT_DOWNLOAD_END = 54;
     static final int EXECUTION_DATA_END = 55;
     static final int DELTA_NEUTRAL_VALIDATION = 56;
+    static final int TICK_SNAPSHOT_END = 57;
     
 
     private EClientSocket 	m_parent;
@@ -573,6 +574,10 @@ public class EReader extends Thread {
                 if (version >= 4) {
                 	contract.m_underConId = readInt();
                 }
+                if (version >= 5) {
+                	contract.m_longName = readStr();
+                	contract.m_listingExchange = readStr();
+                }
                 eWrapper().contractDetails( reqId, contract);
                 break;
             }
@@ -612,6 +617,9 @@ public class EReader extends Thread {
                 	contract.m_nextOptionType = readStr();
                 	contract.m_nextOptionPartial = readBoolFromInt();
                 	contract.m_notes = readStr();
+                }
+                if (version >= 4) {
+                	contract.m_longName = readStr();
                 }
                 eWrapper().bondContractDetails( reqId, contract);
                 break;
@@ -821,6 +829,12 @@ public class EReader extends Thread {
                 eWrapper().deltaNeutralValidation( reqId, underComp);
                 break;
             }
+            case TICK_SNAPSHOT_END: {
+                /*int version =*/ readInt();
+                int tickerId = readInt();
+                eWrapper().tickSnapshotEnd( tickerId);
+                break;
+            }            
             default: {
                 m_parent.error( EClientErrors.NO_VALID_ID, EClientErrors.UNKNOWN_ID.code(), EClientErrors.UNKNOWN_ID.msg());
                 return false;

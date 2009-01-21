@@ -7,23 +7,22 @@ package com.ib.client;
 import java.util.Vector;
 
 public class Contract implements Cloneable {
-
-	public int    m_conId;
-    public String m_symbol;
-    public String m_secType;
-    public String m_expiry;
-    public double m_strike;
-    public String m_right;
-    public String m_multiplier;
-    public String m_exchange;
-
-    public String m_currency;
-    public String m_localSymbol;
-    public String m_primaryExch;      // pick a non-aggregate (ie not the SMART exchange) exchange that the contract trades on.  DO NOT SET TO SMART.
-    public boolean m_includeExpired;  // can not be set to true for orders.
+    
+	public int    m_conId;              // contract id, returned from TWS
+    public String m_symbol;             // underlying symbol
+    public String m_secType;            // security type
+    public String m_expiry;             // expiration for futures and options
+    public double m_strike;             // strike price for options
+    public String m_right;              // put or call (P or C)
+    public String m_multiplier;         // multiplier
+    public String m_exchange;           // exchange
+    public String m_currency;           // currency, e.g. USD
+    public String m_localSymbol;        // local symbol for futures or options, e.g. ESZN for ES DEC09 contract 
+    public String m_primaryExch;        // for SMART orders, specify an actual exchange where the contract trades, e.g. ISLAND
+    public boolean m_includeExpired;    // for contract requests, specifies that even expired contracts should be returned
     
     // COMBOS
-    public String m_comboLegsDescrip; // received in open order version 14 and up for all combos
+    public String m_comboLegsDescrip;   // received in open order version 14 and up for all combos
     public Vector m_comboLegs = new Vector();
     
     // delta neutral
@@ -116,5 +115,9 @@ public class Contract implements Cloneable {
         }
 
         return true;
+    }
+    
+    public String toString() {
+        return m_symbol;
     }
 }

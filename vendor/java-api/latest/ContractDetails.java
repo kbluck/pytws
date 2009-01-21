@@ -13,7 +13,9 @@ public class ContractDetails {
     public String 	m_orderTypes;
     public String 	m_validExchanges;
     public int      m_underConId;
-
+    public String   m_listingExchange;
+    public String   m_longName;
+    
     // BOND values
     public String 	m_cusip;
     public String 	m_ratings;

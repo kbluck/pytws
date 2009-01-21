@@ -62,4 +62,8 @@ public class OrderState {
 
         return true;
 	}
+	
+    public String toString() {
+        return m_status;
+    }
 }

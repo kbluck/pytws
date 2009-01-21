@@ -64,8 +64,11 @@ public class EClientSocket {
 	//    ; can receive end marker for account download
 	//    ; can receive end marker for executions download
 	// 42 = can receive deltaNeutralValidation
+	// 43 = can receive longName(companyName)
+	//    ; can receive listingExchange
+	// 44 = can receive end market for ticker snapshot
 	
-    private static final int CLIENT_VERSION = 42;
+    private static final int CLIENT_VERSION = 44;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
