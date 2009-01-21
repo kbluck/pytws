@@ -73,12 +73,16 @@ class EClientSocket(object):
     def __init__(self, wrapper):
         assert isinstance(wrapper, __import__("tws").EWrapper)
 
+        if wrapper.client:
+            raise ValueError("Wrapper object is already assigned to a SocketClient.")
+
         self._mutex = __import__("threading").RLock()
         self._wrapper = wrapper
         self._reader = None
         self._connected = False
         self._server_version = 0
         self._tws_time = 0
+        self._wrapper._client = self
 
 
     @synchronized
