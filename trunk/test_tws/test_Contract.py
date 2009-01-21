@@ -29,7 +29,7 @@ class test_Contract(unittest.TestCase):
         self.assertEqual(test1.m_primaryExch, "")
         self.assertEqual(test1.m_includeExpired, False)
         self.assertEqual(test1.m_comboLegsDescrip, "")
-        self.assertEqual(test1.m_underComp, UnderComp())
+        self.assertEqual(test1.m_underComp, None)
 
         self.assertEqual(test2.m_conId, 1)
         self.assertEqual(test2.m_symbol, "ab")
@@ -43,8 +43,8 @@ class test_Contract(unittest.TestCase):
         self.assertEqual(test2.m_localSymbol, "op")
         self.assertEqual(test2.m_comboLegs, [ComboLeg()])
         self.assertEqual(test2.m_primaryExch, "qr")
-        self.assertEqual(test1.m_comboLegsDescrip, "")
-        self.assertEqual(test1.m_underComp, UnderComp())
+        self.assertEqual(test2.m_comboLegsDescrip, "")
+        self.assertEqual(test2.m_underComp, None)
 
     def test_fields(self):
         test = Contract()

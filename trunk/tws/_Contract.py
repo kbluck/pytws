@@ -32,7 +32,7 @@ class Contract(object):
         self.m_comboLegsDescrip = ""
 
         # delta neutrals
-        self.m_underComp = self._undercomp_factory();
+        self.m_underComp = None;
 
 
     def __eq__(self, other):
@@ -59,6 +59,3 @@ class Contract(object):
         if not _Util.VectorEqualsUnordered(self.m_comboLegs, other.m_comboLegs):
             return False
         return True
-
-
-    from tws._UnderComp import UnderComp as _undercomp_factory

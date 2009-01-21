@@ -31,7 +31,7 @@ class test_helper_StockContract(unittest.TestCase):
         self.assertEqual(test1.m_primaryExch, "")
         self.assertEqual(test1.m_includeExpired, False)
         self.assertEqual(test1.m_comboLegsDescrip, "")
-        self.assertEqual(test1.m_underComp, UnderComp())
+        self.assertEqual(test1.m_underComp, None)
 
         self.assertEqual(test2.m_conId, 1)
         self.assertEqual(test2.m_symbol, "SGE")
@@ -47,7 +47,7 @@ class test_helper_StockContract(unittest.TestCase):
         self.assertEqual(test2.m_primaryExch, "")
         self.assertEqual(test2.m_includeExpired, False)
         self.assertEqual(test2.m_comboLegsDescrip, "")
-        self.assertEqual(test2.m_underComp, UnderComp())
+        self.assertEqual(test2.m_underComp, None)
 
 
 class test_helper_FuturesContract(unittest.TestCase):
@@ -73,7 +73,7 @@ class test_helper_FuturesContract(unittest.TestCase):
         self.assertEqual(test1.m_primaryExch, "")
         self.assertEqual(test1.m_includeExpired, False)
         self.assertEqual(test1.m_comboLegsDescrip, "")
-        self.assertEqual(test1.m_underComp, UnderComp())
+        self.assertEqual(test1.m_underComp, None)
 
         self.assertEqual(test2.m_conId, 2)
         self.assertEqual(test2.m_symbol, "YM")
@@ -89,7 +89,7 @@ class test_helper_FuturesContract(unittest.TestCase):
         self.assertEqual(test2.m_primaryExch, "")
         self.assertEqual(test2.m_includeExpired, False)
         self.assertEqual(test2.m_comboLegsDescrip, "")
-        self.assertEqual(test2.m_underComp, UnderComp())
+        self.assertEqual(test2.m_underComp, None)
 
         if __debug__:
             self.assertRaises(AssertionError, FuturesContract,"X",symbol="X")
@@ -117,7 +117,7 @@ class test_helper_OptionContract(unittest.TestCase):
         self.assertEqual(test1.m_primaryExch, "")
         self.assertEqual(test1.m_includeExpired, False)
         self.assertEqual(test1.m_comboLegsDescrip, "")
-        self.assertEqual(test1.m_underComp, UnderComp())
+        self.assertEqual(test1.m_underComp, None)
 
         self.assertEqual(test2.m_conId, 3)
         self.assertEqual(test2.m_symbol, "QQQQ")
@@ -133,7 +133,7 @@ class test_helper_OptionContract(unittest.TestCase):
         self.assertEqual(test2.m_primaryExch, "")
         self.assertEqual(test2.m_includeExpired, False)
         self.assertEqual(test2.m_comboLegsDescrip, "")
-        self.assertEqual(test2.m_underComp, UnderComp())
+        self.assertEqual(test2.m_underComp, None)
 
         if __debug__:
             self.assertRaises(AssertionError, OptionContract,"X","X")

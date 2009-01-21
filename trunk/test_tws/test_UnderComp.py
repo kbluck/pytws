@@ -40,12 +40,3 @@ class test_UnderComp(unittest.TestCase):
         self.assertNotEqual(test1, "")
         self.assertEqual(test3, test3)
         self.assertNotEqual(test1, test3)
-
-    def test_nonzero(self):
-        test1 = UnderComp()
-        test2 = UnderComp()
-        test2.m_conId = 1
-        test2.m_delta = 2.5
-        test2.m_price = 3.0
-        self.assertFalse(test1)
-        self.assertTrue(test2)
