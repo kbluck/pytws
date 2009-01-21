@@ -722,7 +722,7 @@ class EClientSocket(object):
             self._send(order.m_sweepToFill)
             self._send(order.m_displaySize)
             self._send(order.m_triggerMethod)
-            self._send(True if (self._server_version >= 38) and order.m_outsideRth else False)
+            self._send(order.m_outsideRth if (self._server_version >= 38) else False)
         if self._server_version >= 7:
             self._send(order.m_hidden)
         if self._server_version >= 8:
