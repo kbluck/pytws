@@ -650,7 +650,7 @@ class EClientSocket(object):
         VERSION = 27
 
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS:
-            if (order.m_scaleInitLevelSize < order._DOUBLE_MAX_VALUE) or (order.m_scalePriceIncrement < order._DOUBLE_MAX_VALUE):
+            if (order.m_scaleInitLevelSize < order._INT_MAX_VALUE) or (order.m_scalePriceIncrement < order._DOUBLE_MAX_VALUE):
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
                                 id=id,
                                 msg="It does not support Scale orders."))
@@ -675,7 +675,7 @@ class EClientSocket(object):
                                 msg="It does not support delta-neutral orders."))
                 return
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS2:
-            if (order.m_scaleSubsLevelSize < order._DOUBLE_MAX_VALUE):
+            if (order.m_scaleSubsLevelSize < order._INT_MAX_VALUE):
                 self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
                                 id=id,
                                 msg="It does not support Subsequent Level Size for Scale orders."))
