@@ -73,6 +73,7 @@ class EClientSocket(object):
     def __init__(self, wrapper):
         assert isinstance(wrapper, __import__("tws").EWrapper)
 
+        self._mutex = __import__("threading").RLock()
         self._wrapper = wrapper
         self._reader = None
         self._connected = False
