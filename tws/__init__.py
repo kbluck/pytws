@@ -10,16 +10,19 @@ __version__   = "$Id$"
 
 def synchronized(f):
     '''Thread mutex-locking decorator.'''
-    def _synchronized_call(*args, **kwds):
-        global _mutex
-        _mutex.acquire()
-        try:
-            return f(*args, **kwds)
-        finally:
-            _mutex.release()
-    return _synchronized_call
 
-_mutex = __import__("threading").RLock()
+    assert  (__import__("inspect").getargspec(f)[0][0] == "self")
+
+    def _synchronized_call(self, *args, **kwds):
+        assert hasattr(self, "_mutex")
+        
+        self._mutex.acquire()
+        try:
+            return f(self, *args, **kwds)
+        finally:
+            self._mutex.release()
+
+    return _synchronized_call
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

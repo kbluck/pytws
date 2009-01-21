@@ -68,11 +68,6 @@ class test_synchronized(unittest.TestCase):
 
     def setUp(self):
         self._mutex = threading.Lock()
-        self._old_mutex = tws._mutex
-        tws._mutex = self._mutex
-
-    def tearDown(self):
-        tws._mutex = self._old_mutex
 
     @tws.synchronized
     def mock_function(self, *args, **kwds):
@@ -91,3 +86,11 @@ class test_synchronized(unittest.TestCase):
         self.assertFalse(self._mutex.locked())
         self.assertRaises(Exception, self.throws)
         self.assertFalse(self._mutex.locked())
+
+        if __debug__:
+            self.assertRaises(AssertionError, tws.synchronized, lambda x: 0)
+
+            @tws.synchronized
+            def no_mutex(self): pass
+            self.assertRaises(AssertionError, no_mutex, None)
+                        
