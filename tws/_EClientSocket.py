@@ -87,8 +87,12 @@ class EClientSocket(object):
 
     @synchronized
     def _close(self):
-        self.eDisconnect()
-        self.wrapper().connectionClosed()
+        assert self._connected
+
+        try:
+            self.eDisconnect()
+        finally:
+            self._wrapper.connectionClosed()
 
 
     def _send(self, data):
