@@ -363,6 +363,7 @@ class test_EClientSocket(unittest.TestCase):
                                  self.client.reqMktData, 1, tws.Contract(), "", False)
 
         contract = tws.Contract()
+        contract.m_underComp = tws.UnderComp()
         contract.m_underComp.m_conId = 1
         self._check_min_server(self.client.MIN_SERVER_VER_UNDER_COMP, 1, self.client.reqMktData,
                                1, contract, "", False)
@@ -470,6 +471,7 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.REQ_MKT_DATA,
                          self.stream.getvalue())
 
+        contract.m_underComp = tws.UnderComp()
         contract.m_underComp.m_conId = 100
         contract.m_underComp.m_delta = 200.5
         contract.m_underComp.m_price = 300.5
@@ -794,11 +796,12 @@ class test_EClientSocket(unittest.TestCase):
                                3, contract, order)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support what-if orders.")
 
+        contract.m_underComp = tws.UnderComp()
         contract.m_underComp.m_conId = 1
         self._check_min_server(self.client.MIN_SERVER_VER_UNDER_COMP, 3, self.client.placeOrder,
                                3, contract, order)
         self.assertEqual(self.wrapper.errors[-1][2], "The TWS is out of date and must be upgraded. It does not support delta-neutral orders.")
-        contract.m_underComp = tws.UnderComp()
+        contract.m_underComp = None
 
         order.m_scaleSubsLevelSize = 1
         self._check_min_server(self.client.MIN_SERVER_VER_SCALE_ORDERS2, 3, self.client.placeOrder,
@@ -1060,6 +1063,7 @@ class test_EClientSocket(unittest.TestCase):
                          self.client.PLACE_ORDER,
                          self.stream.getvalue())
 
+        contract.m_underComp = tws.UnderComp()
         contract.m_underComp.m_conId = 22
         order.m_scaleSubsLevelSize = 23.5
         self.client._server_version = 40
