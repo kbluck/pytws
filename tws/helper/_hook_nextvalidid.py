@@ -12,7 +12,12 @@ import tws.EClientErrors as _EClientErrors
 class HookNextValidId(object):
     '''Installs hook to handle EWrapper.nextValidId() events.
 
-       To install construct an instance passing the wrapper object to hook. 
+       To install construct an instance passing the wrapper object to hook.
+       
+       After installation, your wrapper object will begin handling the 
+       EWrapper.nextValidId event. At any time you may call the method
+       <wrapper>.get_next_id() to obtain the next valid order id as
+       reported by the TWS application. 
     '''
 
     def __init__(self, wrapper):
