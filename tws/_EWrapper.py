@@ -18,6 +18,7 @@ class EWrapper(object):
     def __init__(self, logger=None):
         if logger is None:
             logger = __import__("logging").getLogger(self.__class__.__name__)
+            __import__("logging").basicConfig()
         self.logger = logger
         self._client = None
 
