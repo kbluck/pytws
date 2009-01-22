@@ -42,7 +42,7 @@ class HookNextValidId(object):
     def get_next_id(self):
         '''Next valid order ID.
 
-           This property contains the current next valid order ID as reported
+           This method returns the current next valid order ID as reported
            by the TWS application. Naturally, TWS has no knowledge of any IDs
            that may be in use by as-yet unsubmitted Order objects. 
 
