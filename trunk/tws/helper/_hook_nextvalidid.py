@@ -5,7 +5,7 @@ from __future__ import with_statement
 __copyright__ = "Copyright (c) 2009 Kevin J Bluck"
 __version__   = "$Id$"
 
-from time import sleep as _sleep
+import threading as _threading
 import tws.EClientErrors as _EClientErrors
 
 
@@ -17,17 +17,26 @@ class HookNextValidId(object):
 
     def __init__(self, wrapper):
         assert isinstance(wrapper, __import__("tws").EWrapper)
+        assert hasattr(wrapper,"client")
 
-        self._next_valid_id = _EClientErrors.NO_VALID_ID
         self._wrapper = wrapper
+        self._next_valid_id = _EClientErrors.NO_VALID_ID
+        self._condition = _threading.Condition()
+
         wrapper.nextValidId = self.nextValidId
         wrapper.get_next_id = self.get_next_id
 
 
     def nextValidId(self, id):
-        '''Handler for EWrapper.nextValidId event.'''
-        with (self._wrapper.client.mutex):
-            self._next_valid_id = id
+        '''Handler for EWrapper.nextValidId event.
+
+           Installed using tws.helper.HookNextValidId(wrapper)
+        '''
+        with (self._condition):
+            try:
+                self._next_valid_id = id
+            finally:
+                self._condition.notifyAll()
 
 
     def get_next_id(self):
@@ -36,14 +45,15 @@ class HookNextValidId(object):
            This property contains the current next valid order ID as reported
            by the TWS application. Naturally, TWS has no knowledge of any IDs
            that may be in use by as-yet unsubmitted Order objects. 
+
+           Installed using tws.helper.HookNextValidId(wrapper)
         '''
-        while True:
-            with (self._wrapper.client.mutex):
-                id =  self._next_valid_id
-                if id != _EClientErrors.NO_VALID_ID:
-                    self._next_valid_id = _EClientErrors.NO_VALID_ID
-                    self._wrapper.client.reqIds(1)
-                    return id
-            if not self._wrapper.client.isConnected():
-                raise _EClientErrors.NOT_CONNECTED
-            _sleep(0.001)
+        if not self._wrapper.client.isConnected():
+            raise _EClientErrors.NOT_CONNECTED
+        with (self._condition):
+            if self._next_valid_id == _EClientErrors.NO_VALID_ID:
+                self._condition.wait()
+            id = self._next_valid_id
+            self._next_valid_id = _EClientErrors.NO_VALID_ID
+            self._wrapper.client.reqIds(1)
+            return id
