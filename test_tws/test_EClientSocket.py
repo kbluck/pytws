@@ -4,13 +4,46 @@ __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import unittest
+import threading
 from StringIO import StringIO
 import tws
 from tws import EClientSocket, EClientErrors, EReader
 from test_tws import mock_wrapper, mock_socket
+from tws._EClientSocket import _synchronized
 
 
-# Local classes required to test EClientSocket
+class test_synchronized(unittest.TestCase):
+    '''Test decorator "tws._EClientSocket.synchronized"'''
+
+    def setUp(self):
+        self.mutex = threading.Lock()
+
+    @_synchronized
+    def mock_function(self, *args, **kwds):
+        self.assertTrue(self.mutex.locked())
+        return (args, kwds)
+
+    @_synchronized
+    def throws(self):
+        self.assertTrue(self.mutex.locked())
+        raise Exception()
+
+    def test_decorator(self):
+        self.assertFalse(self.mutex.locked())
+        self.assertEqual(self.mock_function(1, "B", c="C"),
+                        ((1,"B"),{"c":"C"}))
+        self.assertFalse(self.mutex.locked())
+        self.assertRaises(Exception, self.throws)
+        self.assertFalse(self.mutex.locked())
+
+        if __debug__:
+            self.assertRaises(AssertionError, _synchronized, lambda x: 0)
+
+            @_synchronized
+            def no_mutex(self): pass
+            self.assertRaises(AssertionError, no_mutex, None)
+
+
 class test_EClientSocket(unittest.TestCase):
     '''Test class "tws.EClientSocket"'''
 

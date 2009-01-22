@@ -4,11 +4,30 @@
    the TWS socket server, through which the entire API operates.
 '''
 
+from __future__ import with_statement
+
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
 import tws.EClientErrors as _EClientErrors
-from tws import synchronized
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Decorators to support package
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+def synchronized(f):
+    '''Thread mutex-locking decorator.'''
+
+    assert  (__import__("inspect").getargspec(f)[0][0] == "self")
+
+    def _synchronized_call(self, *args, **kwds):
+        assert hasattr(self, "mutex")
+        
+        with self.mutex:
+            return f(self, *args, **kwds)
+
+    return _synchronized_call
 
 
 def requestmethod(has_id=False, min_server=0,
@@ -1034,4 +1053,5 @@ class EClientSocket(object):
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
 del requestmethod
+_synchronized = synchronized
 del synchronized
