@@ -14,13 +14,13 @@ def synchronized(f):
     assert  (__import__("inspect").getargspec(f)[0][0] == "self")
 
     def _synchronized_call(self, *args, **kwds):
-        assert hasattr(self, "_mutex")
+        assert hasattr(self, "mutex")
         
-        self._mutex.acquire()
+        self.mutex.acquire()
         try:
             return f(self, *args, **kwds)
         finally:
-            self._mutex.release()
+            self.mutex.release()
 
     return _synchronized_call
 

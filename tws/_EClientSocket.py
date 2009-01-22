@@ -199,6 +199,12 @@ class EClientSocket(object):
     from tws._Util import _DOUBLE_MAX_VALUE
 
 
+    @property
+    def mutex(self):
+        '''Mutex for client thread synchronization.'''
+        return self._mutex
+
+
     def wrapper(self):
         return self._wrapper
 
