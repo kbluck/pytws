@@ -5,27 +5,6 @@ __version__   = "$Id$"
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Utility stuff to support package
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-def synchronized(f):
-    '''Thread mutex-locking decorator.'''
-
-    assert  (__import__("inspect").getargspec(f)[0][0] == "self")
-
-    def _synchronized_call(self, *args, **kwds):
-        assert hasattr(self, "mutex")
-        
-        self.mutex.acquire()
-        try:
-            return f(self, *args, **kwds)
-        finally:
-            self.mutex.release()
-
-    return _synchronized_call
-
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Module imports. Backfill sys.modules for each
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

@@ -5,7 +5,6 @@ __version__   = "$Id$"
 
 import unittest
 import socket
-import threading
 import logging
 import tws
 
@@ -61,35 +60,3 @@ class mock_socket(object):
 
     def makefile(self, mode):
         return StringIO()
-
-
-class test_synchronized(unittest.TestCase):
-    '''Test decorator "tws.synchronized"'''
-
-    def setUp(self):
-        self.mutex = threading.Lock()
-
-    @tws.synchronized
-    def mock_function(self, *args, **kwds):
-        self.assertTrue(self.mutex.locked())
-        return (args, kwds)
-
-    @tws.synchronized
-    def throws(self):
-        self.assertTrue(self.mutex.locked())
-        raise Exception()
-
-    def test_decorator(self):
-        self.assertFalse(self.mutex.locked())
-        self.assertEqual(self.mock_function(1, "B", c="C"),
-                        ((1,"B"),{"c":"C"}))
-        self.assertFalse(self.mutex.locked())
-        self.assertRaises(Exception, self.throws)
-        self.assertFalse(self.mutex.locked())
-
-        if __debug__:
-            self.assertRaises(AssertionError, tws.synchronized, lambda x: 0)
-
-            @tws.synchronized
-            def no_mutex(self): pass
-            self.assertRaises(AssertionError, no_mutex, None)
