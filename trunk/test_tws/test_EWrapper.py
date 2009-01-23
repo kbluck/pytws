@@ -44,7 +44,7 @@ class test_EWrapper(unittest.TestCase):
     def test_connectionClosed(self):
         self.wrapper.connectionClosed()
         self.assertEqual(len(self.wrapper.logger.logs), 1)
-        self.assertEqual(self.wrapper.logger.logs[0], 
+        self.assertEqual(self.wrapper.logger.logs[0],
                          (logging.WARNING,"Connection closed.",()))
 
     def test_error(self):
@@ -54,19 +54,19 @@ class test_EWrapper(unittest.TestCase):
         self.wrapper.error(EClientErrors.TwsError(code=2100, msg="Test4"))
 
         self.assertEqual(len(self.wrapper.logger.logs), 4)
-        self.assertEqual(self.wrapper.logger.logs[0], 
+        self.assertEqual(self.wrapper.logger.logs[0],
                          (logging.ERROR,"Test1",()))
-        self.assertEqual(self.wrapper.logger.logs[1], 
+        self.assertEqual(self.wrapper.logger.logs[1],
                          (logging.WARNING,"Test2",()))
-        self.assertEqual(self.wrapper.logger.logs[2], 
+        self.assertEqual(self.wrapper.logger.logs[2],
                          (logging.ERROR,"TWS Error 501: Already connected.",()))
-        self.assertEqual(self.wrapper.logger.logs[3], 
+        self.assertEqual(self.wrapper.logger.logs[3],
                          (logging.WARNING,"TWS Error 2100: Test4",()))
 
     def test_unimplemented(self):
         self.wrapper.bogus(1,2,x=3,y=4)
         self.assertEqual(len(self.wrapper.logger.logs), 2)
-        self.assertEqual(self.wrapper.logger.logs[0], 
+        self.assertEqual(self.wrapper.logger.logs[0],
                          (logging.ERROR,"'EWrapper' object has no attribute 'bogus'",()))
-        self.assertEqual(self.wrapper.logger.logs[1], 
+        self.assertEqual(self.wrapper.logger.logs[1],
                          (logging.WARNING,"Unimplemented method 'EWrapper.bogus' invoked with args: (1, 2) and kwds: {'y': 4, 'x': 3}",()))

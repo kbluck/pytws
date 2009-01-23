@@ -12,7 +12,7 @@ from tws.helper import QueueWrapper
 class test_QueueWrapper(unittest.TestCase):
 
     def setUp(self):
-        self.wrapper = QueueWrapper() 
+        self.wrapper = QueueWrapper()
 
     def test_init(self):
         self.assertTrue(isinstance(QueueWrapper(), tws.EWrapper))
@@ -27,7 +27,7 @@ class test_QueueWrapper(unittest.TestCase):
         self.wrapper.put(item=("test1",{"A1":1,"B2":3}))
         self.assertFalse(self.wrapper.empty())
         self.assertEqual(self.wrapper.get(), ("test1",{"A1":1,"B2":3}))
-        
+
         self.assertTrue(self.wrapper.empty())
         self.wrapper.put_nowait(item=("test2",{"C3":2,"D4":4}))
         self.assertFalse(self.wrapper.empty())
@@ -35,7 +35,7 @@ class test_QueueWrapper(unittest.TestCase):
 
     def test_put_wrapper_call(self):
         self.assertTrue(self.wrapper.empty())
-        self.wrapper._put_wrapper_call("test", A1=1, B2=3)         
+        self.wrapper._put_wrapper_call("test", A1=1, B2=3)
         self.assertFalse(self.wrapper.empty())
         self.assertEqual(self.wrapper.get(), ("test",{"A1":1,"B2":3}))
         self.assertTrue(self.wrapper.empty())

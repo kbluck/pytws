@@ -13,7 +13,7 @@ class test_SynchronizedWrapper(unittest.TestCase):
 
     def setUp(self):
         self.client_wrapper = test_tws.mock_wrapper()
-        self.sync_wrapper = tws.helper.SynchronizedWrapper(self.client_wrapper) 
+        self.sync_wrapper = tws.helper.SynchronizedWrapper(self.client_wrapper)
 
     def test_init(self):
         self.assertTrue(isinstance(
@@ -21,7 +21,7 @@ class test_SynchronizedWrapper(unittest.TestCase):
 
     def test_put_wrapper_call(self):
         self.assertTrue(self.sync_wrapper._queue.empty())
-        self.sync_wrapper._put_wrapper_call("test", 1, 3)         
+        self.sync_wrapper._put_wrapper_call("test", 1, 3)
         self.assertFalse(self.sync_wrapper._queue.empty())
         self.assertEqual(self.sync_wrapper._queue.get(), ("test",(1,3)))
         self.assertTrue(self.sync_wrapper._queue.empty())

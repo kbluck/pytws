@@ -17,7 +17,7 @@ class test_helper_HookNextValidId(unittest.TestCase):
     def test_init(self):
         self.assertTrue(HookNextValidId(tws.EWrapper()))
 
-    def test_hook(self):         
+    def test_hook(self):
         self.assertFalse(self.wrapper.__dict__.get("nextValidId", None))
         self.assertFalse(self.wrapper.__dict__.get("get_next_id", None))
         HookNextValidId(self.wrapper)
