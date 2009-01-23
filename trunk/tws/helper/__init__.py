@@ -13,3 +13,4 @@ from tws.helper._contract import OptionContract
 
 from tws.helper._hook_nextvalidid import HookNextValidId
 from tws.helper._hook_openorder import HookOpenOrder
+from tws.helper._hook_orderstatus import HookOrderStatus
