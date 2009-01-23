@@ -12,11 +12,11 @@ class HookOpenOrder(object):
     '''Installs hook to handle EWrapper.openOrder() events.
 
        To install construct an instance passing the wrapper object to hook.
-       
-       After installation, your wrapper object will begin handling the 
+
+       After installation, your wrapper object will begin handling the
        EWrapper.openOrder and openOrderEnd events. At any time you may
        call the method <wrapper>.get_open_orders() to obtain a dict of
-       the currently open orders as reported by TWS. 
+       the currently open orders as reported by TWS.
     '''
 
     def __init__(self, wrapper):
@@ -59,7 +59,7 @@ class HookOpenOrder(object):
            orders as reported by TWS. The dict is indexed by Order ID and
            each entry's value is a tuple of the associated Contract, Order,
            and OrderState objects.
-           
+
            Note that TWS will not report an order as "open" until it has
            finished transmitting and received confirmation of the order from
            IB, so if you call get_open_orders() immediately after calling
@@ -73,7 +73,7 @@ class HookOpenOrder(object):
             raise _EClientErrors.NOT_CONNECTED
         with (self._condition):
             assert self._open_orders is None
-            
+
             self._open_orders = {}
             self._wrapper.client.reqOpenOrders()
             self._condition.wait()

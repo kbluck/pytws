@@ -17,7 +17,7 @@ class test_helper_HookOpenOrder(unittest.TestCase):
     def test_init(self):
         self.assertTrue(HookOpenOrder(tws.EWrapper()))
 
-    def test_hook(self):         
+    def test_hook(self):
         self.assertFalse(self.wrapper.__dict__.get("openOrder", None))
         self.assertFalse(self.wrapper.__dict__.get("openOrderEnd", None))
         self.assertFalse(self.wrapper.__dict__.get("get_open_orders", None))

@@ -60,7 +60,7 @@ class SynchronizedWrapper(EWrapper):
                 item = self._queue.get(block=False)
                 getattr(self._chained_wrapper, item[0])(*item[1])
 
-        # Once waiting queue is empty, just return.                 
+        # Once waiting queue is empty, just return.
         except self._queue_empty:
             return
 
@@ -170,7 +170,7 @@ class SynchronizedWrapper(EWrapper):
                                operation, side, price, size)
 
 
-    def updateMktDepthL2(self, tickerId, position, marketMaker, operation, 
+    def updateMktDepthL2(self, tickerId, position, marketMaker, operation,
                                side, price, size):
         self._put_wrapper_call("updateMktDepthL2", tickerId, position,
                                marketMaker, operation, side, price, size)
@@ -191,7 +191,7 @@ class SynchronizedWrapper(EWrapper):
 
     def historicalData(self, reqId, date, open, high, low, close, volume,
                              count, wap, hasGaps):
-        self._put_wrapper_call("historicalData", reqId, date, open, high, 
+        self._put_wrapper_call("historicalData", reqId, date, open, high,
                                low, close, volume, count, wap, hasGaps)
 
 

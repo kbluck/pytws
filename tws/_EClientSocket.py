@@ -23,7 +23,7 @@ def synchronized(f):
 
     def _synchronized_call(self, *args, **kwds):
         assert hasattr(self, "mutex")
-        
+
         with self.mutex:
             return f(self, *args, **kwds)
 
@@ -86,7 +86,7 @@ def requestmethod(has_id=False, min_server=0,
 class EClientSocket(object):
     '''Socket client which connects to the TWS socket server.
     '''
-    
+
     from socket import socket as _socket_factory
 
     def __init__(self, wrapper):

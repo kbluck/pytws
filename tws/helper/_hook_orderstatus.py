@@ -13,11 +13,11 @@ class HookOrderStatus(object):
     '''Installs hook to handle EWrapper.orderStatus() events.
 
        To install construct an instance passing the wrapper object to hook.
-       
-       After installation, your wrapper object will begin handling the 
+
+       After installation, your wrapper object will begin handling the
        EWrapper.orderStatus event. At any time you may call the method
        <wrapper>.get_order_status() to obtain the current order status
-       as reported by the TWS application. 
+       as reported by the TWS application.
     '''
 
     def __init__(self, wrapper):
@@ -55,7 +55,7 @@ class HookOrderStatus(object):
            with values being tuples containing the same values as the
            arguments that would be passed to the EWrapper.orderStatus()
            method.
-           
+
            It is often the case that you will want to wait for the order
            status to change. To do this, pass in the the wait_until_changed
            param the dict of order statuses which you consider current.
@@ -67,7 +67,7 @@ class HookOrderStatus(object):
            timeout value for the maximum seconds it should wait before
            returning the current order status dict regardless of whether
            there was an update from TWS.
-           
+
            If you do not pass a dict to the wait_until_changed param, the
            method will not block, and the timeout param is ignored.
 

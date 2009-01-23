@@ -13,7 +13,7 @@ class test_helper_StockContract(unittest.TestCase):
 
     def test_init(self):
         self.assertRaises(TypeError, StockContract)
-        
+
         test1 = StockContract("IBM")
         test2 = StockContract("SGE", "LSE", "GBP", con_id=1)
 
@@ -55,7 +55,7 @@ class test_helper_FuturesContract(unittest.TestCase):
 
     def test_init(self):
         self.assertRaises(TypeError, FuturesContract)
-        
+
         test1 = FuturesContract("GLOBEX", local_symbol="NQH9")
         test2 = FuturesContract("ECBOT", "YM", "200903", con_id=2)
 

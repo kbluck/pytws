@@ -30,7 +30,7 @@ class StockContract(Contract):
 class FuturesContract(Contract):
     '''Description of a futures contract.'''
 
-    def __init__(self, exchange, symbol="", expiry="", currency="USD", 
+    def __init__(self, exchange, symbol="", expiry="", currency="USD",
                  local_symbol="", **kwds):
         '''Specialized constructor for futures contracts.
 

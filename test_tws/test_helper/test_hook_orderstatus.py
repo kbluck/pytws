@@ -17,7 +17,7 @@ class test_helper_HookOrderStatus(unittest.TestCase):
     def test_init(self):
         self.assertTrue(HookOrderStatus(tws.EWrapper()))
 
-    def test_hook(self):         
+    def test_hook(self):
         self.assertFalse(self.wrapper.__dict__.get("orderStatus", None))
         self.assertFalse(self.wrapper.__dict__.get("get_order_status", None))
         HookOrderStatus(self.wrapper)
