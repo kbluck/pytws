@@ -54,6 +54,7 @@ class test_EClientSocket(unittest.TestCase):
         self.client._stream = self.stream
 
     def test_init(self):
+        self.assertTrue(EClientSocket())
         self.assertTrue(EClientSocket(mock_wrapper()))
 
         if __debug__:
