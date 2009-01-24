@@ -9,7 +9,8 @@ from __future__ import with_statement
 __copyright__ = "Copyright (c) 2008 Kevin J Bluck"
 __version__   = "$Id$"
 
-import tws.EClientErrors as _EClientErrors
+import tws._EClientErrors as _EClientErrors
+from tws._EWrapper import EWrapper as _wrapper_factory
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -89,8 +90,11 @@ class EClientSocket(object):
 
     from socket import socket as _socket_factory
 
-    def __init__(self, wrapper):
-        assert isinstance(wrapper, __import__("tws").EWrapper)
+    def __init__(self, wrapper=None):
+        assert isinstance(wrapper, __import__("tws").EWrapper) or wrapper is None
+
+        if wrapper is None:
+            wrapper = _wrapper_factory()
 
         if wrapper.client:
             raise ValueError("Wrapper object is already assigned to a SocketClient.")
