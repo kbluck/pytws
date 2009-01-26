@@ -91,3 +91,11 @@ class test_Contract(unittest.TestCase):
         self.assertNotEqual(test1, "")
         self.assertEqual(test3, test3)
         self.assertNotEqual(test1, test3)
+
+    def test_hash(self):
+        test1 = Contract()
+        test2 = Contract(symbol="A1")
+
+        self.assertEqual(hash(test1), hash(Contract()))
+        self.assertEqual(hash(test2), hash(Contract(symbol="A1")))
+        self.assertNotEqual(hash(test2), hash(Contract(symbol="B2")))
