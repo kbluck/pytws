@@ -160,7 +160,7 @@ class HookTicks(object):
 
            This method returns the the current tick values as reported by
            the TWS application. It returns a dict keyed by ticker ID and
-           with values also being dicts. Each value dick is keyed by the
+           with values also being dicts. Each value dict is keyed by the
            field ID and contains a value which is a tuple containing the
            same values as the arguments that would be passed to the
            EWrapper.tick*() method corresponding to that field. For
