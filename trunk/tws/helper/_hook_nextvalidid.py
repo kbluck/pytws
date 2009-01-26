@@ -56,9 +56,6 @@ class HookNextValidId(object):
         if not self._wrapper.client.isConnected():
             raise _EClientErrors.NOT_CONNECTED
         with (self._condition):
-            if self._next_valid_id == _EClientErrors.NO_VALID_ID:
-                self._condition.wait()
-            id = self._next_valid_id
-            self._next_valid_id = _EClientErrors.NO_VALID_ID
             self._wrapper.client.reqIds(1)
-            return id
+            self._condition.wait()
+            return self._next_valid_id
