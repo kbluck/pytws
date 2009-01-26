@@ -59,3 +59,7 @@ class Contract(object):
         if not _Util.VectorEqualsUnordered(self.m_comboLegs, other.m_comboLegs):
             return False
         return True
+
+
+    def __hash__(self):
+        return hash(self.m_symbol)
