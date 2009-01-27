@@ -227,7 +227,7 @@ class HookAccountUpdates(object):
             return self._portfolio[account]
 
 
-    def get_account_update_time(self, wait_until_changed=None, timeout=None):
+    def get_account_update_time(self):
         '''Gets timestamp string of last account update.
 
            This method returns a string with the formatted timestamp of the
@@ -235,33 +235,15 @@ class HookAccountUpdates(object):
            account updates for at least one account by the reqAccountUpdates()
            method of EClientSocket before any timestamp updates will occur.
            Unlike the other account methods, it does not take an account name.
-           The timestamp returned may reflect any account requested.
-
-           It is often the case that you will want to wait for the next
-           timestamp update. To do this, pass in the the wait_until_changed
-           param the timestamp string which you consider current. The method
-           will block until it receives an update from TWS with an updated
-           timestamp. Be careful! By default it will wait forever for an
-           update, so you should not wait unless you are certain that TWS
-           will deliver an update within a reasonable amount of time. If you
-           like, you may pass in a float timeout value for the maximum seconds
-           the method should wait before returning the current timestamp
-           regardless of whether there was an update from TWS.
-
-           If you do not pass a value to the wait_until_changed param, the
-           method will not block, and the timeout param is ignored.
+           The timestamp returned may reflect any account requested. The
+           timestamp may be blank if a complete account snapshot has not
+           yet been received.
 
            Installed using tws.helper.HookAccountUpdates(wrapper)
         '''
-        assert isinstance(wait_until_changed, str) or (wait_until_changed is None)
-        assert (timeout >= 0) or (timeout is None)
-
         if not self._wrapper.client.isConnected():
             raise _EClientErrors.NOT_CONNECTED
         with (self._condition):
-            if wait_until_changed != None:
-                while self._timestamp == wait_until_changed:
-                    self._condition.wait(timeout)
             return self._timestamp
 
 
