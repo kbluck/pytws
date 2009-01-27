@@ -11,6 +11,7 @@ from tws.helper._contract import StockContract
 from tws.helper._contract import FuturesContract
 from tws.helper._contract import OptionContract
 
+from tws.helper._hook_accountupdates import HookAccountUpdates
 from tws.helper._hook_currenttime import HookCurrentTime
 from tws.helper._hook_nextvalidid import HookNextValidId
 from tws.helper._hook_openorder import HookOpenOrder
