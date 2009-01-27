@@ -24,13 +24,19 @@ class EWrapper(object):
 
 
     def __getattr__(self, name):
-        self.error(AttributeError("'%s' object has no attribute '%s'" %
-                                  (self.__class__.__name__, name)))
+        attribute_error = AttributeError("'%s' object has no attribute '%s'" %
+                                         (self.__class__.__name__, name))
+
+        # Don't handle attributes with leading underscore.
+        if name.startswith("_"):
+            raise attribute_error
+
         # Any arbitrary unknown attribute is mapped to a callable stub.
         def _mock(*args, **kwds):
-            self._logger.warning("Unimplemented method '%s.%s' invoked with "
-                                 "args: %s and kwds: %s" %
-                                 (self.__class__.__name__, name, args, kwds))
+            self._logger.warning("Unimplemented method '%s.%s' invoked " 
+                                 "with args: %s and kwds: %s" %
+                            (self.__class__.__name__, name, args, kwds))
+        self.error(attribute_error)
         return _mock
 
 
