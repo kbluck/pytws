@@ -28,7 +28,7 @@ class HookAccountUpdates(object):
         self._snapshot = {}
         self._values = {}
         self._portfolio = {}
-        self._timestamp = ""
+        self._timestamp = None
         self._condition = _threading.Condition()
 
         wrapper.updateAccountValue = self.updateAccountValue
@@ -236,15 +236,15 @@ class HookAccountUpdates(object):
            method of EClientSocket before any timestamp updates will occur.
            Unlike the other account methods, it does not take an account name.
            The timestamp returned may reflect any account requested. The
-           timestamp may be blank if a complete account snapshot has not
-           yet been received.
+           timestamp may be the string "None" if a complete account snapshot
+           has not yet been received.
 
            Installed using tws.helper.HookAccountUpdates(wrapper)
         '''
         if not self._wrapper.client.isConnected():
             raise _EClientErrors.NOT_CONNECTED
         with (self._condition):
-            return self._timestamp
+            return str(self._timestamp)
 
 
     def _wait_for_snapshot(self, account, timeout):
