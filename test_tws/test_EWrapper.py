@@ -70,3 +70,4 @@ class test_EWrapper(unittest.TestCase):
                          (logging.ERROR,"'EWrapper' object has no attribute 'bogus'",()))
         self.assertEqual(self.wrapper.logger.logs[1],
                          (logging.WARNING,"Unimplemented method 'EWrapper.bogus' invoked with args: (1, 2) and kwds: {'y': 4, 'x': 3}",()))
+        self.assertRaises(AttributeError, getattr, self.wrapper, "_x")
