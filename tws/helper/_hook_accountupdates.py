@@ -181,10 +181,16 @@ class HookAccountUpdates(object):
            timeout value.
 
            Note carefully that the returned dict is keyed on tws.Contract
-           objects. To deference such keys, you must supply a contract object
+           objects. To reference such keys, you must supply a contract object
            which evaluates equal to the key object. This may not be exactly
-           what you might expect. It is probably safest to iterate through
-           the list of keys to get the actual key objects for later use.
+           what you might expect. The Contract objects used to key your
+           portfolio will be completely filled in, including fields you might
+           consider "optional", such as conId in particular. If the Contract
+           object you use is not "equal" according to TWS rules, which means
+           your matching Contract objects must be completely filled out, they
+           will not match. It is probably safest to iterate through the list
+           of portfolio keys to get the actual, fully specified Contract key
+           objects for later use if you want to do dict indexing by key.
 
            It is often the case that you will want to wait for the next
            portfolio update. To do this, pass in the the wait_until_changed
