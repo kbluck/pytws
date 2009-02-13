@@ -88,5 +88,4 @@ class HookContractDetails(object):
                 self._condition.wait()
 
             # Pop collected data and return list of details.
-            details = self._details.pop(req_id)
-            return details[0]
+            return self._details.pop(req_id)[0]
