@@ -11,9 +11,9 @@ class ContractDetails(object):
        including bond information.
     '''
 
-    def __init__(self, summary=_contract_factory(), market_name="", trading_class="",
+    def __init__(self, summary=None, market_name="", trading_class="",
                  min_tick=0.0, order_types="", valid_exchanges="", under_con_id=0):
-        self.m_summary = summary
+        self.m_summary = _contract_factory() if summary is None else summary 
         self.m_marketName = market_name
         self.m_tradingClass = trading_class
         self.m_minTick = min_tick
