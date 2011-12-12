@@ -56,6 +56,16 @@ CLOSE_EFP_COMPUTATION = 44
 LAST_TIMESTAMP = 45
 SHORTABLE = 46
 FUNDAMENTAL_RATIOS = 47
+RT_VOLUME = 48
+HALTED = 49
+BID_YIELD = 50
+ASK_YIELD = 51
+LAST_YIELD = 52    
+CUST_OPTION_COMPUTATION = 53  
+TRADE_COUNT = 54
+TRADE_RATE = 55
+VOLUME_RATE = 56
+LAST_RTH_TRADE = 57
 
 
 _field_names = {
@@ -107,6 +117,16 @@ _field_names = {
     LAST_TIMESTAMP:             "lastTimestamp",
     SHORTABLE:                  "shortable",
     FUNDAMENTAL_RATIOS:         "fundamentals",
+    RT_VOLUME:                  "RTVolume",
+    HALTED:                     "halted",
+    BID_YIELD:                  "bidYield",
+    ASK_YIELD:                  "askYield",
+    LAST_YIELD:                 "lastYield",             
+    CUST_OPTION_COMPUTATION:    "custOptComp",             
+    TRADE_COUNT:                "trades",
+    TRADE_RATE:                 "trades/min",
+    VOLUME_RATE:                "volume/min",             
+    LAST_RTH_TRADE:             "lastRTHTrade"             
 }
 
 

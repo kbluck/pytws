@@ -26,13 +26,13 @@ class OrderState(object):
         if id(self) == id(other): return True
         if not isinstance(other, self.__class__): return False
         return True if (
-            (self.m_status == other.m_status) and
-            (self.m_initMargin == other.m_initMargin) and
-            (self.m_maintMargin == other.m_maintMargin) and
-            (self.m_equityWithLoan == other.m_equityWithLoan) and
+            (self.m_status.tolower() == other.m_status.tolower()) and
+            (self.m_initMargin.tolower() == other.m_initMargin.tolower()) and
+            (self.m_maintMargin.tolower() == other.m_maintMargin.tolower()) and
+            (self.m_equityWithLoan.tolower() == other.m_equityWithLoan.tolower()) and
             (self.m_commission == other.m_commission) and
             (self.m_minCommission == other.m_minCommission) and
             (self.m_maxCommission == other.m_maxCommission) and
-            (self.m_commissionCurrency == other.m_commissionCurrency) and
+            (self.m_commissionCurrency.tolower() == other.m_commissionCurrency.tolower()) and
             (self.m_warningText == other.m_warningText)
         ) else False
