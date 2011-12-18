@@ -154,19 +154,34 @@ class EReader(_thread_type):
         version = self._readInt()
         ticker_id = self._readInt()
         tick_type = self._readInt()
-        implied_vol = self._readDouble()
-        delta = self._readDouble()
-        if (tick_type == _TickType.MODEL_OPTION):
-            model_price = self._readDouble()
-            pv_dividend = self._readDouble()
-        else:
-            model_price = pv_dividend = self._DOUBLE_MAX_VALUE
-
-        self._wrapper.tickOptionComputation(ticker_id, tick_type,
-                                            implied_vol if implied_vol >= 0.0 else self._DOUBLE_MAX_VALUE,
-                                            delta if abs(delta) <= 1.0 else self._DOUBLE_MAX_VALUE,
-                                            model_price, pv_dividend)
-
+        implied_vol = self._readDouble() 
+        if implied_vol < 0: #-1 is the "not yet computed" indicator
+		implied_vol = self._DOUBLE_MAX_VALUE 
+	delta = self._readDouble()
+	if abs(delta) > 1: #-2 is the "not yet computed" indicator
+		delta = self._DOUBLE_MAX_VALUE
+	opt_price = self._DOUBLE_MAX_VALUE
+	pv_dividend = self._DOUBLE_MAX_VALUE
+	gamma = self._DOUBLE_MAX_VALUE
+	vega = self._DOUBLE_MAX_VALUE
+	theta = self._DOUBLE_MAX_VALUE
+	und_price = self._DOUBLE_MAX_VALUE
+	if (version >= 6) or (tick_type = _TickType.MODEL_OPTION):
+		opt_price = self._readDouble()
+		if opt_price < 0 opt_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+		pv_dividend = self._readDouble()
+		if pv_dividend < 0 pv_dividend = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+	if version >= 6:
+		gamma = self._readDouble()
+		if abs(gamma) > 1 gamma = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator
+		vega = self._readDouble()
+		if abs(vega) > 1 vega = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicato
+		theta = self._readDouble()
+		if abs(theta) > 1 theta = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator		
+		und_price = self._readDouble()
+		if und_price < 0 und_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+	self._wrapper.tickOptionComputation(ticker_id, tick_type, implied_vol, delta, optPrice, pv_dividend, 
+						gamma, vega, theta, und_price)
 
     def _readTickGeneric(self):
         version = self._readInt()
@@ -308,7 +323,7 @@ class EReader(_thread_type):
             order.m_discretionaryAmt = self._readDouble()
         if version >= 5:
             order.m_goodAfterTime = self._readStr()
-        if version >= 6:
+        if version >= 6: #skip deprecated sharesAllocation field
             self._readStr()
         if version >= 7:
             order.m_faGroup = self._readStr()
@@ -323,7 +338,11 @@ class EReader(_thread_type):
             order.m_settlingFirm = self._readStr()
             order.m_shortSaleSlot = self._readInt()
             order.m_designatedLocation = self._readStr()
-            order.m_auctionStrategy = self._readInt()
+	    if (self._connection.serverVersion() == 51):
+		self._readInd() #exemptCode
+            if (version >= 23):
+		order.m_exemptCode = self._readInt()
+	    order.m_auctionStrategy = self._readInt()
             order.m_startingPrice = self._readDouble()
             order.m_stockRefPrice = self._readDouble()
             order.m_delta = self._readDouble()
@@ -374,6 +393,8 @@ class EReader(_thread_type):
         if version >= 19:
             order.m_clearingAccount = self._readStr()
             order.m_clearingIntent = self._readStr()
+	if version >= 22
+	    order.m_notHeld = self._readBoolFromInt()
         if version >= 20:
             if self._readBoolFromInt():
                 undercomp = self._undercomp_factory()
@@ -415,7 +436,8 @@ class EReader(_thread_type):
     def _readScannerData(self):
         version = self._readInt()
         ticker_id = self._readInt()
-        for i in xrange(self._readInt()):
+	number_of_elements = self._readInt()
+        for i in xrange(number_of_elements):
             contract = self._contract_details_factory()
             rank = self._readInt()
             if version >= 3:
@@ -461,6 +483,17 @@ class EReader(_thread_type):
             contract.m_priceMagnifier = self._readInt()
         if version >= 4:
             contract.m_underConId = self._readInt()
+	if version >= 5: 
+	    contract.m_longName = self._readStr()
+	    contract.m_summary.m_primaryExch = self._readStr()
+	if version >= 6: 
+	    contract.m_contractMonth = self._readStr()
+	    contract.m_industry = self._readStr()
+	    contract.m_category = self._readStr()
+	    contract.m_subcategory = self._readStr()
+	    contract.m_timeZoneId = self._readStr()
+	    contract.m_tradingHours = self._readStr()
+	    contract.m_liquidHours = self._readStr()
         self._wrapper.contractDetails(req_id, contract)
 
 
@@ -494,6 +527,8 @@ class EReader(_thread_type):
             contract.m_nextOptionType = self._readStr()
             contract.m_nextOptionPartial = self._readBoolFromInt()
             contract.m_notes = self._readStr()
+	if version >= 4
+	    contract.m_longName = self._readStr()
         self._wrapper.bondContractDetails(req_id, contract)
 
 
@@ -606,7 +641,7 @@ class EReader(_thread_type):
 
 
     def _readCurrentTime(self):
-        version = self._readInt()
+        self._readInt()
         time = self._readLong()
         self._wrapper.currentTime(time)
 
@@ -664,8 +699,13 @@ class EReader(_thread_type):
         undercomp.m_price = self._readDouble()
         self._wrapper.deltaNeutralValidation(req_id, undercomp)
 
+    def _tickSnapshotEnd(self):
+	self._readInt()
+	req_id = self.readInt()
+	self._wrapper.tickSnapshotEnd(req_id)
+ 
 
-    ## Tag constants ##
+    ## incoming msg id's##
     TICK_PRICE = 1
     TICK_SIZE = 2
     ORDER_STATUS = 3
@@ -698,20 +738,26 @@ class EReader(_thread_type):
     ACCT_DOWNLOAD_END = 54
     EXECUTION_DATA_END = 55
     DELTA_NEUTRAL_VALIDATION = 56
-
+    TICK_SNAPSHOT_END = 57
 
     ## Tag-method dispatch rules ##
     _reader_map = {
         TICK_PRICE: _readTickPrice,
         TICK_SIZE: _readTickSize,
+        TICK_OPTION_COMPUTATION: _readTickOptionComputation,
+        TICK_GENERIC: _readTickGeneric,
+        TICK_STRING: _readTickString,
+        TICK_EFP: _readTickEFP,
         ORDER_STATUS: _readOrderStatus,
-        ERR_MSG: _readError,
-        OPEN_ORDER: _readOpenOrder,
         ACCT_VALUE: _readUpdateAccountValue,
         PORTFOLIO_VALUE: _readUpdatePortfolio,
         ACCT_UPDATE_TIME: _readUpdateAccountTime,
+        ERR_MSG: _readError,
+        OPEN_ORDER: _readOpenOrder,
         NEXT_VALID_ID: _readNextValidId,
+        SCANNER_DATA: _readScannerData,
         CONTRACT_DATA: _readContractDetails,
+        BOND_CONTRACT_DATA: _readBondContractDetails,
         EXECUTION_DATA: _readExecDetails,
         MARKET_DEPTH: _readUpdateMktDepth,
         MARKET_DEPTH_L2: _readUpdateMktDepthL2,
@@ -719,13 +765,7 @@ class EReader(_thread_type):
         MANAGED_ACCTS: _readManagedAccounts,
         RECEIVE_FA: _readReceiveFA,
         HISTORICAL_DATA:_readHistoricalData,
-        BOND_CONTRACT_DATA: _readBondContractDetails,
         SCANNER_PARAMETERS: _readScannerParameters,
-        SCANNER_DATA: _readScannerData,
-        TICK_OPTION_COMPUTATION: _readTickOptionComputation,
-        TICK_GENERIC: _readTickGeneric,
-        TICK_STRING: _readTickString,
-        TICK_EFP: _readTickEFP,
         CURRENT_TIME: _readCurrentTime,
         REAL_TIME_BARS: _readRealtimeBar,
         FUNDAMENTAL_DATA: _readFundamentalData,
@@ -733,7 +773,8 @@ class EReader(_thread_type):
         OPEN_ORDER_END: _readOpenOrderEnd,
         ACCT_DOWNLOAD_END: _readAccountDownloadEnd,
         EXECUTION_DATA_END: _readExecDetailsEnd,
-        DELTA_NEUTRAL_VALIDATION: _readDeltaNeutralValidation
+        DELTA_NEUTRAL_VALIDATION: _readDeltaNeutralValidation,
+	TICK_SNAPSHOT_END: _tickSnapshotEnd
     }
 
 

@@ -11,7 +11,8 @@ class Order(object):
     '''
 
     def __init__(self):
-        self.m_orderId = 0
+        #main order fields
+	self.m_orderId = 0
         self.m_clientId = 0
         self.m_permId = 0
         self.m_action = self.EMPTY_STR
@@ -19,63 +20,92 @@ class Order(object):
         self.m_orderType = self.EMPTY_STR
         self.m_lmtPrice = 0.0
         self.m_auxPrice = 0.0
-        self.m_tif = self.EMPTY_STR
-        self.m_ocaGroup = self.EMPTY_STR
-        self.m_ocaType = 0
-        self.m_orderRef = self.EMPTY_STR
-        self.m_transmit = True
-        self.m_parentId = 0
+        
+	#extended order fields
+	self.m_tif = self.EMPTY_STR #"Time in Force" - DAY, GTC, etc.
+        self.m_ocaGroup = self.EMPTY_STR #once cancels all group names
+        self.m_ocaType = 0 #1 = CANCEL_WITH_BLOCK, 2 = REDUCE_WITH_BLOCK, 3 = REDUCE_NON_BLOCK
+        self.m_orderRef = self.EMPTY_STR 
+        self.m_transmit = True #if false, order will be created but not transmited
+        self.m_parentId = 0 #Parent order Id, to associate Auto STP or TRAIL orders with the original order.
         self.m_blockOrder = False
         self.m_sweepToFill = False
         self.m_displaySize = 0
-        self.m_triggerMethod = 0
+        self.m_triggerMethod = 0 # 0=Default, 1=Double_Bid_Ask, 2=Last, 3=Double_Last, 4=Bid_Ask, 7=Last_or_Bid_Ask, 8=Mid-point
         self.m_outsideRth = False
         self.m_hidden = False
-        self.m_goodAfterTime = self.EMPTY_STR
-        self.m_goodTillDate = self.EMPTY_STR
+        self.m_goodAfterTime = self.EMPTY_STR #FORMAT: 20060505 08:00:00 {time zone}
+        self.m_goodTillDate = self.EMPTY_STR #FORMAT: 20060505 08:00:00 {time zone}
         self.m_overridePercentageConstraints = False
-        self.m_rule80A = self.EMPTY_STR
+        self.m_rule80A = self.EMPTY_STR #Individual = 'I', Agency = 'A', AgentOtherMember = 'W', IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M', IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
         self.m_allOrNone = False
         self.m_minQty = self._INT_MAX_VALUE
-        self.m_percentOffset = self._DOUBLE_MAX_VALUE
-        self.m_trailStopPrice = self._DOUBLE_MAX_VALUE
+        self.m_percentOffset = self._DOUBLE_MAX_VALUE #REL orders only 
+        self.m_trailStopPrice = self._DOUBLE_MAX_VALUE #for TRAILLIMIT orders only
+        
+	#Financial advisors only 
         self.m_faGroup = self.EMPTY_STR
         self.m_faProfile = self.EMPTY_STR
         self.m_faMethod = self.EMPTY_STR
         self.m_faPercentage = self.EMPTY_STR
-        self.m_openClose = "O"
-        self.m_origin = self.CUSTOMER
-        self.m_shortSaleSlot = 0
-        self.m_designatedLocation = self.EMPTY_STR
-        self.m_discretionaryAmt = 0.0
+        
+	#Institutional orders only
+	self.m_openClose = "O" #O=Open, C=Close
+        self.m_origin = self.CUSTOMER #0=Customer, 1=Firm
+        self.m_shortSaleSlot = 0 # if you hold the shares, 2 if they will be delivered from elsewhere.  Only for Action="SSHORT
+        self.m_designatedLocation = self.EMPTY_STR #set when slot=2 only.
+        self.m_exemptCode = -1 
+
+	#SMART routing only
+	self.m_discretionaryAmt = 0.0
         self.m_eTradeOnly = False
         self.m_firmQuoteOnly = False
         self.m_nbboPriceCap = self._DOUBLE_MAX_VALUE
-        self.m_auctionStrategy = 0
-        self.m_startingPrice = self._DOUBLE_MAX_VALUE
+
+	#BOX or VOL ORDERS ONLY	
+        self.m_auctionStrategy = 0 #1=AUCTION_MATCH, 2=AUCTION_IMPROVEMENT, 3=AUCTION_TRANSPARENT
+        
+	#BOX ORDERS ONLY
+	self.m_startingPrice = self._DOUBLE_MAX_VALUE
         self.m_stockRefPrice = self._DOUBLE_MAX_VALUE
         self.m_delta = self._DOUBLE_MAX_VALUE
+
+	#pegged to stock or VOL orders
         self.m_stockRangeLower = self._DOUBLE_MAX_VALUE
         self.m_stockRangeUpper = self._DOUBLE_MAX_VALUE
-        self.m_volatility = self._DOUBLE_MAX_VALUE
-        self.m_volatilityType = self._INT_MAX_VALUE
+        
+	#VOLATILITY ORDERS ONLY
+	self.m_volatility = self._DOUBLE_MAX_VALUE
+        self.m_volatilityType = self._INT_MAX_VALUE # 1=daily, 2=annual
         self.m_continuousUpdate = 0
-        self.m_referencePriceType = self._INT_MAX_VALUE
+        self.m_referencePriceType = self._INT_MAX_VALUE #1=Average, 2 = BidOrAsk
         self.m_deltaNeutralOrderType = self.EMPTY_STR
         self.m_deltaNeutralAuxPrice = self._DOUBLE_MAX_VALUE
-        self.m_basisPoints = self._DOUBLE_MAX_VALUE
-        self.m_basisPointsType = self._INT_MAX_VALUE
-        self.m_scaleInitLevelSize = self._INT_MAX_VALUE
+        
+	#COMBO ORDERS ONLY
+	self.m_basisPoints = self._DOUBLE_MAX_VALUE #EFP orders only
+        self.m_basisPointsType = self._INT_MAX_VALUE #EFP orders only
+        
+	#SCALE ORDERS ONLY
+	self.m_scaleInitLevelSize = self._INT_MAX_VALUE
         self.m_scaleSubsLevelSize = self._INT_MAX_VALUE
         self.m_scalePriceIncrement = self._DOUBLE_MAX_VALUE
-        self.m_account = self.EMPTY_STR
+        
+	# Clearing info
+	self.m_account = self.EMPTY_STR #IB account
         self.m_settlingFirm = self.EMPTY_STR
-        self.m_clearingAccount = self.EMPTY_STR
-        self.m_clearingIntent = self.EMPTY_STR
-        self.m_algoStrategy = self.EMPTY_STR
+        self.m_clearingAccount = self.EMPTY_STR #True beneficiary of the order
+        self.m_clearingIntent = self.EMPTY_STR #"" (Default), "IB", "Away", "PTA" (PostTrade)
+        
+	#ALGO ORDERS ONLY
+	self.m_algoStrategy = self.EMPTY_STR
         self.m_algoParams = []
-        self.m_whatIf = False
+        
+	#What-if
+	self.m_whatIf = False
 
+	#Not Held
+	self.m_notHeld = False
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__): return False
@@ -123,26 +153,28 @@ class Order(object):
             (self.m_scaleSubsLevelSize == other.m_scaleSubsLevelSize) and
             (self.m_scalePriceIncrement == other.m_scalePriceIncrement) and
             (self.m_whatIf == other.m_whatIf) and
-            (self.m_action == other.m_action) and
-            (self.m_orderType == other.m_orderType) and
-            (self.m_tif == other.m_tif) and
-            (self.m_ocaGroup == other.m_ocaGroup) and
-            (self.m_orderRef == other.m_orderRef) and
-            (self.m_goodAfterTime == other.m_goodAfterTime)and
-            (self.m_goodTillDate == other.m_goodTillDate) and
-            (self.m_rule80A == other.m_rule80A) and
-            (self.m_faGroup == other.m_faGroup) and
-            (self.m_faProfile == other.m_faProfile) and
-            (self.m_faMethod == other.m_faMethod) and
-            (self.m_faPercentage == other.m_faPercentage) and
-            (self.m_openClose == other.m_openClose) and
-            (self.m_designatedLocation == other.m_designatedLocation) and
-            (self.m_deltaNeutralOrderType == other.m_deltaNeutralOrderType) and
-            (self.m_account == other.m_account) and
-            (self.m_settlingFirm == other.m_settlingFirm) and
-            (self.m_clearingAccount == other.m_clearingAccount)and
-            (self.m_clearingIntent == other.m_clearingIntent) and
-            (self.m_algoStrategy == other.m_algoStrategy) and
+	    (self.m_notHeld == other.m_notHeld) and
+	    (self.m_exemptCode == other.m_exemptCode) and
+            (self.m_action.lower() == other.m_action.lower()) and
+            (self.m_orderType.lower() == other.m_orderType.lower()) and
+            (self.m_tif.lower() == other.m_tif.lower()) and
+            (self.m_ocaGroup.lower() == other.m_ocaGroup.lower()) and
+            (self.m_orderRef.lower() == other.m_orderRef.lower()) and
+            (self.m_goodAfterTime.lower() == other.m_goodAfterTime.lower())and
+            (self.m_goodTillDate.lower() == other.m_goodTillDate.lower()) and
+            (self.m_rule80A.lower() == other.m_rule80A.lower()) and
+            (self.m_faGroup.lower() == other.m_faGroup.lower()) and
+            (self.m_faProfile.lower() == other.m_faProfile.lower()) and
+            (self.m_faMethod.lower() == other.m_faMethod.lower()) and
+            (self.m_faPercentage.lower() == other.m_faPercentage.lower()) and
+            (self.m_openClose.lower() == other.m_openClose.lower()) and
+            (self.m_designatedLocation.lower() == other.m_designatedLocation.lower()) and
+            (self.m_deltaNeutralOrderType.lower() == other.m_deltaNeutralOrderType.lower()) and
+            (self.m_account.lower() == other.m_account.lower()) and
+            (self.m_settlingFirm.lower() == other.m_settlingFirm.lower()) and
+            (self.m_clearingAccount.lower() == other.m_clearingAccount.lower())and
+            (self.m_clearingIntent.lower() == other.m_clearingIntent.lower()) and
+            (self.m_algoStrategy.lower() == other.m_algoStrategy.lower()) and
              _Util.VectorEqualsUnordered(self.m_algoParams, other.m_algoParams)
         ) else False
 
