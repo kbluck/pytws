@@ -159,7 +159,7 @@ class EClientSocket(object):
 
 
     # General constants
-    CLIENT_VERSION = 42
+    CLIENT_VERSION = 48
     SERVER_VERSION = 38
     EOL = "\x00"
     BAG_SEC_TYPE = "BAG"
@@ -196,6 +196,11 @@ class EClientSocket(object):
     CANCEL_REAL_TIME_BARS = 51
     REQ_FUNDAMENTAL_DATA = 52
     CANCEL_FUNDAMENTAL_DATA = 53
+    REQ_CALC_IMPLIED_VOLAT = 54
+    REQ_CALC_OPTION_PRICE = 55
+    CANCEL_CALC_IMPLIED_VOLAT = 56
+    CANCEL_CALC_OPTION_PRICE = 57
+    REQ_GLOBAL_CANCEL = 58
     MIN_SERVER_VER_REAL_TIME_BARS = 34
     MIN_SERVER_VER_SCALE_ORDERS = 35
     MIN_SERVER_VER_SNAPSHOT_MKT_DATA = 35
@@ -209,7 +214,17 @@ class EClientSocket(object):
     MIN_SERVER_VER_SCALE_ORDERS2 = 40
     MIN_SERVER_VER_ALGO_ORDERS = 41
     MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42
-
+    MIN_SERVER_VER_NOT_HELD = 44
+    MIN_SERVER_VER_SEC_ID_TYPE = 45
+    MIN_SERVER_VER_PLACE_ORDER_CONID = 46
+    MIN_SERVER_VER_REQ_MKT_DATA_CONID = 47
+    MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT = 49
+    MIN_SERVER_VER_REQ_CALC_OPTION_PRICE = 50
+    MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50
+    MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE = 50
+    MIN_SERVER_VER_SSHORTX_OLD = 51
+    MIN_SERVER_VER_SSHORTX = 52
+    MIN_SERVER_VER_REQ_GLOBAL_CANCEL = 53
 
     # Message Type name constants
     GROUPS = 1
@@ -413,7 +428,7 @@ class EClientSocket(object):
         assert isinstance(contract, __import__("tws").Contract)
         assert isinstance(generic_tick_list, str)
         assert isinstance(snapshot, bool)
-        VERSION = 8
+        VERSION = 9
 
         if contract.m_underComp and (self._server_version < self.MIN_SERVER_VER_UNDER_COMP):
             self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
@@ -426,9 +441,17 @@ class EClientSocket(object):
                             msg="It does not support snapshot market data requests."))
             return
 
+        if contract.m_conId and (self._server_version < self.MIN_SERVER_VER_REQ_MKT_DATA_CONID):
+            self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                            id=id,
+                            msg="It does not support conId parameter."))
+            return
+
         self._send(self.REQ_MKT_DATA)
         self._send(VERSION)
         self._send(id)
+        if self._server_version >= MIN_SERVER_VER_REQ_MKT_DATA_CONID:
+	    send(contract.m_conId)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -525,7 +548,7 @@ class EClientSocket(object):
         self._send(duration_str)
         self._send(use_RTH)
         self._send(what_to_show)
-        if self._server_version >= 17:
+        if self._server_version >= 16:
             self._send(format_date)
         if self.BAG_SEC_TYPE.lower() == contract.m_secType.lower():
             self._send(len(contract.m_comboLegs))
@@ -572,7 +595,13 @@ class EClientSocket(object):
     def reqContractDetails(self, req_id, contract):
         assert isinstance(req_id, int)
         assert isinstance(contract, __import__("tws").Contract)
-        VERSION = 5
+        VERSION = 6 
+
+	if (contract.m_secIdType and contract.m_secId) and self._server_version < MIN_SERVER_VER_SEC_ID_TYPE:
+            self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                            id=id,
+                            msg="It does not support secIdType and secId parameter."))
+	    return
 
         self._send(self.REQ_CONTRACT_DATA)
         self._send(VERSION)
@@ -592,7 +621,9 @@ class EClientSocket(object):
         self._send(contract.m_localSymbol)
         if self._server_version >= 31:
             self._send(contract.m_includeExpired)
-
+        if self._server_version >= MIN_SERVER_VER_SEC_ID_TYPE: 
+            self._send( contract.m_secIdType)
+            self._send( contract.m_secId)
 
     @synchronized
     @requestmethod(has_id=True, min_server=6,
@@ -685,7 +716,6 @@ class EClientSocket(object):
         assert isinstance(id, int)
         assert isinstance(contract, __import__("tws").Contract)
         assert isinstance(order, __import__("tws").Order)
-        VERSION = 27
 
         if self._server_version < self.MIN_SERVER_VER_SCALE_ORDERS:
             if (order.m_scaleInitLevelSize < order._INT_MAX_VALUE) or (order.m_scalePriceIncrement < order._DOUBLE_MAX_VALUE):
@@ -724,10 +754,48 @@ class EClientSocket(object):
                                 id=id,
                                 msg="It does not support algo orders."))
                 return
+	
+	if self._server_vertion < MIN_SERVER_VER_NOT_HELD:
+	    if oder.m_notHeld:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=id,
+                                msg="It does not support notHeld parameter."))
+		return
+	
+	if self._server_vertion < MIN_SERVER_VER_SEC_ID_TYPE:
+	    if contract.m_secIdType and contract.m_secId:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=id,
+                                msg="It does not support secIdType and secId parameters."))
+		return
+
+	if self._server_vertion < MIN_SERVER_VER_PLACE_ORDER_CONID:
+	    if contract.m_conId>0:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=id,
+                                msg="It does not support conId parameter."))
+		return
+
+	if self._server_vertion < MIN_SERVER_VER_SSHORTX:
+	    if contract.m_exemptCode != -1:
+                self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                id=id,
+                                msg="It does not support exemptCode parameter."))
+		return
+            for leg in contract.m_comboLegs:
+                if leg.m_exemptCode != -1:
+                    self._error(_EClientErrors.TwsError( source=_EClientErrors.UPDATE_TWS,
+                                    id=id,
+                                    msg="It does not support exemptCode parameter."))
+                    return
+
+	VERSION = 27 if self._server_version < MIN_SERVER_VER_NOT_HELD else 31
 
         self._send(self.PLACE_ORDER)
         self._send(VERSION)
         self._send(id)
+	if self._server_version >= MIN_SERVER_VER_PLACE_ORDER_CONID: 
+	    self._send(contract.m_conId)
         self._send(contract.m_symbol)
         self._send(contract.m_secType)
         self._send(contract.m_expiry)
@@ -736,11 +804,14 @@ class EClientSocket(object):
         if self._server_version >= 15:
             self._send(contract.m_multiplier)
         self._send(contract.m_exchange)
-        if self._server_version >= 14:
+        if self._server_version >= 14
             self._send(contract.m_primaryExch)
         self._send(contract.m_currency)
         if self._server_version >= 2:
             self._send(contract.m_localSymbol)
+	if self._server_version >= MIN_SERVER_VER_SEC_ID_TYPE:
+	    self._send(contract.m_secIdType)
+	    self._send(contract.m_secId)
         self._send(order.m_action)
         self._send(order.m_totalQuantity)
         self._send(order.m_orderType)
@@ -775,6 +846,8 @@ class EClientSocket(object):
                     if self._server_version >= self.MIN_SERVER_VER_SSHORT_COMBO_LEGS:
                         self._send(leg.m_shortSaleSlot)
                         self._send(leg.m_designatedLocation)
+		    if self._server_version >= MIN_SERVER_VER_SSHORTX_OLD
+			self._send(leg.m_exemptCode)
         if self._server_version >= 9:
             self._send("")
         if self._server_version >= 10:
@@ -1052,7 +1125,90 @@ class EClientSocket(object):
         self._send(self.CANCEL_FUNDAMENTAL_DATA)
         self._send(VERSION)
         self._send(id)
+    
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT,
+                   min_server_error_suffix="It does not support implied volatility requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQCALCIMPLIEDVOLAT)
+    def calculateImpliedVolatility(self, id, contract, optionPrice, underPrice):
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+	assert isinstance(optionPrice, float)
+	assert isinstance(underPrice, float)
+	VERSION=1
 
+        self._send(self.REQ_CALC_IMPLIED_VOLAT)
+        self._send(VERSION)
+        self._send(id)
+        self._send(contract.m_conId)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT,
+                   min_server_error_suffix="It does not support calculate implied volatility cancellation.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANCELIMPLIEDVOLAT) #CANCALIMPLIEDVOLAT @ java api
+    def cancelCalculateImpliedVolatility(self, id):
+        assert isinstance(id, int)
+        VERSION = 1
+        
+	send(self.CANCEL_CALC_IMPLIED_VOLAT)
+        send(VERSION)
+        send(id)
+
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_REQ_CALC_OPTION_PRICE,
+                   min_server_error_suffix="It does not support calculate option price requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQCALCOPTIONPRICE) 
+    def cancelCalculateImpliedVolatility(self, id, contract, volatility, underPrice):
+        assert isinstance(id, int)
+        assert isinstance(contract, __import__("tws").Contract)
+	assert isinstance(volatility, float)
+	assert isinstance(underPrice, float)
+        VERSION = 1
+
+        self._send(self.REQ_CALC_OPTION_PRICE)
+        self._send(VERSION)
+        self._send(id)
+        self._send(contract.m_conId)
+        self._send(contract.m_symbol)
+        self._send(contract.m_secType)
+        self._send(contract.m_expiry)
+        self._send(contract.m_strike)
+        self._send(contract.m_right)
+        self._send(contract.m_multiplier)
+        self._send(contract.m_exchange)
+        self._send(contract.m_primaryExch)
+        self._send(contract.m_currency)
+        self._send(contract.m_localSymbol)
+        self._send(volatility)
+        self._send(underPrice)
+    
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE,
+                   min_server_error_suffix="It does not support calculate option price cancellation.",
+                   generic_error=_EClientErrors.FAIL_SEND_CANCELOPTIONPRICE) #CANCALOPTIONPRICE @ java api
+    def cancelCalculateOptionPrice(self, id):
+        assert isinstance(id, int)
+        VERSION = 1
+
+        self._send(self.CANCEL_CALC_OPTION_PRICE)
+        self._send(VERSION)
+        self._send(id)
+
+    @synchronized
+    @requestmethod(has_id=True, min_server=MIN_SERVER_VER_REQ_GLOBAL_CANCEL,
+                   min_server_error_suffix="It does not support globalCancel requests.",
+                   generic_error=_EClientErrors.FAIL_SEND_REQGLOBALCANCEL) 
+    def reqGlobalCancel(self):
+	VERSION = 1
+        self._send(self.REQ_GLOBAL_CANCEL)
+        self._send(VERSION)
 
 # Clean up unneeded symbols.
 _requestmethod = requestmethod
