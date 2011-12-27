@@ -1148,6 +1148,11 @@ class EClientSocket(object):
         self._send(contract.m_right)
         self._send(contract.m_multiplier)
         self._send(contract.m_exchange)
+	self._send(contract.m_primaryExch)
+	self._send(contract.m_currency)
+	self._send(contract.m_localSymbol)
+	self._send(optionPrice)
+	self._send(underPrice)
 
     @synchronized
     @requestmethod(has_id=True, min_server=MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT,
