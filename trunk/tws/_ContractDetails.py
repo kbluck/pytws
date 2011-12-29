@@ -13,7 +13,7 @@ class ContractDetails(object):
 
     def __init__(self, summary=None, market_name="", trading_class="",
                  min_tick=0.0, order_types="", valid_exchanges="", under_con_id=0,
-		 long_name="", contractMonth="", industry="", category="",
+		 long_name="", contract_month="", industry="", category="",
 		 subcategory="", time_zone_Id="", trading_hours="", liquid_hours=""):
         self.m_summary = _contract_factory() if summary is None else summary 
         self.m_marketName = market_name

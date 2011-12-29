@@ -47,8 +47,8 @@ def requestmethod(has_id=False, min_server=0,
 
     def _decorator(method):
         assert  (__import__("inspect").getargspec(method)[0][0] == "self")
-        assert  (not has_id) or (__import__("inspect").getargspec(method)[0][1] == "id")
-
+        #assert  ((not has_id) or (__import__("inspect").getargspec(method)[0][1] == "id"))
+	
         def _decorated(self, *args, **kwds):
             assert isinstance(self, EClientSocket)
 
@@ -82,7 +82,6 @@ def requestmethod(has_id=False, min_server=0,
 
         return _decorated
     return _decorator
-
 
 class EClientSocket(object):
     '''Socket client which connects to the TWS socket server.
@@ -804,7 +803,7 @@ class EClientSocket(object):
         if self._server_version >= 15:
             self._send(contract.m_multiplier)
         self._send(contract.m_exchange)
-        if self._server_version >= 14
+        if self._server_version >= 14:
             self._send(contract.m_primaryExch)
         self._send(contract.m_currency)
         if self._server_version >= 2:
@@ -846,7 +845,7 @@ class EClientSocket(object):
                     if self._server_version >= self.MIN_SERVER_VER_SSHORT_COMBO_LEGS:
                         self._send(leg.m_shortSaleSlot)
                         self._send(leg.m_designatedLocation)
-		    if self._server_version >= MIN_SERVER_VER_SSHORTX_OLD
+		    if self._server_version >= MIN_SERVER_VER_SSHORTX_OLD:
 			self._send(leg.m_exemptCode)
         if self._server_version >= 9:
             self._send("")
@@ -1157,7 +1156,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(has_id=True, min_server=MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT,
                    min_server_error_suffix="It does not support calculate implied volatility cancellation.",
-                   generic_error=_EClientErrors.FAIL_SEND_CANCELIMPLIEDVOLAT) #CANCALIMPLIEDVOLAT @ java api
+                   generic_error=_EClientErrors.FAIL_SEND_CANCALCIMPLIEDVOLAT) 
     def cancelCalculateImpliedVolatility(self, id):
         assert isinstance(id, int)
         VERSION = 1
@@ -1197,7 +1196,7 @@ class EClientSocket(object):
     @synchronized
     @requestmethod(has_id=True, min_server=MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE,
                    min_server_error_suffix="It does not support calculate option price cancellation.",
-                   generic_error=_EClientErrors.FAIL_SEND_CANCELOPTIONPRICE) #CANCALOPTIONPRICE @ java api
+                   generic_error=_EClientErrors.FAIL_SEND_CANCALCOPTIONPRICE) 
     def cancelCalculateOptionPrice(self, id):
         assert isinstance(id, int)
         VERSION = 1
@@ -1212,7 +1211,8 @@ class EClientSocket(object):
                    generic_error=_EClientErrors.FAIL_SEND_REQGLOBALCANCEL) 
     def reqGlobalCancel(self):
 	VERSION = 1
-        self._send(self.REQ_GLOBAL_CANCEL)
+        
+	self._send(self.REQ_GLOBAL_CANCEL)
         self._send(VERSION)
 
 # Clean up unneeded symbols.
