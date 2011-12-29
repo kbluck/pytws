@@ -16,9 +16,9 @@ class TwsError(StandardError):
 
     def __init__(self, id=NO_VALID_ID, code=None, msg=None, source=None):
         assert isinstance(id, int)
-        assert (isinstance(code, int)) or code is None
-        assert (isinstance(msg, str)) or msg is None
-        assert (isinstance(source, TwsError)) or source is None
+        assert (isinstance(code, int) or code is None)
+        assert (isinstance(msg, str) or msg is None)
+        assert (isinstance(source, TwsError) or source is None)
 
         StandardError.__init__(self, (id, code, msg, source))
 
@@ -79,8 +79,8 @@ FAIL_SEND_CANRTBARS = CodeMsgPair(code=530, msg="Cancel Real-time Bar Data Sendi
 FAIL_SEND_REQCURRTIME = CodeMsgPair(code=531, msg="Request Current Time Sending Error - ")
 FAIL_SEND_REQFUNDDATA = CodeMsgPair(code=532, msg="Request Fundamental Data Sending Error - ")
 FAIL_SEND_CANFUNDDATA = CodeMsgPair(code=533, msg="Cancel Fundamental Data Sending Error - ")
-FAIL_SEND_REQCALCIMPLIEDVOLAT = CodeMsgPair(534, "Request Calculate Implied Volatility Sending Error - ")
-FAIL_SEND_REQCALCOPTIONPRICE = CodeMsgPair(535, "Request Calculate Option Price Sending Error - ")
-FAIL_SEND_CANCALCIMPLIEDVOLAT = CodeMsgPair(536, "Cancel Calculate Implied Volatility Sending Error - ")
-FAIL_SEND_CANCALCOPTIONPRICE = CodeMsgPair(537, "Cancel Calculate Option Price Sending Error - ")
-FAIL_SEND_REQGLOBALCANCEL = CodeMsgPair(538, "Request Global Cancel Sending Error - ")
+FAIL_SEND_REQCALCIMPLIEDVOLAT = CodeMsgPair(534, msg="Request Calculate Implied Volatility Sending Error - ")
+FAIL_SEND_REQCALCOPTIONPRICE = CodeMsgPair(535, msg="Request Calculate Option Price Sending Error - ")
+FAIL_SEND_CANCALCIMPLIEDVOLAT = CodeMsgPair(536, msg="Cancel Calculate Implied Volatility Sending Error - ")
+FAIL_SEND_CANCALCOPTIONPRICE = CodeMsgPair(537, msg="Cancel Calculate Option Price Sending Error - ")
+FAIL_SEND_REQGLOBALCANCEL = CodeMsgPair(538, msg="Request Global Cancel Sending Error - ")

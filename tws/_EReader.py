@@ -157,30 +157,36 @@ class EReader(_thread_type):
         implied_vol = self._readDouble() 
         if implied_vol < 0: #-1 is the "not yet computed" indicator
 		implied_vol = self._DOUBLE_MAX_VALUE 
-	delta = self._readDouble()
-	if abs(delta) > 1: #-2 is the "not yet computed" indicator
-		delta = self._DOUBLE_MAX_VALUE
-	opt_price = self._DOUBLE_MAX_VALUE
-	pv_dividend = self._DOUBLE_MAX_VALUE
-	gamma = self._DOUBLE_MAX_VALUE
-	vega = self._DOUBLE_MAX_VALUE
-	theta = self._DOUBLE_MAX_VALUE
-	und_price = self._DOUBLE_MAX_VALUE
-	if (version >= 6) or (tick_type = _TickType.MODEL_OPTION):
-		opt_price = self._readDouble()
-		if opt_price < 0 opt_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
-		pv_dividend = self._readDouble()
-		if pv_dividend < 0 pv_dividend = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
-	if version >= 6:
-		gamma = self._readDouble()
-		if abs(gamma) > 1 gamma = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator
-		vega = self._readDouble()
-		if abs(vega) > 1 vega = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicato
-		theta = self._readDouble()
-		if abs(theta) > 1 theta = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator		
-		und_price = self._readDouble()
-		if und_price < 0 und_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
-	self._wrapper.tickOptionComputation(ticker_id, tick_type, implied_vol, delta, optPrice, pv_dividend, 
+        delta = self._readDouble()
+        if abs(delta) > 1: #-2 is the "not yet computed" indicator
+		    delta = self._DOUBLE_MAX_VALUE
+        opt_price = self._DOUBLE_MAX_VALUE
+        pv_dividend = self._DOUBLE_MAX_VALUE
+        gamma = self._DOUBLE_MAX_VALUE
+        vega = self._DOUBLE_MAX_VALUE
+        theta = self._DOUBLE_MAX_VALUE
+        und_price = self._DOUBLE_MAX_VALUE
+        if (version >= 6) or (tick_type == _TickType.MODEL_OPTION):
+		    opt_price = self._readDouble()
+        if opt_price < 0: 
+            opt_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+        pv_dividend = self._readDouble()
+        if pv_dividend < 0:
+            pv_dividend = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+        if version >= 6:
+            gamma = self._readDouble()
+        if abs(gamma) > 1:
+            gamma = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator
+        vega = self._readDouble()
+        if abs(vega) > 1:
+            vega = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicato
+        theta = self._readDouble()
+        if abs(theta) > 1:
+            theta = self._DOUBLE_MAX_VALUE # -2 is the "not yet computed" indicator		
+        und_price = self._readDouble()
+        if und_price < 0:
+            und_price = self._DOUBLE_MAX_VALUE #-1 is the "not yet computed" indicator
+	    self._wrapper.tickOptionComputation(ticker_id, tick_type, implied_vol, delta, opt_price, pv_dividend, 
 						gamma, vega, theta, und_price)
 
     def _readTickGeneric(self):
@@ -393,7 +399,7 @@ class EReader(_thread_type):
         if version >= 19:
             order.m_clearingAccount = self._readStr()
             order.m_clearingIntent = self._readStr()
-	if version >= 22
+	if version >= 22:
 	    order.m_notHeld = self._readBoolFromInt()
         if version >= 20:
             if self._readBoolFromInt():
@@ -527,7 +533,7 @@ class EReader(_thread_type):
             contract.m_nextOptionType = self._readStr()
             contract.m_nextOptionPartial = self._readBoolFromInt()
             contract.m_notes = self._readStr()
-	if version >= 4
+	if version >= 4:
 	    contract.m_longName = self._readStr()
         self._wrapper.bondContractDetails(req_id, contract)
 
