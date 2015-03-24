@@ -1,0 +1,7 @@
+PyTWS is a Python port of the API used for controlling the Interactive Brokers LLC Trader Workstation software.  PyTWS implements in Python a very similar interface and functionality as the proprietary Java API distributed by Interactive Brokers.
+
+PyTWS is not reviewed, supported or endorsed by Interactive Brokers LLC.
+
+You may also be interested in the [IbPy project](http://code.google.com/p/ibpy/), which is a different implementation of the TWS API in Python. I was aware of IbPy's existence, but decided to write PyTWS as a personal learning exercise to familiarize myself with the inner workings of the TWS API. IbPy uses a tool to translate the original Java code directly into Python, whereas PyTWS is hand-coded. Being mostly machine-generated, IbPy is a closer "mirror" of the exact Java semantics, whereas I have taken a few liberties with PyTWS to make it a bit more "Pythonic" while still closely approximating the "spirit" of the Java API.
+
+PyTWS is presently in an unmaintained state. I once used it extensively for my own purposes, and at that time it worked well. However, I stopped using it in early 2010. Since then, IB has made several new releases of the TWS API, which are likely to break the internals of this code. As such, new users should no longer expect it to work "out of the box."
